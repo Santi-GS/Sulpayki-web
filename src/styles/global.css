@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme{
+  --color-primary: #6BC340;   /* Verde cactus */
+  --color-primary-dark: #599F30;
+  --color-secondary: #F7931E;/* Naranja atardecer */
+  --color-secondary-dark:	#C46E0D; 
+  --color-tertiary: #FCD21D;  /* Amarillo sol */
+  --color-accent: #7A4A00;    /* Marrón texto sombra */
+  --color-text: #3A3A3A;      /* Gris oscuro para textos */
+  --color-neutral:	#3A3A3A;
+  --color-neutral-light: #F5F5F5;
+  
+}
+.bg-hero {
+    background-image: url('/talampaya-park.webp');
+    background-size: cover;
+    background-position: center;
+  }
+  

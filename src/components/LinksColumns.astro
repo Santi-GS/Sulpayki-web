@@ -1,0 +1,73 @@
+---
+const linksInfo = [
+  {
+    title: "Sulpayki",
+    links: [
+      {
+        label: "Ayuda",
+        href: "",
+        showOnMobile: true,
+      },
+      {
+        label: "Seguridad",
+        href: "",
+      },
+      {
+        label: "Condiciones legales",
+        href: "",
+        showOnMobile: true,
+      },
+    ],
+  },
+  {
+    title: "Políticas",
+    links: [
+      {
+        label: "InfoJobs hoy",
+        href: "",
+      },
+      {
+        label: "Trabaja con nosotros",
+        href: "",
+      },
+      {
+        label: "Ofertas de empleo",
+        href: "",
+      },
+    ],
+  },
+]
+---
+
+<div
+  class="px-[40px] gap-26 items-center md:justify-center md:items-start flex flex-col md:flex-row"
+>
+  {
+    linksInfo.map(({ title, links }, index) => {
+      return (
+        <div class={`${index === 0 ? "" : "hidden sm:block"}`}>
+          <h2 class="text-black font-semibold text-[18px] hidden md:block mb-2">
+            {title}
+          </h2>
+
+          <ul class="flex flex-row  md:flex-col underline md:no-underline gap-4 md:gap-0">
+            {links.map(({ label, href, showOnMobile }) => {
+              return (
+                <li
+                  class:list={[
+                    `mb-2 hover:underline hover:underline-offset-[3px]`,
+                    showOnMobile ? "" : "hidden md:block",
+                  ]}
+                >
+                  <a href={href} class="text-[14px] leading-6" target="_blank" rel="noopener noreferrer" aria-label={label}>
+                    {label}
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )
+    })
+  }
+</div>

@@ -1,0 +1,75 @@
+---
+import FollowUsLink from "./FollowUsLink.astro";
+import Icon from "./ui/Icon.astro";
+
+const hoverSocialNetworks = "md:transition-transform md:hover:scale-110";
+const hoverStoreApps = "md:transition-opacity md:duration-150 md:ease-in-out md:hover:opacity-90";
+---
+
+
+<section class="flex flex-col items-center justify-between md:flex-row md:p-10">
+  <article
+    class="w-full flex items-center justify-center gap-2 py-4 flex-wrap"
+  >
+    <p class="text-xl tracking-[0.38px] leading-6 font-semibold">
+      ¡Seguinos!
+    </p>
+
+    <span class="flex items-center gap-2">
+      <FollowUsLink
+        href="https://www.facebook.com/profile.php?id=61551433251415"
+        class={hoverSocialNetworks}
+        socialPlatform="Visítanos en Facebook."
+      >
+        <Icon name="facebook" />
+      </FollowUsLink>
+
+      <FollowUsLink
+        href="https://www.instagram.com/sulpayki_viajesyturismo/"
+        class={hoverSocialNetworks}
+        socialPlatform="Visítanos en Instagram."
+      >
+        <Icon name="instagram" />
+      </FollowUsLink>
+
+    </span>
+  </article>
+
+  
+  <article
+  class="w-full flex items-center justify-center gap-4 py-4 flex-wrap md:flex-nowrap md:p-0 md:gap-2"
+>
+  <p class="text-xl tracking-[0.38px] leading-6 font-semibold">
+    Contactanos por:
+  </p>
+
+  <FollowUsLink
+    href="tel: +54 9 380 467-9492"
+    class={hoverSocialNetworks}
+    socialPlatform="Contactanos por Whatsapp."
+  >
+    <Icon name="whatsapp" />
+  </FollowUsLink>
+
+  <!-- Enlace para móviles (mailto) -->
+  <FollowUsLink
+    href="mailto:sulpaykiviajesyturismo@gmail.com"
+    class={`block md:hidden ${hoverSocialNetworks}`}
+    socialPlatform="Contactanos por correo."
+  >
+    <Icon name="Gmail" />
+  </FollowUsLink>
+
+  <!-- Enlace para escritorio (Gmail) -->
+  <FollowUsLink
+    href="https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    class={`hidden md:block ${hoverSocialNetworks}`}
+    socialPlatform="Contactanos por Gmail."
+  >
+    <Icon name="Gmail" />
+  </FollowUsLink>
+</article>
+
+</section>

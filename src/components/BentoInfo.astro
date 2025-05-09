@@ -1,0 +1,80 @@
+---
+import SectionContainer from "./SectionContainer.astro"
+import Subtitle from "./Subtitle.astro"
+
+const ARTICLES = [
+  {
+    title: "Nuestras rutas principales",
+    link: "https://www.facebook.com/profile.php?id=61551433251415",
+    class:
+      "bg-gradient-to-r from-[#fef6db] to-[#fce197] text-neutral md:aspect-[12/6] md:col-span-2 md:row-span-1 h-full",
+    image: "/bus-turistico.webp",
+    imageClass:
+      "w-auto h-auto max-h-[65%] object-contain md:absolute md:bottom-0 md:max-h-[80%] mr-10",
+    track: "blog_selection_process",
+  },
+  {
+    title: "Eventos que no te podés perder",
+    link: "#", // puedes reemplazar esto con una URL real
+    class:
+      "bg-gradient-to-r from-[#ffd2d2] to-[#f9b395] text-ij-red md:col-start-3 md:row-span-2 md:h-full",
+    image: "/talampaya-park.webp",
+    imageClass:
+      "w-full h-full object-cover object-[center_30%] md:object-center",
+    track: "blog_emerging_jobs",
+  },
+  {
+    title: "Sobre nosotros",
+    link: "#", // puedes reemplazar esto con una URL real
+    class:
+      "bg-gradient-to-r from-[#e6f6ee] to-[#8bcfad] text-neutral md:aspect-[12/6] md:col-span-2 md:row-span-1 h-full",
+    image: "/bento-info/sulpayki-logo-grande.webp",
+    imageClass: "w-3/4 h-auto object-contain mb-3 mr-6",
+    track: "blog_about_us",
+  },
+]
+---
+
+<SectionContainer>
+  <Subtitle>Conoce más</Subtitle>
+  <div class="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 md:p-0">
+    {
+      ARTICLES.map(
+        ({
+          class: className,
+          title,
+          image,
+          imageClass,
+          link,
+          track,
+        }) => (
+          <a
+            href={link}
+            target="_blank"
+            class:list={[
+              "aspect-square w-full h-full rounded-2xl overflow-hidden relative group",
+              className,
+            ]}
+            data-track={track}
+          >
+            <div class="absolute inset-0 flex overflow-hidden p-0 items-end justify-end">
+              <img
+                src={image}
+                alt=""
+                class:list={[
+                  "transition-transform duration-300 ease-in-out group-hover:scale-110",
+                  imageClass,
+                ]}
+              />
+            </div>
+            <div class="absolute inset-0 p-4 flex flex-col justify-start items-start z-10">
+              <span class="font-medium text-3xl text-left text-pretty tracking-separated pr-3 md:max-w-64">
+                {title}
+              </span>
+            </div>
+          </a>
+        )
+      )
+    }
+  </div>
+</SectionContainer>
