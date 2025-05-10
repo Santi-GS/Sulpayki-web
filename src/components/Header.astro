@@ -1,23 +1,51 @@
 ---
-//import Button from "./ui/Button.astro"
+import Drawer from "./Drawer.astro"
 ---
 
-<header
-  id="header"
-  class="py-4 px-4 sm:px-8 flex justify-between items-center max-w-full sm:max-w-7xl mx-auto top-0 z-50 mb-4 backdrop-blur-xl"
->
-  <!-- Logo -->
-  <a href="#" class="flex-shrink-0">
-    <svg class="icon fill-neutral h-16 sm:h-32 max-w-[140px] sm:max-w-none w-auto object-contain">
-      <use xlink:href="/logo.svg#Sulpayki-logo"></use>
-    </svg>
-  </a>
+<header class="sticky top-0 z-50 bg-white/80">
+  <div class="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8">
+    <div class="flex h-24 items-center justify-between">
 
-  <!-- Botón -->
-  <a
-    href="#"
-    class="text-sm sm:text-base bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full px-4 py-2 transition whitespace-nowrap"
-  >
-    Crea tu cuenta
-  </a>
+      <!-- Logo -->
+      <div class="md:flex md:items-center md:gap-12">
+        <a class="block text-teal-600" href="#">
+          <span class="sr-only">Inicio</span>
+          <img src="/bento-info/sulpayki-logo-grande.webp" alt="Sulpayki Logo" class="h-25 w-auto" />
+        </a>
+      </div>
+
+      <!-- Navegación + Icono -->
+      <div class="hidden md:flex md:items-center md:gap-6">
+        <nav aria-label="Global">
+          <ul class="flex items-center gap-4 text-bold">
+            <li>
+              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300" 
+              href="#">Sobre Nosotros</a>
+            </li>
+            <li>
+              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300" 
+              href="#">Destinos</a>
+            </li>
+            <li>
+              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300" 
+              href="#">Eventos</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Ícono usuario -->
+        <a class="rounded-md px-4 py-2.5 text-sm font-medium hover:opacity-70 hover:bg-gray-200 active:hover:opacity-100 transition" href="#">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="9" r="3" stroke="#1C274C" stroke-width="1.5" />
+            <circle cx="12" cy="12" r="10" stroke="#1C274C" stroke-width="1.5" />
+            <path stroke="#1C274C" stroke-linecap="round" stroke-width="1.5"
+              d="M17.9691 20c-.1591-2.8915-1.0444-5-5.9692-5-4.92469 0-5.80999 2.1085-5.96914 5" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Drawer para móviles -->
+      <Drawer />
+    </div>
+  </div>
 </header>
