@@ -5,7 +5,7 @@ import Subtitle from "./Subtitle.astro"
 const ARTICLES = [
   {
     title: "Nuestras rutas principales",
-    link: "https://www.facebook.com/profile.php?id=61551433251415",
+    link: "/destinos",
     class:
       "bg-gradient-to-r from-[#fef6db] to-[#fce197] text-neutral md:aspect-[12/6] md:col-span-2 md:row-span-1 h-full",
     image: "/bus-turistico.webp",
@@ -18,9 +18,9 @@ const ARTICLES = [
     link: "#", // puedes reemplazar esto con una URL real
     class:
       "bg-gradient-to-r from-[#ffd2d2] to-[#f9b395] text-ij-red md:col-start-3 md:row-span-2 md:h-full",
-    image: "/talampaya-park.webp",
+    image: "/bento-info/eventos.webp",
     imageClass:
-      "w-full h-full object-cover object-[center_30%] md:object-center",
+      "w-auto h-auto max-h-[80%] object-contain object-[center_30%] md:object-center md:max-w-[140%] md:mb-10 md:-mr-20",
     track: "blog_emerging_jobs",
   },
   {
@@ -50,12 +50,12 @@ const ARTICLES = [
         }) => (
           <a
             href={link}
-            target="_blank"
             class:list={[
               "aspect-square w-full h-full rounded-2xl overflow-hidden relative group",
               className,
             ]}
             data-track={track}
+            
           >
             <div class="absolute inset-0 flex overflow-hidden p-0 items-end justify-end">
               <img
