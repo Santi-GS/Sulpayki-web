@@ -2,7 +2,7 @@
 import Drawer from "./Drawer.astro"
 ---
 
-<header class="sticky top-0 z-50 bg-white/80">
+<header id="main-header" class="fixed top-0 z-50 w-full transition-transform duration-450 bg-white/80">
   <div class="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8">
     <div class="flex h-24 items-center justify-between">
 
@@ -17,35 +17,25 @@ import Drawer from "./Drawer.astro"
       <!-- Navegación + Icono -->
       <div class="hidden md:flex md:items-center md:gap-6">
         <nav aria-label="Global">
-          <ul class="flex items-center gap-4 font-semibold ">
+          <ul class="flex items-center gap-4 font-semibold">
             <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300" 
-              href="/">Inicio</a>
+              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
+                href="/">Inicio</a>
             </li>
             <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300" 
-              href="/destinos">Destinos</a>
+              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
+                href="/destinos">Destinos</a>
             </li>
             <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300" 
-              href="#">Eventos</a>
+              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
+                href="/eventos">Eventos</a>
             </li>
             <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300" 
-              href="/about">Sobre Nosotros</a>
+              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
+                href="/about">Sobre Nosotros</a>
             </li>
           </ul>
         </nav>
-
-        <!-- Ícono usuario -->
-       <!--  <a class="rounded-md px-4 py-2.5 text-sm font-medium hover:opacity-70 hover:bg-gray-200 active:hover:opacity-100 transition" href="#">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 24 24">
-            <circle cx="12" cy="9" r="3" stroke="#1C274C" stroke-width="1.5" />
-            <circle cx="12" cy="12" r="10" stroke="#1C274C" stroke-width="1.5" />
-            <path stroke="#1C274C" stroke-linecap="round" stroke-width="1.5"
-              d="M17.9691 20c-.1591-2.8915-1.0444-5-5.9692-5-4.92469 0-5.80999 2.1085-5.96914 5" />
-          </svg>
-        </a> -->
       </div>
 
       <!-- Drawer para móviles -->
@@ -53,3 +43,23 @@ import Drawer from "./Drawer.astro"
     </div>
   </div>
 </header>
+
+<!-- Script para ocultar el header al hacer scroll hacia abajo -->
+<script>
+  let lastScroll = 0;
+  const header = document.getElementById('main-header');
+
+  if (header) {
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+
+      if (currentScroll > lastScroll && currentScroll > 100) {
+        header.classList.add('-translate-y-full');
+      } else {
+        header.classList.remove('-translate-y-full');
+      }
+
+      lastScroll = currentScroll;
+    });
+  }
+</script>
