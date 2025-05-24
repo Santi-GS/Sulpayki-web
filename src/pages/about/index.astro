@@ -1,8 +1,11 @@
 ---
 import SectionTopContainer from "../../components/SectionTopContainer.astro"
 import Layout from "../../layouts/Layout.astro"
+import { about } from "../../consts/pageTitles";
+
+const description = "En Sulpayki combinamos pasión y experiencia para crear viajes inolvidables, especializados en turismo industrial y servicios personalizados."
 ---
-<Layout title="Sulpayki - Todo lo que tenes que saber sobre la gencia de Viajes y Turismo "> 
+<Layout title={about} description={description}> 
     <SectionTopContainer>
         <article class="mx-auto prose md:prose-lg">
             <h2>
