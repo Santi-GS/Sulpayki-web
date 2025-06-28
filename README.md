@@ -70,6 +70,45 @@ Los archivos estáticos se generarán en la carpeta `dist/`.
 
 ---
 
+Claro, aquí tenés una versión resumida y clara para un `README.md`:
+
+---
+
+## 🗺️ Insertar Mapas en Markdown
+
+Este proyecto permite insertar mapas de Google Maps directamente en contenido Markdown usando una sintaxis simple.
+
+### 🔧 Sintaxis Básica
+
+```markdown
+[map:URL_DE_GOOGLE_MAPS]
+[map:URL_DE_GOOGLE_MAPS|Título del Mapa]
+```
+
+* **URL**: debe ser una URL de tipo embed (`https://www.google.com/maps/embed?...`)
+* **Título (opcional)**: se usa como título accesible para lectores de pantalla
+
+### 📍 Ejemplo
+
+```markdown
+[map:https://www.google.com/maps/embed?pb=...|Nuestra Oficina en La Rioja]
+```
+
+### 📐 Características
+
+* Soporta múltiples mapas
+* Responsive (ancho 100%, alto 400px)
+* Títulos accesibles (`aria-label`)
+* Estilo con `rounded-lg`, sombra, y carga diferida (`loading="lazy"`)
+
+### 📝 Cómo obtener la URL
+
+1. Abrí Google Maps
+2. Buscá una ubicación
+3. Hacé clic en “Compartir” > “Insertar un mapa”
+4. Copiá el enlace del iframe
+
+---
 ## 📝 Licencia
 
 Este proyecto es de uso interno para fines turísticos. Si querés colaborar o tenés ideas, ¡te leemos!
