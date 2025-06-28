@@ -1,0 +1,75 @@
+---
+import { marked } from "marked";
+interface Props {
+  pregunta: string;
+  respuesta: string;
+}
+
+const { pregunta, respuesta } = Astro.props;
+
+const htmlRespuesta = marked(respuesta);
+---
+
+<li class="p-6 bg-gray-50 rounded-xl shadow faq-item">
+  <button
+    class="w-full flex justify-between items-center text-left font-bold font-heading hover:text-gray-600 faq-item-button"
+  >
+    <span class="text-xl">{pregunta}</span>
+    <svg
+      class="w-5 h-5 text-green-600 transition-transform duration-300 faq-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+      ></path>
+    </svg>
+  </button>
+  <div class="hidden mt-4 text-neutral-800 font-normal leading-loose faq-item-answer prose" set:html={htmlRespuesta}></div>
+</li>
+
+<style>
+  .faq-item-button {
+    cursor: pointer;
+  }
+
+
+  .faq-icon.rotate-90 {
+    transform: rotate(90deg);
+  }
+</style>
+<script>
+  function initializeFAQ() {
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(faqItem => {
+      const faqItemButton = faqItem.querySelector('.faq-item-button') as HTMLButtonElement;
+      const faqItemAnswer = faqItem.querySelector('.faq-item-answer') as HTMLParagraphElement;
+      const faqIcon = faqItem.querySelector('.faq-icon') as SVGElement;
+
+      if (!faqItemButton || !faqItemAnswer || !faqIcon) return;
+
+      // Remover event listeners anteriores
+      faqItemButton.removeEventListener('click', handleFAQClick);
+
+      function handleFAQClick() {
+        faqItemAnswer.classList.toggle('hidden');
+        faqIcon.classList.toggle('rotate-90');
+      }
+
+      // Agregar nuevo event listener
+      faqItemButton.addEventListener('click', handleFAQClick);
+    });
+  }
+
+  // Inicializar en DOMContentLoaded
+  document.addEventListener("DOMContentLoaded", initializeFAQ);
+
+  // Reinicializar en cada navegación de página
+  document.addEventListener("astro:page-load", initializeFAQ);
+</script>

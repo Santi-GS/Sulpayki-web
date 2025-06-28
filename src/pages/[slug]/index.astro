@@ -1,0 +1,34 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SectionTopContainer from "../../components/SectionTopContainer.astro";
+import BlockRenderer from "../../components/blocks/BlockRenderer.astro";
+import { getCollection } from "astro:content";
+
+import type { CollectionEntry } from "astro:content";
+
+// Use with Astro's collection entry type
+type Page = CollectionEntry<"strapiPages">;
+
+export async function getStaticPaths() {
+  const collection = await getCollection("strapiPages");
+
+  function createStaticPaths(articles: Page[]) {
+    return articles.map(article => ({
+      params: { slug: article.data.slug },
+      props: article.data
+    }));
+  }
+
+  return createStaticPaths(collection);
+}
+
+
+const { props } = Astro;
+const { blocks } = props;
+---
+
+<Layout title="Sulpayki Viajes y Turismo">
+  <SectionTopContainer>
+      <BlockRenderer blocks={blocks || []} />
+  </SectionTopContainer>
+</Layout>

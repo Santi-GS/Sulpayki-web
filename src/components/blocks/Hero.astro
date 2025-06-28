@@ -1,0 +1,203 @@
+---
+import type { HeroProps } from "../../lib/types";
+import StrapiImage from "../StrapiImage.astro";
+
+  interface Props {
+    data: HeroProps;
+  }
+
+  const {
+    data: { heading, text, carruselHero, links },
+  } = Astro.props;
+
+---
+<section>
+  <div class="mx-auto max-w-screen-2xl px-4 py-8 pt-32 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-4 md:items-center md:gap-8">
+      <div class="md:col-span-1">
+        <div class="max-w-lg md:max-w-none text-center md:text-left">
+          <h2 class="text-3xl px-4.5 md:px-0 font-semibold text-gray-900 sm:text-4xl prose">
+            {heading}
+          </h2>
+
+          <p class="mt-4 px-4 md:px-0 md:pr-10 text-gray-700 prose max-w-md">
+            {text}
+          </p>
+
+          { links && (
+            <div class="mt-6 flex flex-wrap gap-3 justify-center md:justify-start">
+              {links.map((link) => {
+                const isPrimary = link.type === "PRIMARY" ? "bg-tertiary hover:saturate-90 hover:scale-103 text-accent" : "bg-transparent border border-neutral hover:border-gray-500 hover:opacity-80 hover:scale-103 text-neutral-900";
+                return <a class={`inline-block py-2 px-6 leading-loose ${isPrimary} font-semibold rounded-l-xl rounded-t-xl transition duration-200`} href={link.href} target={link.isExternal ? "_blank" : "_self"}>{link.label}</a>
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div class="md:col-span-3">
+        {Array.isArray(carruselHero) && carruselHero.length > 0 && (
+          <div class="relative">
+            {/* Botón izquierdo */}
+            <button 
+              id="prevBtn"
+              class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-neutral-900 p-2 rounded-full shadow-lg transition-all duration-200"
+              type="button"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            
+            {/* Botón derecho */}
+            <button 
+              id="nextBtn"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-neutral-900 p-2 rounded-full shadow-lg transition-all duration-200"
+              type="button"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+            
+            {/* Carrusel */}
+            <div class="overflow-hidden rounded-lg relative h-160">
+              {carruselHero.map((item, index) => (
+                <div 
+                  class={`carousel-slide absolute inset-0 transition-opacity duration-500 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+                  data-slide={index}
+                >
+                  <a href={item.link.href} class="block relative group">
+                    <StrapiImage 
+                      src={item.card.imagen.url} 
+                      alt={item.card.imagen.alternativeText || item.card.titulo} 
+                      height={400} 
+                      width={800} 
+                      class="h-160 w-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                    />
+                    
+                    {/* Overlay con título y texto */}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+                      <h3 class="text-white text-xl font-bold mb-2">{item.card.titulo}</h3>
+                      <p class="text-white/90 text-sm">{item.card.text}</p>
+                    </div>
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script type="module">
+  let currentSlide = 0;
+  let slides;
+  let prevBtn;
+  let nextBtn;
+  
+  let autoplayInterval;
+  let isPaused = false;
+
+  function initializeCarousel() {
+    slides = document.querySelectorAll('.carousel-slide');
+    prevBtn = document.getElementById('prevBtn');
+    nextBtn = document.getElementById('nextBtn');
+    
+    if (slides.length === 0) return;
+
+    // Limpiar intervalos anteriores
+    if (autoplayInterval) {
+      clearInterval(autoplayInterval);
+      autoplayInterval = undefined;
+    }
+
+    // Remover event listeners anteriores
+    if (prevBtn) {
+      prevBtn.removeEventListener('click', previousSlide);
+      prevBtn.removeEventListener('mouseenter', pauseAutoplay);
+      prevBtn.removeEventListener('mouseleave', resumeAutoplay);
+    }
+    if (nextBtn) {
+      nextBtn.removeEventListener('click', nextSlide);
+      nextBtn.removeEventListener('mouseenter', pauseAutoplay);
+      nextBtn.removeEventListener('mouseleave', resumeAutoplay);
+    }
+
+    // Agregar nuevos event listeners
+    if (prevBtn) {
+      prevBtn.addEventListener('click', previousSlide);
+      prevBtn.addEventListener('mouseenter', pauseAutoplay);
+      prevBtn.addEventListener('mouseleave', resumeAutoplay);
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', nextSlide);
+      nextBtn.addEventListener('mouseenter', pauseAutoplay);
+      nextBtn.addEventListener('mouseleave', resumeAutoplay);
+    }
+
+    // Reinicializar carrusel
+    currentSlide = 0;
+    isPaused = false;
+    showSlide(currentSlide);
+    startAutoplay();
+  }
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      const isVisible = i === index;
+      slide.classList.toggle('opacity-100', isVisible);
+      slide.classList.toggle('opacity-0', !isVisible);
+      
+      // solo la slide visible es interactiva.
+      slide.style.pointerEvents = isVisible ? 'auto' : 'none';
+
+      // hover: se aplica solo a la slide visible.
+      slide.removeEventListener('mouseenter', pauseAutoplay);
+      slide.removeEventListener('mouseleave', resumeAutoplay);
+      if (isVisible) {
+        slide.addEventListener('mouseenter', pauseAutoplay);
+        slide.addEventListener('mouseleave', resumeAutoplay);
+      }
+    });
+    currentSlide = index;
+  }
+
+  function nextSlide() {
+    const newIndex = (currentSlide + 1) % slides.length;
+    showSlide(newIndex);
+  }
+
+  function previousSlide() {
+    const newIndex = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(newIndex);
+  }
+
+  function pauseAutoplay() {
+    isPaused = true;
+  }
+
+  function resumeAutoplay() {
+    isPaused = false;
+  }
+  
+  function startAutoplay() {
+    if (autoplayInterval) clearInterval(autoplayInterval);
+    autoplayInterval = setInterval(() => {
+      if (!isPaused) {
+        nextSlide();
+      }
+    }, 5000);
+  }
+
+  // Inicializar en DOMContentLoaded
+  document.addEventListener("DOMContentLoaded", initializeCarousel);
+
+  // Reinicializar en cada navegación de página
+  document.addEventListener("astro:page-load", initializeCarousel);
+</script>
+
+

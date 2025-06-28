@@ -1,66 +1,88 @@
-<!-- Drawer Init & Trigger -->
+---
+import Icon from "./ui/Icon.astro";
+
+const NavItems = [
+  { title: "Inicio", link: "/", icon: "Home" },
+  { title: "Destinos", link: "/destinos", icon: "Map-pins" },
+  { title: "Eventos", link: "/eventos", icon: "Calendar-event" },
+  { title: "Sobre Nosotros", link: "/sobre-nosotros", icon: "Cactus" },
+];
+---
+
+<!-- Botón para abrir drawer -->
 <div class="block md:hidden">
-  <button 
-    class="rounded-sm bg-transparent p-2 text-gray-700 hover:text-teal-600 focus:bg-gray-100 active:bg-gray-200 transition"
-    type="button"
-    data-drawer-target="drawer-right-example"
-    data-drawer-show="drawer-right-example"
-    data-drawer-placement="right"
-    aria-controls="drawer-right-example"
-    data-drawer-body-scrolling="true"
-    data-drawer-backdrop="true"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  <button id="drawer-toggle" class="p-2 text-gray-700 hover-verde transition">
+    <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   </button>
 </div>
 
-<!-- Drawer Component -->
-<div id="drawer-right-example" 
-class="fixed top-0 right-0 z-40 w-55 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-white/80" 
-tabindex="-1" aria-labelledby="drawer-right-label">
-  
-  <h5 id="drawer-right-label" class="inline-flex items-center mb-4 text-base font-semibold text-gray-600">
-    Menú lateral
-  </h5>
+<!-- Backdrop -->
+<div id="drawer-backdrop" class="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-  <!-- Close Button -->
-  <button type="button" data-drawer-hide="drawer-right-example" aria-controls="drawer-right-example"
-    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center focus:bg-gray-100 active:bg-gray-200 transition">
-    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-    </svg>
-    <span class="sr-only">Cerrar menú</span>
-  </button>
+<!-- Drawer -->
+<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-tertiary/90" tabindex="-1">
 
-  <!-- Contenido -->
+  <div class="flex justify-between items-center mb-6">
+    <h5 class="text-xl font-bold text-gray-700">Menú de Navegación</h5>
+    <button id="drawer-close" class="w-8 h-8 text-gray-700 hover:text-gray-900 transition">
+      ✕
+    </button>
+  </div>
 
-  <div class="py-4 overflow-y-auto">
-  <ul class="space-y-2 font-medium">
-
-    <li>
-      <a href="/" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-200 transition">
-        <span class="flex-1 ms-3 whitespace-nowrap">Inicio</span>
-      </a>
-    </li>
-    <li>
-      <a href="/destinos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-200 transition">
-        <span class="flex-1 ms-3 whitespace-nowrap">Destinos</span>
-      </a>
-    </li>
-    <li>
-      <a href="/eventos" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-200 transition">
-        <span class="flex-1 ms-3 whitespace-nowrap">Eventos</span>
-      </a>
-    </li>
-    <li>
-      <a href="/about" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-200 transition">
-        <span class="flex-1 ms-3 whitespace-nowrap">Sobre Nosotros</span>
-      </a>
-    </li>
+  <ul class="space-y-3 font-semibold">
+    {NavItems.map((item) => (
+      <li>
+        <a href={item.link} class="w-full text-neutral-900 rounded-md px-4 py-3 hover-verde flex items-center gap-3">
+          <Icon name={item.icon} class="w-5 h-5" />
+          {item.title}
+        </a>
+      </li>
+    ))}
   </ul>
 </div>
+<script>
+  function initializeDrawer() {
+    const drawer = document.getElementById("drawer");
+    const backdrop = document.getElementById("drawer-backdrop");
+    const openBtn = document.getElementById("drawer-toggle");
+    const closeBtn = document.getElementById("drawer-close");
 
-<!-- Flowbite Script -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    if (!drawer || !backdrop || !openBtn || !closeBtn) return;
+
+    const openDrawer = () => {
+      drawer.classList.remove("translate-x-full");
+      drawer.classList.add("translate-x-0");
+      backdrop.classList.remove("opacity-0", "pointer-events-none");
+      backdrop.classList.add("opacity-100");
+    };
+
+    const closeDrawer = () => {
+      drawer.classList.add("translate-x-full");
+      drawer.classList.remove("translate-x-0");
+      backdrop.classList.add("opacity-0", "pointer-events-none");
+      backdrop.classList.remove("opacity-100");
+    };
+
+    // Remover event listeners anteriores (usando funciones anónimas para evitar errores)
+    openBtn.removeEventListener("click", openDrawer);
+    closeBtn.removeEventListener("click", closeDrawer);
+    backdrop.removeEventListener("click", closeDrawer);
+
+    // Agregar nuevos event listeners
+    openBtn.addEventListener("click", openDrawer);
+    closeBtn.addEventListener("click", closeDrawer);
+    backdrop.addEventListener("click", closeDrawer);
+
+    // Asegurar que el drawer esté cerrado al inicializar
+    closeDrawer();
+  }
+
+  // Inicializar en DOMContentLoaded
+  document.addEventListener("DOMContentLoaded", initializeDrawer);
+
+  // Reinicializar en cada navegación de página
+  document.addEventListener("astro:page-load", initializeDrawer);
+</script>
+

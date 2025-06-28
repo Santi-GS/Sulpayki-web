@@ -1,0 +1,29 @@
+---
+import Faq from "../CardPregunta.astro";
+import type { PreguntasFrecuentesProps } from "../../lib/types";
+
+interface Props {
+  data: PreguntasFrecuentesProps;
+}
+
+const { data: {pyr} } = Astro.props;
+---
+
+
+<section>
+  <div class="py-10">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto">
+        <ul class="space-y-4 lg:space-y-6">
+          {pyr.map(p => (
+            Array.isArray(p.respuesta)
+              ? p.respuesta.map(r => (
+                  <Faq pregunta={p.pregunta} respuesta={r.text} />
+                ))
+              : <Faq pregunta={p.pregunta} respuesta={p.respuesta.text} />
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

@@ -4,12 +4,12 @@ const linksInfo = [
     title: "Sulpayki",
     links: [
       {
-        label: "Ayuda",
-        href: "",
+        label: "Sobre Nosotros",
+        href: "/sobre-nosotros",
         showOnMobile: true,
       },
       {
-        label: "Seguridad",
+        label: "",
         href: "",
       },
       {
@@ -23,17 +23,10 @@ const linksInfo = [
     title: "Políticas",
     links: [
       {
-        label: "InfoJobs hoy",
-        href: "",
+        label: "Defensa del Consumidor",
+        href: "https://autogestion.produccion.gob.ar/consumidores",
       },
-      {
-        label: "Trabaja con nosotros",
-        href: "",
-      },
-      {
-        label: "Ofertas de empleo",
-        href: "",
-      },
+
     ],
   },
 ]
@@ -46,7 +39,7 @@ const linksInfo = [
     linksInfo.map(({ title, links }, index) => {
       return (
         <div class={`${index === 0 ? "" : "hidden sm:block"}`}>
-          <h2 class="text-black font-semibold text-[18px] hidden md:block mb-2">
+          <h2 class="text-gray-300 font-semibold text-[18px] hidden md:block mb-2">
             {title}
           </h2>
 

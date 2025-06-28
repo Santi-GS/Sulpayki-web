@@ -1,0 +1,30 @@
+---
+import type { Imagen } from "../lib/types";
+import { Image as AstroImage } from 'astro:assets';
+
+const BASE_URL = import.meta.env.VITE_STRAPI_BASE_URL ?? "http://localhost:1337";
+
+interface Props {
+  src: string;
+  alt: string | undefined | null;
+  height: number;
+  width: number;
+  class?: string;  // Add class as optional prop
+}
+
+// Define props for the component
+const { src, alt, height, width, class: className } = Astro.props;
+
+function getStrapiMedia(url: string | null) {
+  if (url == null) return null;
+  // Return as-is if it's a data URL (base64)
+  if (url.startsWith("data:")) return url;
+  // Return as-is if it's an absolute URL
+  if (url.startsWith("http") || url.startsWith("//")) return url;
+  // Prepend BASE_URL for relative URLs
+  return `${BASE_URL}${url}`;
+}
+
+const imageUrl = getStrapiMedia(src);
+---
+{ imageUrl && <AstroImage src={imageUrl} alt={alt || 'No alternative text'}  height={height} width={width}  class={className ?? undefined}  /> }

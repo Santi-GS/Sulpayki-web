@@ -9,9 +9,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/vercel": "^8.1.4",
+    "@astrojs/vercel": "^8.1.5",
     "@tailwindcss/vite": "^4.1.5",
-    "astro": "^5.7.12",
+    "astro": "^5.9.4",
+    "marked": "^15.0.12",
+    "strapi-community-astro-loader": "^2.0.6",
     "tailwindcss": "^4.1.5"
   },
   "devDependencies": {

@@ -1,65 +1,84 @@
 ---
 import Drawer from "./Drawer.astro"
+import Icon from "./ui/Icon.astro";
+
+const NavItems = [
+  { title: "Inicio", link: "/", icon: "Home" },
+  { title: "Destinos", link: "/destinos", icon: "Map-pins" },
+  { title: "Eventos", link: "/eventos", icon: "Calendar-event" },
+  { title: "Sobre Nosotros", link: "/sobre-nosotros", icon: "Cactus" },
+];
 ---
 
-<header id="main-header" class="fixed top-0 z-50 w-full transition-transform duration-450 bg-white/80">
+<header id="main-header" class="fixed top-0 z-30 w-full bg-tertiary/90 transition-transform duration-300">
   <div class="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8">
-    <div class="flex h-24 items-center justify-between">
-
+    <div class="flex h-18 md:h-24 items-center justify-between">
+      
       <!-- Logo -->
-      <div class="md:flex md:items-center md:gap-12">
-        <a class="block text-teal-600" href="/">
+      <div class=" md:flex md:items-center md:gap-12">
+        <a href="/" class="block text-teal-600">
           <span class="sr-only">Inicio</span>
-          <img src="/bento-info/sulpayki-logo-grande.webp" alt="Sulpayki Logo" class="h-25 w-auto" />
+          <img src="/sulpayki-logo-grande.webp" alt="Sulpayki Logo" class="h-15 md:h-25 w-auto" />
         </a>
       </div>
 
-      <!-- Navegación + Icono -->
+      <!-- Navegación desktop -->
       <div class="hidden md:flex md:items-center md:gap-6">
-        <nav aria-label="Global">
-          <ul class="flex items-center gap-4 font-semibold">
-            <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
-                href="/">Inicio</a>
-            </li>
-            <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
-                href="/destinos">Destinos</a>
-            </li>
-            <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
-                href="/eventos">Eventos</a>
-            </li>
-            <li>
-              <a class="text-gray-700 rounded-md px-4 py-2.5 hover:bg-gray-200 transition hover:text-gray-600/90 active:bg-gray-300"
-                href="/about">Sobre Nosotros</a>
-            </li>
-          </ul>
-        </nav>
+        {NavItems.map((item) => (
+          <nav aria-label="Global">
+            <ul class="flex items-center gap-4 font-semibold">
+              <li>
+                <a href={item.link} class="text-neutral-900 rounded-md px-4 py-2.5 hover-verde transition flex items-center gap-2">
+                  <Icon name={item.icon} class="w-5 h-5" />
+                  {item.title}
+                </a>
+              </li>
+            </ul>
+          </nav>
+        ))}
       </div>
 
-      <!-- Drawer para móviles -->
+      <!-- Drawer mobile -->
       <Drawer />
     </div>
   </div>
 </header>
 
-<!-- Script para ocultar el header al hacer scroll hacia abajo -->
+<!-- Ocultar el header al hacer scroll -->
 <script>
   let lastScroll = 0;
-  const header = document.getElementById('main-header');
 
-  if (header) {
-    window.addEventListener('scroll', () => {
-      const currentScroll = window.pageYOffset;
-
-      if (currentScroll > lastScroll && currentScroll > 100) {
-        header.classList.add('-translate-y-full');
-      } else {
-        header.classList.remove('-translate-y-full');
-      }
-
-      lastScroll = currentScroll;
-    });
+  function initializeHeader() {
+    const header = document.getElementById("main-header");
+    
+    if (!header) return;
+    
+    // Resetear estado inicial
+    lastScroll = window.scrollY;
+    header.classList.remove("-translate-y-full");
   }
+
+  function handleScroll() {
+    const header = document.getElementById("main-header");
+    if (!header) return;
+    
+    const currentScroll = window.scrollY;
+    if (currentScroll > lastScroll && currentScroll > 50) {
+      header.classList.add("-translate-y-full");
+    } else {
+      header.classList.remove("-translate-y-full");
+    }
+    lastScroll = currentScroll;
+  }
+
+  // Inicializar en DOMContentLoaded
+  document.addEventListener("DOMContentLoaded", () => {
+    initializeHeader();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+  });
+
+  // Reinicializar en cada navegación de página
+  document.addEventListener("astro:page-load", initializeHeader);
 </script>
+
+

@@ -1,0 +1,58 @@
+---
+import type { ComponentType, BlockData } from "../../lib/types";
+import ArticulosDestacados from "./ArticulosDestacados.astro";
+import BentoInfo from "./BentoInfo.astro";
+import ContenidoConImagen from "./ContenidoConImagen.astro";
+import EncabezadoDeSeccion from "./EncabezadoDeSeccion.astro";
+import Hero from "./Hero.astro";
+import Markdown from "./Markdown.astro";
+import PreguntasFrecuentes from "./PreguntasFrecuentes.astro";
+/*import HeadingSection from "./SectionHeading.astro";
+import CardGrid from "./CardsGrid.astro";
+import ContentWithImage from "./ContentWithImage.astro";
+import Faqs from "./Faqs.astro";
+import PersonCard from "./PersonCard.astro";
+import FeaturedArticles from "./FeaturedArticles.astro";
+import Newsletter from "./Newsletter.astro"*/;
+
+
+const componentMap: Record<ComponentType, any> = {
+  "block.hero": Hero,
+  "block.encabezado-de-seccion": EncabezadoDeSeccion,
+  "block.contenido-con-imagen": ContenidoConImagen,
+  "block.markdown": Markdown,
+  "block.preguntas-frecuentes": PreguntasFrecuentes,
+  "block.bento-info": BentoInfo,
+  "block.destinos-destacados": ArticulosDestacados,
+ /*"blocks.card-grid": CardGrid,
+  "blocks.person-card": PersonCard,
+  "blocks.newsletter": Newsletter,*/
+};
+
+const { blocks } = Astro.props;
+
+// Validar que blocks existe y es un array
+const validBlocks = Array.isArray(blocks) ? blocks.filter(block => {
+  if (!block || !block.__component) {
+    console.warn('Bloque inválido encontrado:', block);
+    return false;
+  }
+  
+  const Component = componentMap[block.__component as ComponentType];
+  if (!Component) {
+    console.warn(`Componente no encontrado para: ${block.__component}`);
+    return false;
+  }
+  
+  return true;
+}) : [];
+---
+
+<div class="block-renderer">
+  {
+    validBlocks.map((block: BlockData) => { 
+      const Component = componentMap[block.__component as ComponentType];
+      return <Component data={block} />;
+    })
+  }
+</div>

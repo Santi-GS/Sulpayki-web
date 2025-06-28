@@ -1,0 +1,134 @@
+---
+import { formatDate } from "../../lib/index";
+import StrapiImage from "../../components/StrapiImage.astro";
+import Layout from "../../layouts/Layout.astro";
+import Pagination from "../../components/Pagination.astro";
+import { getCollection } from "astro:content";
+
+import type { CollectionEntry } from "astro:content";
+
+// Use with Astro's collection entry type
+type Post = CollectionEntry<"strapiArticle">;
+
+type CollectionArticle = {
+  params: { slug: string };
+  props: Post;
+};
+
+type PaginatedPage = {
+  data: CollectionArticle[];
+  currentPage: number;
+  total: number;
+  size: number;
+  url: {
+    prev: string | null;
+    next: string | null;
+  };
+};
+
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  const collection = await getCollection("strapiArticle");
+
+  function createStaticPaths(articles: Post[]) {
+    return articles.map((article) => ({
+      params: { slug: article.data.slug },
+      props: article,
+    }));
+  }
+
+  const staticPaths = createStaticPaths(collection);
+
+  const paginatedData = paginate(staticPaths, {
+    pageSize: 5,
+    url: {
+      prev: "/destinos",
+      next: "/destinos",
+    },
+  });
+
+  return paginatedData;
+}
+
+const { page }: { page: PaginatedPage } = Astro.props;
+
+const articles = page.data;
+const currentPage = page.currentPage;
+const totalPages = Math.ceil(page.total / page.size);
+
+---
+
+<Layout title="Sulpayki Viajes y Turismo">
+  <section class="py-8 pt-32 ">
+    <div class="container mx-auto px-4">
+      <div class="mb-6 flex flex-wrap justify-center">
+        <div class="flex flex-wrap -mx-3 mb-16">
+          {articles.length > 0 && (
+            <a href={`/destinos/${articles[0].params.slug}`} class="mb-6 lg:mb-0 w-full lg:w-1/2 px-3">
+              <div class="h-full flex flex-col rounded shadow">
+                <StrapiImage
+                  class="rounded-t object-cover h-80 lg:h-full w-full"
+                  src={articles[0].props.data.coverImagen.url}
+                  alt={articles[0].props.data.coverImagen.alternativeText ? articles[0].props.data.coverImagen.alternativeText : ""}
+                  height={800}
+                  width={800}
+                />
+                
+                <div class="mt-auto p-6 rounded-b bg-white">
+                    <span class="text-sm text-gray-400">
+                      {formatDate(articles[0].props.data.publishedAt)}
+                    </span>
+                  <h2 class="my-2 text-2xl font-bold">
+                    {articles[0].props.data.titulo}
+                  </h2>
+                  <p class="mb-6 text-gray-400 leading-loose">
+                    {articles[0].props.data.descripcion}
+                  </p>
+                  <span
+                    class="text-green-600 hover:text-green-700 font-bold hover:underline"
+                  >
+                    Ver Más
+                  </span>
+                </div>
+              </div>
+            </a>
+          )}
+
+          <div class="flex flex-wrap w-full lg:w-1/2">
+            {articles.length > 1 && articles.slice(1).map((article: CollectionArticle) => (
+              <a href={`/destinos/${article.params.slug}`} class="mb-6 w-full lg:w-1/2 px-3">
+                <div class="rounded overflow-hidden shadow">
+                  <StrapiImage
+                    class="lg:h-48 rounded-t"
+                    src={article.props.data.coverImagen.url}
+                    alt={article.props.data.coverImagen.alternativeText ? article.props.data.coverImagen.alternativeText : ""}
+                    height={400}
+                    width={400}
+                  />
+                  <div class="p-6 rounded-b bg-white">
+                    <span class="text-sm text-gray-400">
+                      {formatDate(article.props.data.publishedAt)}
+                    </span>
+                    <h2 class="my-2 text-2xl font-bold">
+                      {article.props.data.titulo}
+                    </h2>
+                    <span
+                      class="text-green-600 hover:text-green-700 font-bold hover:underline"
+                    >
+                      Ver Más
+                    </span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+        <Pagination
+          previousPage={page.url.prev ? page.url.prev : null}
+          nextPage={page.url.next ? page.url.next : null}
+          currentPage={currentPage}
+          totalPages={totalPages}
+        />
+      </div>
+    </div>
+  </section> 
+</Layout>

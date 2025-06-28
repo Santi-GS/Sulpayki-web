@@ -1,6 +1,13 @@
 ---
-import HeroForm from '../components/HeroForm.astro';
-import BentoInfo from '../components/BentoInfo.astro';
+import BlockRenderer from "../components/blocks/BlockRenderer.astro";
+
+import { getLandingPageData } from "../lib/loaders";
+
+const data = await getLandingPageData();
+
+const landingPage = data?.data;
+
+if (!landingPage) throw new Error("Landing page not found");
 
 import Layout from '../layouts/Layout.astro';
 
@@ -9,7 +16,5 @@ const description = "Sulpayki Viajes y Turismo ofrece servicios online especiali
 
 <Layout title="Sulpayki Viajes y Turismo - Diseñamos junto a vos tu viaje inolvidable."
 description={description}>
-	<HeroForm />
-	<BentoInfo />
-
+	<BlockRenderer blocks={landingPage.blocks} />
 </Layout>

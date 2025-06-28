@@ -1,0 +1,134 @@
+---
+import { marked } from "marked";
+import type { MarkdownProps } from "../../lib/types";
+import SectionContainer from "../SectionContainer.astro";
+
+interface Props {
+  data: MarkdownProps;
+}
+
+const { data: { text } } = Astro.props;
+
+// Validar que text existe y es una cadena válida
+const hasValidText = text && typeof text === 'string' && text.trim().length > 0;
+
+// Si no hay texto válido, registrar advertencia
+if (!hasValidText) {
+  console.warn('Markdown: Texto faltante o inválido', { text });
+}
+
+let html = '';
+if (hasValidText) {
+  try {
+    // Procesar mapas antes del markdown
+    let processedText = text;
+    
+    // Buscar patrones de mapas: [map:URL] o [map:URL|Título]
+    const mapRegex = /\[map:(.*?)(?:\|(.*?))?\]/g;
+    
+    // Reemplazar cada mapa con HTML directamente
+    processedText = processedText.replace(mapRegex, (match, url, title = '') => {
+      // Limpiar y procesar la URL
+      let cleanUrl = url.trim();
+      
+      // Si la URL contiene parámetros de iframe, extraer solo la URL base
+      if (cleanUrl.includes('width=') || cleanUrl.includes('height=') || cleanUrl.includes('style=')) {
+        // Extraer la URL del src si está en formato iframe completo
+        const srcMatch = cleanUrl.match(/src="([^"]+)"/);
+        if (srcMatch) {
+          cleanUrl = srcMatch[1];
+        } else {
+          // Si no hay src, intentar extraer la URL antes de los parámetros
+          const urlMatch = cleanUrl.match(/^(https:\/\/www\.google\.com\/maps\/embed\?[^&\s]+)/);
+          if (urlMatch) {
+            cleanUrl = urlMatch[1];
+          }
+        }
+      }
+      
+      // Asegurar que la URL sea válida
+      if (!cleanUrl.startsWith('https://www.google.com/maps/embed')) {
+        console.warn('URL de mapa inválida:', cleanUrl);
+        return match; // Mantener el texto original si la URL no es válida
+      }
+      
+      // Crear el HTML del mapa directamente
+      const mapHtml = `
+<div class="map-container my-6">
+  ${title ? `<h3 class="text-lg font-semibold mb-3 text-gray-900">${title}</h3>` : ''}
+  <div class="map-wrapper rounded-lg overflow-hidden shadow-lg">
+    <iframe 
+      src="${cleanUrl}" 
+      width="100%" 
+      height="400" 
+      style="border:0;" 
+      allowfullscreen="" 
+      loading="lazy" 
+      referrerpolicy="no-referrer-when-downgrade"
+      title="${title || 'Ubicación en Google Maps'}"
+    ></iframe>
+  </div>
+</div>
+      `;
+      
+      return mapHtml;
+    });
+    
+    // Procesar markdown
+    const result = marked(processedText);
+    html = typeof result === 'string' ? result : String(result);
+    
+  } catch (error) {
+    console.error('Error procesando markdown:', error);
+    html = `<p>Error al procesar el contenido</p>`;
+  }
+}
+---
+
+{hasValidText && (
+  <SectionContainer>
+    <article class="max-w-2xl mx-auto mb-6 leading-loose text-xl text-neutral-900 prose" set:html={html} />
+  </SectionContainer>
+)}
+
+<style is:global>  
+  /******************************************* 
+  Rich Text Styles
+  *******************************************/
+
+  article.prose a {
+    text-decoration: underline;
+    line-height: 1.625; /* leading-relaxed */
+    color: var(--color-accent);
+  }
+
+  article.prose a:hover {
+    filter: saturate(1.6);
+  }
+
+  /* Images */
+  article.prose img {
+    width: 50%;
+    object-fit: cover;
+    border-radius: 0.75rem; /* rounded-xl */
+    margin: 1.5rem auto; /* my-6 */
+    display: block;
+  }
+
+  /* Map Container */
+  article.prose .map-container {
+    width: 100%;
+    margin: 2rem 0;
+  }
+
+  article.prose .map-wrapper {
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  article.prose .map-container iframe {
+    border-radius: 0.75rem;
+    transition: transform 0.2s ease-in-out;
+  }
+
+</style>

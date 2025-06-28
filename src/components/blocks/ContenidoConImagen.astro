@@ -1,0 +1,64 @@
+---
+import SectionContainer from "../SectionContainer.astro";
+import type { ContenidoConImagenProps } from "../../lib/types";
+import StrapiImage from "../StrapiImage.astro";
+import { marked } from "marked";
+
+interface Props {
+  data: ContenidoConImagenProps;
+}
+
+const {
+  data: { titulo, texto, imagen, link, invertido },
+} = Astro.props;
+
+// Validar que los datos necesarios existen
+const hasValidData = titulo && texto && imagen && imagen.url;
+
+// Si no hay datos válidos, registrar advertencia
+if (!hasValidData) {
+  console.warn('ContenidoConImagen: Datos faltantes o inválidos', { titulo, texto, imagen, link, invertido });
+}
+
+// Procesar el texto con marked si existe
+let htmlText = '';
+if (hasValidData && texto) {
+  try {
+    const result = marked(texto);
+    htmlText = typeof result === 'string' ? result : String(result);
+  } catch (error) {
+    console.error('Error procesando markdown:', error);
+    htmlText = texto;
+  }
+}
+---
+
+{hasValidData && (
+  <SectionContainer class="flex justify-center">
+    <div class="py-4 bg-gray-100 border border-neutral-200 rounded-xl shadow-xl h-auto lg:h-[550px]">
+      <div class="container mx-auto px-4 h-full">
+        <div class={`flex flex-col lg:flex-row gap-4 h-full ${invertido && 'lg:flex-row-reverse'}`}>
+          <div class=" lg:h-full">
+            <StrapiImage 
+              src={imagen.url} 
+              alt={imagen.alternativeText || titulo} 
+              height={600} 
+              width={800} 
+              class="object-contain rounded-lg w-full h-full max-h-[500px]" 
+            />
+          </div>
+          <div class="flex flex-col w-full lg:w-100 py-6 px-6 rounded-lg bg-gray-50 shadow-l">
+            <h2 class="my-4 text-2xl font-bold pb-2 border-b-2 border-gray-400">{titulo}</h2>
+            <div class="mb-4 text-neutral-900 leading-loose prose" set:html={htmlText}></div>
+            {
+              link && link.href && link.label &&
+              <div class="flex justify-center">
+                <a class="py-2 px-4 leading-loose bg-tertiary hover:saturate-90 hover:scale-101 text-accent font-semibold rounded-full mb-3 lg:mb-2 lg:mr-3 w-auto transition duration-200" href={link.href} target={link.isExternal ? '_blank' : '_self'}>{link.label}</a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </SectionContainer>
+)}
