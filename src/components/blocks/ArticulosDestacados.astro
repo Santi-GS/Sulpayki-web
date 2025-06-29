@@ -10,48 +10,151 @@ interface Props {
 const {
   data: { articulo_destinos },
 } = Astro.props;
-
 ---
 
-<section>
-  <div class="py-20 bg-gray-50">
-    <div class="container mx-auto px-4 w-full lg:w-3/4">
-      <div class="flex gap-4 flex-wrap">
-        {
-          articulo_destinos.map((article) => (
-            <a href={`/destinos/${article.slug}`} class="flex flex-wrap -mx-3">
-              <div class="mb-4 lg:mb-0 w-full lg:w-1/4 px-3">
+<style>
+  .card-hover-content {
+    transform: translateY(100%);
+    transition: transform 0.4s ease-in-out;
+    background: linear-gradient(to top, #63B451, #6EE650);
+  }
+
+  .card:hover .card-hover-content,
+  .card:focus-within .card-hover-content {
+    transform: translateY(0);
+  }
+
+  .fade-wrapper {
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    transition: mask-image 0.3s ease, -webkit-mask-image 0.3s ease;
+  }
+
+  .fade-wrapper[data-fade="none"] {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  #scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  #scroll-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scroll-btn:disabled {
+    opacity: 0.3;
+  }
+</style>
+
+<section class="py-12 relative">
+  <div class="container mx-auto px-4">
+    <div class="relative">
+
+      <!-- Botón izquierdo -->
+      <button
+        id="scroll-left-btn"
+        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 scroll-btn"
+        disabled
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Contenedor con fade -->
+      <div id="scroll-wrapper" class="overflow-hidden fade-wrapper" data-fade="both">
+        <div id="scroll-container" class="flex gap-6 overflow-x-auto scroll-smooth px-4 md:px-12">
+          {
+            articulo_destinos.map((article) => (
+              <a
+                href={`/destinos/${article.slug}`}
+                class="relative w-[85%] sm:w-[340px] h-[220px] rounded overflow-hidden bg-white shadow flex-shrink-0 card group transition-transform duration-300 focus:outline-none"
+                tabindex="0"
+              >
                 <StrapiImage
                   src={article.coverImagen.url}
                   alt={article.coverImagen.alternativeText}
-                  width={400}
-                  height={400}
-                  class="w-full h-full object-cover rounded"
+                  width={340}
+                  height={220}
+                  class="w-full h-full object-cover"
                 />
-              </div>  
-              <div class="w-full lg:w-3/4 px-3">
-                <span class="hover:underline">
-                  <h3 class="mb-1 text-2xl font-bold font-heading">
-                    {article.titulo}
-                  </h3>
-                </span>
-                <div class="mb-2 flex items-center text-sm">
-                  <span
-                    class="text-green-600 hover:text-green-700"
-                  >
-                    {article.tags[0].titulo}
-                  </span>
-                  <span class="text-gray-400 mx-2">•</span>
-                  <span class="text-gray-400">
-                    {formatDate(article.publishedAt)}
-                  </span>
+                <div class="absolute bottom-0 left-0 w-full h-full text-white p-4 card-hover-content flex flex-col justify-center">
+                  <h3 class="text-xl font-bold mb-2">{article.titulo}</h3>
+                  <div class="text-sm mb-2 flex flex-wrap items-center gap-x-2">
+                    <span class="text-green-200 font-medium hover:text-green-100">
+                      {article.tags[0].titulo}
+                    </span>
+                    <span class="text-white">•</span>
+                    <span class="text-white">
+                      {formatDate(article.publishedAt)}
+                    </span>
+                  </div>
+                  <p class="text-gray-200 text-sm leading-snug">{article.descripcion}</p>
                 </div>
-                <p class="text-gray-500">{article.descripcion}</p>
-              </div>
-            </a>
-          ))
-        }
+              </a>
+            ))
+          }
+        </div>
       </div>
+
+      <!-- Botón derecho -->
+      <button
+        id="scroll-right-btn"
+        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 scroll-btn"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
     </div>
   </div>
 </section>
+
+<script>
+    const scrollByAmount = 360;
+
+    function scrollContent(direction: number) {
+      const container = document.getElementById("scroll-container");
+      if (container) {
+        container.scrollBy({ left: direction * scrollByAmount, behavior: "smooth" });
+      }
+    }
+
+    function updateUI() {
+      const container = document.getElementById("scroll-container");
+      const leftBtn = document.getElementById("scroll-left-btn") as HTMLButtonElement;
+      const rightBtn = document.getElementById("scroll-right-btn") as HTMLButtonElement;
+      const wrapper = document.getElementById("scroll-wrapper");
+
+      if (!container || !leftBtn || !rightBtn || !wrapper) return;
+
+      const scrollLeft = container.scrollLeft;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+
+      leftBtn.disabled = scrollLeft <= 0;
+      rightBtn.disabled = scrollLeft >= maxScroll - 1;
+
+      const fadeState = scrollLeft <= 0 && scrollLeft >= maxScroll - 1 ? "none" : "both";
+      wrapper.setAttribute("data-fade", fadeState);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("scroll-container");
+      const leftBtn = document.getElementById("scroll-left-btn") as HTMLButtonElement;
+      const rightBtn = document.getElementById("scroll-right-btn") as HTMLButtonElement;
+
+      if (container && leftBtn && rightBtn) {
+        // Agregar event listeners a los botones
+        leftBtn.addEventListener("click", () => scrollContent(-1));
+        rightBtn.addEventListener("click", () => scrollContent(1));
+
+        // Inicializar UI
+        updateUI();
+        container.addEventListener("scroll", updateUI);
+        window.addEventListener("resize", updateUI);
+      }
+    });
+  </script>
