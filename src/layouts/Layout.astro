@@ -4,6 +4,7 @@
  import Header from '../components/Header.astro'
  import Footer from '../components/Footer.astro'
  import { fixedTitle } from '../consts/pageTitles'
+ import  SpeedInsights  from "@vercel/speed-insights/astro"
 
  interface Props {
   title: string
@@ -31,6 +32,7 @@ description= 'Sulpayki Viajes y Turismo ofrece servicios online especializados e
 		  <slot />
 		</main>
 		<Footer />
+		<SpeedInsights />
 	</body>
 </html>
 
