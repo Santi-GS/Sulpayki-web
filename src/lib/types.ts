@@ -51,6 +51,7 @@ export interface Imagen {
     | "block.preguntas-frecuentes"
     | "block.bento-info"
     | "block.destinos-destacados"
+    | "block.eventos-destacados"
     /*| "blocks.card-grid"
     | "blocks.person-card"
     | "blocks.newsletter"*/;
@@ -117,24 +118,30 @@ export interface Imagen {
     bentoComponent: {
       titulo: string;
       link: LinkSimple;
-      imagen: Imagen;
       }[];
   }
 
- export interface ArticulosDestacadosProps extends Base<"block.destinos-destacados"> {
-    articulo_destinos: {
-      id: number;
-      documentId: string;
-      titulo: string;
-      descripcion: string;
-      link: Link;
-      publishedAt: string;
-      updatedAt: string;
-      slug: string;
-      coverImagen: Imagen;
-      tags: Tags[];
-    }[];
-  }
+export interface ArticulosDestacadosItem {
+  id: number;
+  documentId: string;
+  titulo: string;
+  descripcion: string;
+  publishedAt: string;
+  updatedAt: string;
+  slug: string;
+  coverImagen: Imagen;
+  tags: Tags[];
+}
+
+export interface DestacadosProps<T extends ComponentType> extends Base<T> {
+  items?: ArticulosDestacadosItem[];
+  articulo_destinos?: ArticulosDestacadosItem[];
+  articulo_eventos?: ArticulosDestacadosItem[];
+}
+
+// Alias para compatibilidad retroactiva
+export type DestinosDestacadosProps = DestacadosProps<"block.destinos-destacados">;
+export type EventosDestacadosProps = DestacadosProps<"block.eventos-destacados">;
   
   /*export interface CardGridProps extends Base<"blocks.card-grid"> {
     card: {
@@ -168,7 +175,8 @@ export interface Imagen {
     | MarkdownProps
     | PreguntasFrecuentesProps
     | BentoInfoProps
-    | ArticulosDestacadosProps
+    | DestinosDestacadosProps
+    | EventosDestacadosProps
     /*
     | CardGridProps
     | PersonCardProps

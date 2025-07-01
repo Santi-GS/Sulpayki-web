@@ -1,15 +1,19 @@
 ---
-import type { ArticulosDestacadosProps } from "../../lib/types";
+import type { DestinosDestacadosProps } from "../../lib/types";
+import type { EventosDestacadosProps } from "../../lib/types";
 import { formatDate } from "../../lib/index";
 import StrapiImage from "../StrapiImage.astro";
 
 interface Props {
-  data: ArticulosDestacadosProps;
+  data: DestinosDestacadosProps | EventosDestacadosProps;
 }
 
-const {
-  data: { articulo_destinos },
-} = Astro.props;
+const { data } = Astro.props as Props;
+
+// Detecto si es destinos o eventos
+const isEventos = (data.__component === "block.eventos-destacados");
+const items = data.items ?? data.articulo_destinos ?? data.articulo_eventos ?? [];
+const baseHref = isEventos ? "/eventos/" : "/destinos/";
 ---
 
 <style>
@@ -68,9 +72,9 @@ const {
       <div id="scroll-wrapper" class="overflow-hidden fade-wrapper" data-fade="both">
         <div id="scroll-container" class="flex gap-6 overflow-x-auto scroll-smooth px-4 md:px-12">
           {
-            articulo_destinos.map((article) => (
+            items.map((article) => (
               <a
-                href={`/destinos/${article.slug}`}
+                href={`${baseHref}${article.slug}`}
                 class="relative w-[85%] sm:w-[340px] h-[220px] rounded overflow-hidden bg-white shadow flex-shrink-0 card group transition-transform duration-300 focus:outline-none"
                 tabindex="0"
               >
@@ -113,48 +117,46 @@ const {
   </div>
 </section>
 
-<script>
-    const scrollByAmount = 360;
+<script type="module">
+  const scrollByAmount = 360;
 
-    function scrollContent(direction: number) {
-      const container = document.getElementById("scroll-container");
-      if (container) {
-        container.scrollBy({ left: direction * scrollByAmount, behavior: "smooth" });
-      }
-    }
+  function $(id) {
+    return document.getElementById(id);
+  }
 
-    function updateUI() {
-      const container = document.getElementById("scroll-container");
-      const leftBtn = document.getElementById("scroll-left-btn") as HTMLButtonElement;
-      const rightBtn = document.getElementById("scroll-right-btn") as HTMLButtonElement;
-      const wrapper = document.getElementById("scroll-wrapper");
+  function scrollContent(dir) {
+    const container = $("scroll-container");
+    container?.scrollBy({ left: dir * scrollByAmount, behavior: "smooth" });
+    setTimeout(updateUI, 350);
+  }
 
-      if (!container || !leftBtn || !rightBtn || !wrapper) return;
+  function updateUI() {
+    const container = $("scroll-container");
+    const leftBtn = $("scroll-left-btn");
+    const rightBtn = $("scroll-right-btn");
+    const wrapper = $("scroll-wrapper");
+    if (!container || !leftBtn || !rightBtn || !wrapper) return;
 
-      const scrollLeft = container.scrollLeft;
-      const maxScroll = container.scrollWidth - container.clientWidth;
+    const scrollLeft = container.scrollLeft;
+    const maxScroll = container.scrollWidth - container.clientWidth;
 
-      leftBtn.disabled = scrollLeft <= 0;
-      rightBtn.disabled = scrollLeft >= maxScroll - 1;
+    leftBtn.disabled = scrollLeft <= 0;
+    rightBtn.disabled = scrollLeft >= maxScroll - 1;
+    wrapper.dataset.fade = (scrollLeft <= 0 || scrollLeft >= maxScroll - 1) ? "none" : "both";
+  }
 
-      const fadeState = scrollLeft <= 0 && scrollLeft >= maxScroll - 1 ? "none" : "both";
-      wrapper.setAttribute("data-fade", fadeState);
-    }
+  document.addEventListener("DOMContentLoaded", () => {
+    const container = $("scroll-container");
+    const leftBtn = $("scroll-left-btn");
+    const rightBtn = $("scroll-right-btn");
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const container = document.getElementById("scroll-container");
-      const leftBtn = document.getElementById("scroll-left-btn") as HTMLButtonElement;
-      const rightBtn = document.getElementById("scroll-right-btn") as HTMLButtonElement;
+    if (!container || !leftBtn || !rightBtn) return;
 
-      if (container && leftBtn && rightBtn) {
-        // Agregar event listeners a los botones
-        leftBtn.addEventListener("click", () => scrollContent(-1));
-        rightBtn.addEventListener("click", () => scrollContent(1));
+    leftBtn.onclick = () => scrollContent(-1);
+    rightBtn.onclick = () => scrollContent(1);
+    container.addEventListener("scroll", updateUI);
+    window.addEventListener("resize", updateUI);
+    updateUI();
+  });
+</script>
 
-        // Inicializar UI
-        updateUI();
-        container.addEventListener("scroll", updateUI);
-        window.addEventListener("resize", updateUI);
-      }
-    });
-  </script>

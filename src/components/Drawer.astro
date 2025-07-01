@@ -42,47 +42,35 @@ const NavItems = [
     ))}
   </ul>
 </div>
-<script>
+
+<script type="module">
+  const $ = (id) => document.getElementById(id);
+
   function initializeDrawer() {
-    const drawer = document.getElementById("drawer");
-    const backdrop = document.getElementById("drawer-backdrop");
-    const openBtn = document.getElementById("drawer-toggle");
-    const closeBtn = document.getElementById("drawer-close");
+    const drawer = $("drawer");
+    const backdrop = $("drawer-backdrop");
+    const openBtn = $("drawer-toggle");
+    const closeBtn = $("drawer-close");
 
     if (!drawer || !backdrop || !openBtn || !closeBtn) return;
 
-    const openDrawer = () => {
-      drawer.classList.remove("translate-x-full");
-      drawer.classList.add("translate-x-0");
-      backdrop.classList.remove("opacity-0", "pointer-events-none");
-      backdrop.classList.add("opacity-100");
+    const toggleDrawer = (open) => {
+      drawer.classList.toggle("translate-x-full", !open);
+      drawer.classList.toggle("translate-x-0", open);
+      backdrop.classList.toggle("opacity-0", !open);
+      backdrop.classList.toggle("opacity-100", open);
+      backdrop.classList.toggle("pointer-events-none", !open);
     };
 
-    const closeDrawer = () => {
-      drawer.classList.add("translate-x-full");
-      drawer.classList.remove("translate-x-0");
-      backdrop.classList.add("opacity-0", "pointer-events-none");
-      backdrop.classList.remove("opacity-100");
-    };
+    openBtn.onclick = () => toggleDrawer(true);
+    closeBtn.onclick = () => toggleDrawer(false);
+    backdrop.onclick = () => toggleDrawer(false);
 
-    // Remover event listeners anteriores (usando funciones anónimas para evitar errores)
-    openBtn.removeEventListener("click", openDrawer);
-    closeBtn.removeEventListener("click", closeDrawer);
-    backdrop.removeEventListener("click", closeDrawer);
-
-    // Agregar nuevos event listeners
-    openBtn.addEventListener("click", openDrawer);
-    closeBtn.addEventListener("click", closeDrawer);
-    backdrop.addEventListener("click", closeDrawer);
-
-    // Asegurar que el drawer esté cerrado al inicializar
-    closeDrawer();
+    toggleDrawer(false); // Ensure closed on init
   }
 
-  // Inicializar en DOMContentLoaded
   document.addEventListener("DOMContentLoaded", initializeDrawer);
-
-  // Reinicializar en cada navegación de página
   document.addEventListener("astro:page-load", initializeDrawer);
 </script>
+
 

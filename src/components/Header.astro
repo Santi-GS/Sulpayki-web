@@ -10,7 +10,7 @@ const NavItems = [
 ];
 ---
 
-<header id="main-header" class="fixed top-0 z-30 w-full bg-tertiary/90 transition-transform duration-300">
+<header id="main-header" class="fixed top-0 z-30 w-full bg-tertiary/90 transition-transform-ease-in-out duration-400">
   <div class="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8">
     <div class="flex h-18 md:h-24 items-center justify-between">
       
@@ -44,41 +44,33 @@ const NavItems = [
   </div>
 </header>
 
-<!-- Ocultar el header al hacer scroll -->
-<script>
+<script type="module">
   let lastScroll = 0;
-
-  function initializeHeader() {
-    const header = document.getElementById("main-header");
-    
-    if (!header) return;
-    
-    // Resetear estado inicial
-    lastScroll = window.scrollY;
-    header.classList.remove("-translate-y-full");
-  }
+  const $ = (id) => document.getElementById(id);
 
   function handleScroll() {
-    const header = document.getElementById("main-header");
+    const header = $("main-header");
     if (!header) return;
-    
-    const currentScroll = window.scrollY;
-    if (currentScroll > lastScroll && currentScroll > 50) {
-      header.classList.add("-translate-y-full");
-    } else {
-      header.classList.remove("-translate-y-full");
-    }
-    lastScroll = currentScroll;
+
+    const y = window.scrollY;
+    header.classList.toggle("-translate-y-full", y > lastScroll && y > 50);
+    lastScroll = y;
   }
 
-  // Inicializar en DOMContentLoaded
-  document.addEventListener("DOMContentLoaded", () => {
-    initializeHeader();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-  });
+  function initializeHeader() {
+    const header = $("main-header");
+    if (!header) return;
 
-  // Reinicializar en cada navegación de página
+    lastScroll = window.scrollY;
+    header.classList.remove("-translate-y-full");
+    // 👇 Re-agrega el listener en cada reinicialización
+    window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+  }
+
+  document.addEventListener("DOMContentLoaded", initializeHeader);
   document.addEventListener("astro:page-load", initializeHeader);
 </script>
+
 
 

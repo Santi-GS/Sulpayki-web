@@ -44,9 +44,6 @@ const blocksPopulate = {
         bentoComponent: {
           populate:{
             link: true,
-            imagen: {
-              fields: ["alternativeText", "url"]
-            }
           }
         }
       }
@@ -57,6 +54,18 @@ const blocksPopulate = {
           populate: {
           coverImagen:{
             fields: ["alternativeText", "url"]
+          },
+          tags: true,
+          },            
+        },
+      }
+    },
+    "block.eventos-destacados":{
+      populate:{
+      articulo_eventos:{
+          populate: {
+          coverImagen:{
+          fields: ["alternativeText", "url"]
           },
           tags: true,
           },            

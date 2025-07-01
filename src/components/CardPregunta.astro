@@ -43,33 +43,28 @@ const htmlRespuesta = marked(respuesta);
     transform: rotate(90deg);
   }
 </style>
-<script>
+
+<script type="module">
+  const $all = (sel) => document.querySelectorAll(sel);
+
   function initializeFAQ() {
-    const faqItems = document.querySelectorAll('.faq-item');
+    $all('.faq-item').forEach(faqItem => {
+      const button = faqItem.querySelector('.faq-item-button');
+      const answer = faqItem.querySelector('.faq-item-answer');
+      const icon = faqItem.querySelector('.faq-icon');
 
-    faqItems.forEach(faqItem => {
-      const faqItemButton = faqItem.querySelector('.faq-item-button') as HTMLButtonElement;
-      const faqItemAnswer = faqItem.querySelector('.faq-item-answer') as HTMLParagraphElement;
-      const faqIcon = faqItem.querySelector('.faq-icon') as SVGElement;
+      if (!button || !answer || !icon) return;
 
-      if (!faqItemButton || !faqItemAnswer || !faqIcon) return;
-
-      // Remover event listeners anteriores
-      faqItemButton.removeEventListener('click', handleFAQClick);
-
-      function handleFAQClick() {
-        faqItemAnswer.classList.toggle('hidden');
-        faqIcon.classList.toggle('rotate-90');
-      }
-
-      // Agregar nuevo event listener
-      faqItemButton.addEventListener('click', handleFAQClick);
+      button.onclick = () => {
+        answer.classList.toggle('hidden');
+        icon.classList.toggle('rotate-90');
+      };
     });
   }
 
-  // Inicializar en DOMContentLoaded
   document.addEventListener("DOMContentLoaded", initializeFAQ);
-
-  // Reinicializar en cada navegación de página
   document.addEventListener("astro:page-load", initializeFAQ);
 </script>
+
+
+

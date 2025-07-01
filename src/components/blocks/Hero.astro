@@ -94,110 +94,74 @@ import StrapiImage from "../StrapiImage.astro";
 
 
 <script type="module">
-  let currentSlide = 0;
-  let slides;
-  let prevBtn;
-  let nextBtn;
-  
-  let autoplayInterval;
-  let isPaused = false;
+  let current = 0;
+  let slides = [], prevBtn, nextBtn;
+  let autoplay, paused = false;
 
-  function initializeCarousel() {
-    slides = document.querySelectorAll('.carousel-slide');
-    prevBtn = document.getElementById('prevBtn');
-    nextBtn = document.getElementById('nextBtn');
-    
-    if (slides.length === 0) return;
-
-    // Limpiar intervalos anteriores
-    if (autoplayInterval) {
-      clearInterval(autoplayInterval);
-      autoplayInterval = undefined;
-    }
-
-    // Remover event listeners anteriores
-    if (prevBtn) {
-      prevBtn.removeEventListener('click', previousSlide);
-      prevBtn.removeEventListener('mouseenter', pauseAutoplay);
-      prevBtn.removeEventListener('mouseleave', resumeAutoplay);
-    }
-    if (nextBtn) {
-      nextBtn.removeEventListener('click', nextSlide);
-      nextBtn.removeEventListener('mouseenter', pauseAutoplay);
-      nextBtn.removeEventListener('mouseleave', resumeAutoplay);
-    }
-
-    // Agregar nuevos event listeners
-    if (prevBtn) {
-      prevBtn.addEventListener('click', previousSlide);
-      prevBtn.addEventListener('mouseenter', pauseAutoplay);
-      prevBtn.addEventListener('mouseleave', resumeAutoplay);
-    }
-    if (nextBtn) {
-      nextBtn.addEventListener('click', nextSlide);
-      nextBtn.addEventListener('mouseenter', pauseAutoplay);
-      nextBtn.addEventListener('mouseleave', resumeAutoplay);
-    }
-
-    // Reinicializar carrusel
-    currentSlide = 0;
-    isPaused = false;
-    showSlide(currentSlide);
-    startAutoplay();
-  }
+  const $ = (sel) => document.querySelector(sel);
+  const $all = (sel) => document.querySelectorAll(sel);
 
   function showSlide(index) {
     slides.forEach((slide, i) => {
-      const isVisible = i === index;
-      slide.classList.toggle('opacity-100', isVisible);
-      slide.classList.toggle('opacity-0', !isVisible);
-      
-      // solo la slide visible es interactiva.
-      slide.style.pointerEvents = isVisible ? 'auto' : 'none';
-
-      // hover: se aplica solo a la slide visible.
-      slide.removeEventListener('mouseenter', pauseAutoplay);
-      slide.removeEventListener('mouseleave', resumeAutoplay);
-      if (isVisible) {
-        slide.addEventListener('mouseenter', pauseAutoplay);
-        slide.addEventListener('mouseleave', resumeAutoplay);
+      const isActive = i === index;
+      slide.classList.toggle("opacity-100", isActive);
+      slide.classList.toggle("opacity-0", !isActive);
+      slide.style.pointerEvents = isActive ? "auto" : "none";
+      slide.removeEventListener("mouseenter", pause);
+      slide.removeEventListener("mouseleave", resume);
+      if (isActive) {
+        slide.addEventListener("mouseenter", pause);
+        slide.addEventListener("mouseleave", resume);
       }
     });
-    currentSlide = index;
+    current = index;
   }
 
   function nextSlide() {
-    const newIndex = (currentSlide + 1) % slides.length;
-    showSlide(newIndex);
+    showSlide((current + 1) % slides.length);
   }
 
-  function previousSlide() {
-    const newIndex = (currentSlide - 1 + slides.length) % slides.length;
-    showSlide(newIndex);
+  function prevSlide() {
+    showSlide((current - 1 + slides.length) % slides.length);
   }
 
-  function pauseAutoplay() {
-    isPaused = true;
-  }
+  function pause() { paused = true; }
+  function resume() { paused = false; }
 
-  function resumeAutoplay() {
-    isPaused = false;
-  }
-  
   function startAutoplay() {
-    if (autoplayInterval) clearInterval(autoplayInterval);
-    autoplayInterval = setInterval(() => {
-      if (!isPaused) {
-        nextSlide();
-      }
-    }, 5000);
+    clearInterval(autoplay);
+    autoplay = setInterval(() => { if (!paused) nextSlide(); }, 5000);
   }
 
-  // Inicializar en DOMContentLoaded
-  document.addEventListener("DOMContentLoaded", initializeCarousel);
+  function initCarousel() {
+    slides = $all(".carousel-slide");
+    prevBtn = $("#prevBtn");
+    nextBtn = $("#nextBtn");
 
-  // Reinicializar en cada navegación de página
-  document.addEventListener("astro:page-load", initializeCarousel);
+    if (!slides.length) return;
+
+    [prevBtn, nextBtn].forEach(btn => {
+      btn?.removeEventListener("click", nextSlide);
+      btn?.removeEventListener("mouseenter", pause);
+      btn?.removeEventListener("mouseleave", resume);
+    });
+
+    prevBtn?.addEventListener("click", prevSlide);
+    nextBtn?.addEventListener("click", nextSlide);
+    prevBtn?.addEventListener("mouseenter", pause);
+    nextBtn?.addEventListener("mouseenter", pause);
+    prevBtn?.addEventListener("mouseleave", resume);
+    nextBtn?.addEventListener("mouseleave", resume);
+
+    current = 0;
+    paused = false;
+    showSlide(current);
+    startAutoplay();
+  }
+
+  document.addEventListener("DOMContentLoaded", initCarousel);
+  document.addEventListener("astro:page-load", initCarousel);
 </script>
+
 
 
