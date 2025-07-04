@@ -3,89 +3,76 @@ import { formatDate } from "../../lib/index";
 import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
 import Pagination from "../../components/Pagination.astro";
-import { getCollection } from "astro:content";
 
-import type { CollectionEntry } from "astro:content";
+// Configuración de prerender (si estás generando estáticamente)
+export const prerender = true;
 
-// Use with Astro's collection entry type
-type Post = CollectionEntry<"strapiArticle">;
+const PAGE_SIZE = 5;
 
-type CollectionArticle = {
-  params: { slug: string };
-  props: Post;
-};
+// Recuperar página desde la URL
+const pageParam = Astro.params.page as string | string[] | undefined;
+let currentPage = 1;
+if (typeof pageParam === "string") currentPage = parseInt(pageParam);
+else if (Array.isArray(pageParam) && pageParam.length > 0) currentPage = parseInt(pageParam[0]);
 
-type PaginatedPage = {
-  data: CollectionArticle[];
-  currentPage: number;
-  total: number;
-  size: number;
-  url: {
-    prev: string | null;
-    next: string | null;
-  };
-};
+// Fetch paginado desde Strapi
+const res = await fetch(
+  `${import.meta.env.VITE_STRAPI_HOST}/api/articles?populate=*&pagination[page]=${currentPage}&pagination[pageSize]=${PAGE_SIZE}`,
+  {
+    headers: { Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}` },
+    cache: "no-store",
+  }
+);
+const data = await res.json();
+const articles = data.data ?? [];
+const pagination = data.meta?.pagination ?? { page: 1, pageSize: PAGE_SIZE, pageCount: 1, total: 0 };
 
-export async function getStaticPaths({ paginate }: { paginate: any }) {
-  const collection = await getCollection("strapiArticle");
+const totalPages = pagination.pageCount;
+const prevPage = currentPage > 1 ? `/destinos/${currentPage - 1 === 1 ? "" : currentPage - 1}` : null;
+const nextPage = currentPage < totalPages ? `/destinos/${currentPage + 1}` : null;
 
-  function createStaticPaths(articles: Post[]) {
-    return articles.map((article) => ({
-      params: { slug: article.data.slug },
-      props: article,
-    }));
+// getStaticPaths para generar rutas de paginación
+export async function getStaticPaths() {
+  const PAGE_SIZE = 5;
+  const res1 = await fetch(
+    `${import.meta.env.VITE_STRAPI_HOST}/api/articles?pagination[page]=1&pagination[pageSize]=1`,
+    { headers: { Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}` } }
+  );
+  const { meta } = await res1.json();
+  const total = meta?.pagination?.total || 0;
+  const pageCount = Math.ceil(total / PAGE_SIZE);
+
+  const paths = [];
+  for (let i = 1; i <= pageCount; i++) {
+    paths.push({ params: { page: i === 1 ? undefined : String(i) } });
   }
 
-  const staticPaths = createStaticPaths(collection);
-
-  const paginatedData = paginate(staticPaths, {
-    pageSize: 5,
-    url: {
-      prev: "/destinos",
-      next: "/destinos",
-    },
-  });
-
-  return paginatedData;
+  return paths;
 }
-
-const { page }: { page: PaginatedPage } = Astro.props;
-
-const articles = page.data;
-const currentPage = page.currentPage;
-const totalPages = Math.ceil(page.total / page.size);
-
 ---
 
 <Layout title="Sulpayki Viajes y Turismo">
-  <section class="py-8 pt-32 ">
+  <section class="py-8">
     <div class="container mx-auto px-4">
-      <div class="mb-6 flex flex-wrap justify-center">
+      <div class="flex flex-wrap justify-center mb-6">
         <div class="flex flex-wrap -mx-3 mb-16">
-          {articles.length > 0 && (
-            <a href={`/destinos/${articles[0].params.slug}`} class="mb-6 lg:mb-0 w-full lg:w-1/2 px-3">
+          {articles.length > 0 && articles[0]?.slug && (
+            <a href={`/destinos/${articles[0].slug}`} class="mb-6 lg:mb-0 w-full lg:w-1/2 px-3">
               <div class="h-full flex flex-col rounded shadow">
                 <StrapiImage
                   class="rounded-t object-cover h-80 lg:h-full w-full"
-                  src={articles[0].props.data.coverImagen.url}
-                  alt={articles[0].props.data.coverImagen.alternativeText ? articles[0].props.data.coverImagen.alternativeText : ""}
+                  src={articles[0].coverImagen?.url}
+                  alt={articles[0].coverImagen?.alternativeText || ""}
                   height={800}
                   width={800}
                 />
-                
                 <div class="mt-auto p-6 rounded-b bg-white">
-                    <span class="text-sm text-gray-400">
-                      {formatDate(articles[0].props.data.publishedAt)}
-                    </span>
-                  <h2 class="my-2 text-2xl font-bold">
-                    {articles[0].props.data.titulo}
-                  </h2>
-                  <p class="mb-6 text-gray-400 leading-loose">
-                    {articles[0].props.data.descripcion}
-                  </p>
-                  <span
-                    class="text-green-600 hover:text-green-700 font-bold hover:underline"
-                  >
+                  <span class="text-sm text-gray-400">
+                    {formatDate(articles[0].publishedAt)}
+                  </span>
+                  <h2 class="my-2 text-2xl font-bold">{articles[0].titulo}</h2>
+                  <p class="mb-6 text-gray-400 leading-loose">{articles[0].descripcion}</p>
+                  <span class="text-green-600 hover:text-green-700 font-bold hover:underline">
                     Ver Más
                   </span>
                 </div>
@@ -94,41 +81,45 @@ const totalPages = Math.ceil(page.total / page.size);
           )}
 
           <div class="flex flex-wrap w-full lg:w-1/2">
-            {articles.length > 1 && articles.slice(1).map((article: CollectionArticle) => (
-              <a href={`/destinos/${article.params.slug}`} class="mb-6 w-full lg:w-1/2 px-3">
-                <div class="rounded overflow-hidden shadow">
-                  <StrapiImage
-                    class="lg:h-48 rounded-t"
-                    src={article.props.data.coverImagen.url}
-                    alt={article.props.data.coverImagen.alternativeText ? article.props.data.coverImagen.alternativeText : ""}
-                    height={400}
-                    width={400}
-                  />
-                  <div class="p-6 rounded-b bg-white">
-                    <span class="text-sm text-gray-400">
-                      {formatDate(article.props.data.publishedAt)}
-                    </span>
-                    <h2 class="my-2 text-2xl font-bold">
-                      {article.props.data.titulo}
-                    </h2>
-                    <span
-                      class="text-green-600 hover:text-green-700 font-bold hover:underline"
-                    >
-                      Ver Más
-                    </span>
-                  </div>
-                </div>
-              </a>
-            ))}
+            {articles.length > 1 &&
+              articles.slice(1).map((article: any) =>
+                article?.slug ? (
+                  <a href={`/destinos/${article.slug}`} class="mb-6 w-full lg:w-1/2 px-3">
+                    <div class="rounded overflow-hidden shadow">
+                      <StrapiImage
+                        class="lg:h-48 rounded-t"
+                        src={article.coverImagen?.url}
+                        alt={article.coverImagen?.alternativeText || ""}
+                        height={400}
+                        width={400}
+                      />
+                      <div class="p-6 rounded-b bg-white">
+                        <span class="text-sm text-gray-400">
+                          {formatDate(article.publishedAt)}
+                        </span>
+                        <h2 class="my-2 text-2xl font-bold">{article.titulo}</h2>
+                        <span class="text-green-600 hover:text-green-700 font-bold hover:underline">
+                          Ver Más
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ) : null
+              )}
           </div>
         </div>
+
+        {articles.length === 0 && (
+          <p class="text-center text-gray-500 w-full">No hay artículos en esta página.</p>
+        )}
+
         <Pagination
-          previousPage={page.url.prev ? page.url.prev : null}
-          nextPage={page.url.next ? page.url.next : null}
+          previousPage={prevPage}
+          nextPage={nextPage}
           currentPage={currentPage}
           totalPages={totalPages}
         />
       </div>
     </div>
-  </section> 
+  </section>
 </Layout>

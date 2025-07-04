@@ -9,8 +9,8 @@ const NavItems = [
   { title: "Sobre Nosotros", link: "/sobre-nosotros", icon: "Cactus" },
 ];
 ---
-
-<header id="main-header" class="fixed top-0 z-30 w-full bg-tertiary/90 transition-transform-ease-in-out duration-400">
+<div class="h-[88px] md:h-[112px]">
+<header id="main-header" class="fixed top-0 z-30 w-full bg-[#714C06]/70 transition-transform-ease-in-out duration-400">
   <div class="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8">
     <div class="flex h-18 md:h-24 items-center justify-between">
       
@@ -28,7 +28,7 @@ const NavItems = [
           <nav aria-label="Global">
             <ul class="flex items-center gap-4 font-semibold">
               <li>
-                <a href={item.link} class="text-neutral-900 rounded-md px-4 py-2.5 hover-verde transition flex items-center gap-2">
+                <a href={item.link} class="text-black rounded-md px-4 py-2.5 hover-verde transition flex items-center gap-2">
                   <Icon name={item.icon} class="w-5 h-5" />
                   {item.title}
                 </a>

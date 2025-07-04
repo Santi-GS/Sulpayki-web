@@ -19,14 +19,14 @@ const NavItems = [
 </div>
 
 <!-- Backdrop -->
-<div id="drawer-backdrop" class="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+<div id="drawer-backdrop" class="fixed inset-0 z-40 bg-white/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Drawer -->
-<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-tertiary/90" tabindex="-1">
+<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-[#714C06]/70" tabindex="-1">
 
   <div class="flex justify-between items-center mb-6">
-    <h5 class="text-xl font-bold text-gray-700">Menú de Navegación</h5>
-    <button id="drawer-close" class="w-8 h-8 text-gray-700 hover:text-gray-900 transition">
+    <h5 class="text-xl font-bold text-black">Menú de Navegación</h5>
+    <button id="drawer-close" class="w-8 h-8 text-black">
       ✕
     </button>
   </div>
@@ -34,7 +34,7 @@ const NavItems = [
   <ul class="space-y-3 font-semibold">
     {NavItems.map((item) => (
       <li>
-        <a href={item.link} class="w-full text-neutral-900 rounded-md px-4 py-3 hover-verde flex items-center gap-3">
+        <a href={item.link} class="w-full text-black rounded-md px-4 py-3 hover-verde flex items-center gap-3">
           <Icon name={item.icon} class="w-5 h-5" />
           {item.title}
         </a>

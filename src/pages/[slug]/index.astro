@@ -1,34 +1,38 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import SectionTopContainer from "../../components/SectionTopContainer.astro";
+import SectionContainer from "../../components/SectionContainer.astro";
 import BlockRenderer from "../../components/blocks/BlockRenderer.astro";
-import { getCollection } from "astro:content";
-
-import type { CollectionEntry } from "astro:content";
-
-// Use with Astro's collection entry type
-type Page = CollectionEntry<"strapiPages">;
 
 export async function getStaticPaths() {
-  const collection = await getCollection("strapiPages");
-
-  function createStaticPaths(articles: Page[]) {
-    return articles.map(article => ({
-      params: { slug: article.data.slug },
-      props: article.data
+  const res = await fetch(`${import.meta.env.VITE_STRAPI_HOST}/api/paginas?populate=*`, {
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}`,
+    },
+  });
+  const data = await res.json();
+  return data.data
+    .filter((item: any) => item?.slug)
+    .map((item: any) => ({
+      params: { slug: item.slug },
     }));
-  }
-
-  return createStaticPaths(collection);
 }
 
+const { slug } = Astro.params;
 
-const { props } = Astro;
-const { blocks } = props;
+const res = await fetch(`${import.meta.env.VITE_STRAPI_HOST}/api/paginas?filters[slug][$eq]=${slug}&populate=*`, {
+  headers: {
+    Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}`,
+  },
+  cache: "no-store",
+});
+const data = await res.json();
+const page = data.data?.[0];
+
+if (!page) throw new Error("Página no encontrada");
 ---
 
-<Layout title="Sulpayki Viajes y Turismo">
-  <SectionTopContainer>
-      <BlockRenderer blocks={blocks || []} />
-  </SectionTopContainer>
+<Layout title={page.titulo || "Sulpayki Viajes y Turismo"}>
+  <SectionContainer>
+    <BlockRenderer blocks={page.blocks || []} />
+  </SectionContainer>
 </Layout>

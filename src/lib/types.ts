@@ -71,7 +71,6 @@ export interface Imagen {
   
   export interface HeroProps extends Base<"block.hero"> {
     heading: string;
-    text: string;
     links: Link[];
     carruselHero: {
       id: number;

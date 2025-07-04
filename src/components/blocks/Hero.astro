@@ -7,87 +7,81 @@ import StrapiImage from "../StrapiImage.astro";
   }
 
   const {
-    data: { heading, text, carruselHero, links },
+    data: { heading, carruselHero, links },
   } = Astro.props;
 
 ---
 <section>
-  <div class="mx-auto max-w-screen-2xl px-4 py-8 pt-32 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-4 md:items-center md:gap-8">
-      <div class="md:col-span-1">
-        <div class="max-w-lg md:max-w-none text-center md:text-left">
-          <h2 class="text-3xl px-4.5 md:px-0 font-semibold text-gray-900 sm:text-4xl prose">
-            {heading}
-          </h2>
-
-          <p class="mt-4 px-4 md:px-0 md:pr-10 text-gray-700 prose max-w-md">
-            {text}
-          </p>
-
-          { links && (
-            <div class="mt-6 flex flex-wrap gap-3 justify-center md:justify-start">
-              {links.map((link) => {
-                const isPrimary = link.type === "PRIMARY" ? "bg-tertiary hover:saturate-90 hover:scale-103 text-accent" : "bg-transparent border border-neutral hover:border-gray-500 hover:opacity-80 hover:scale-103 text-neutral-900";
-                return <a class={`inline-block py-2 px-6 leading-loose ${isPrimary} font-semibold rounded-l-xl rounded-t-xl transition duration-200`} href={link.href} target={link.isExternal ? "_blank" : "_self"}>{link.label}</a>
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div class="md:col-span-3">
-        {Array.isArray(carruselHero) && carruselHero.length > 0 && (
-          <div class="relative">
-            {/* Botón izquierdo */}
-            <button 
-              id="prevBtn"
-              class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-neutral-900 p-2 rounded-full shadow-lg transition-all duration-200"
-              type="button"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-            
-            {/* Botón derecho */}
-            <button 
-              id="nextBtn"
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-neutral-900 p-2 rounded-full shadow-lg transition-all duration-200"
-              type="button"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-            
-            {/* Carrusel */}
-            <div class="overflow-hidden rounded-lg relative h-160">
-              {carruselHero.map((item, index) => (
-                <div 
-                  class={`carousel-slide absolute inset-0 transition-opacity duration-500 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
-                  data-slide={index}
-                >
-                  <a href={item.link.href} class="block relative group">
-                    <StrapiImage 
-                      src={item.card.imagen.url} 
-                      alt={item.card.imagen.alternativeText || item.card.titulo} 
-                      height={400} 
-                      width={800} 
-                      class="h-160 w-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                    />
-                    
-                    {/* Overlay con título y texto */}
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
-                      <h3 class="text-white text-xl font-bold mb-2">{item.card.titulo}</h3>
-                      <p class="text-white/90 text-sm">{item.card.text}</p>
-                    </div>
-                  </a>
-                </div>
-              ))}
-            </div>
+  {/* Carrusel a ancho completo */}
+  {Array.isArray(carruselHero) && carruselHero.length > 0 && (
+    <div class="relative w-full">
+      {/* Botón izquierdo */}
+      <button 
+        id="prevBtn"
+        class="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-neutral-900 p-2 rounded-full shadow-lg transition-all duration-200"
+        type="button"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      
+      {/* Botón derecho */}
+      <button 
+        id="nextBtn"
+        class="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-neutral-900 p-2 rounded-full shadow-lg transition-all duration-200"
+        type="button"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+      
+      {/* Carrusel */}
+      <div class="overflow-hidden relative h-96 sm:h-[500px] lg:h-[600px]">
+        {carruselHero.map((item, index) => (
+          <div 
+            class={`carousel-slide absolute inset-0 transition-opacity duration-500 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+            data-slide={index}
+          >
+            <a href={item.link.href} class="block relative group">
+              <StrapiImage 
+                src={item.card.imagen.url} 
+                alt={item.card.imagen.alternativeText || item.card.titulo} 
+                height={1080} 
+                width={1920} 
+                class=" h-96 sm:h-[500px] lg:h-[600px] w-full object-cover transition-transform duration-300 group-hover:scale-105" 
+              />
+              
+              {/* Overlay con título y texto */}
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+                <h3 class="text-white text-xl font-bold mb-2">{item.card.titulo}</h3>
+                <p class="text-white/90 text-sm">{item.card.text}</p>
+              </div>
+            </a>
           </div>
-        )}
+        ))}
       </div>
+    </div>
+  )}
+
+  {/* Contenido centrado debajo del carrusel */}
+  <div class="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="text-center max-w-4xl mx-auto">
+      {/* Heading */}
+      <h2 class="text-3xl font-semibold text-gray-900 sm:text-4xl lg:text-5xl prose mb-8">
+        {heading}
+      </h2>
+
+      {/* Botones */}
+      { links && (
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          {links.map((link) => {
+            const isPrimary = link.type === "PRIMARY" ? "bg-[#AF8E63] hover:saturate-90 hover:scale-103 text-accent" : "bg-transparent border border-neutral hover:border-gray-500 hover:opacity-80 hover:scale-103 text-neutral-900";
+            return <a class={`inline-block py-3 px-8 leading-loose ${isPrimary} font-semibold rounded-l-xl rounded-t-xl transition duration-200 text-lg`} href={link.href} target={link.isExternal ? "_blank" : "_self"}>{link.label}</a>
+          })}
+        </div>
+      )}
     </div>
   </div>
 </section>

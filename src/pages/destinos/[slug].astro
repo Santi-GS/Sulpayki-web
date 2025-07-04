@@ -3,72 +3,64 @@ import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
 import Markdown from "../../components/blocks/Markdown.astro";
 import BlockRenderer from "../../components/blocks/BlockRenderer.astro";
-import { getCollection } from 'astro:content';
-
-import type { CollectionEntry } from "astro:content";
-
-// Use with Astro's collection entry type
-type Post = CollectionEntry<"strapiArticle">;
-
-type CollectionArticle = {
-  params: { slug: string };
-  props: Post;
-};
 
 export async function getStaticPaths() {
-  const collection = await getCollection('strapiArticle');
-
-  function createStaticPaths(articles: Post[]) {
-    return articles.map(article => ({
-      params: { slug: article.data.slug },
-      props: article.data
+  const res = await fetch(`${import.meta.env.VITE_STRAPI_HOST}/api/articles?populate=*`, {
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}`,
+    },
+  });
+  const data = await res.json();
+  return data.data
+    .filter((item: any) => item?.slug)
+    .map((item: any) => ({
+      params: { slug: item.slug },
     }));
-  }
-
-  return createStaticPaths(collection);
 }
 
-const { props } = Astro;
-const { coverImagen, blocks, titulo, descripcion, tags } = props;
+const { slug } = Astro.params;
 
+const res = await fetch(`${import.meta.env.VITE_STRAPI_HOST}/api/articles?filters[slug][$eq]=${slug}&populate=*`, {
+  headers: {
+    Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}`,
+  },
+  cache: "no-store",
+});
+const data = await res.json();
+const articulo = data.data?.[0];
+
+if (!articulo) throw new Error("Destino no encontrado");
+
+const { coverImagen, blocks, titulo, descripcion, tags } = articulo;
 ---
 
 <Layout title="Sulpayki">
-  <section class="my-6 pt-30">
+  <section class="my-6">
     <div class="container mx-auto">
       <div>
-        {
-          coverImagen && (
-            <StrapiImage
-              class="w-full h-110 object-cover rounded-lg"
-              src={coverImagen.url}
-              alt={coverImagen?.alternativeText}
-              height={600}
-              width={800}
-            />
-          )
-        }
+        {coverImagen && (
+          <StrapiImage
+            class="w-full h-110 object-cover rounded-lg"
+            src={coverImagen.url}
+            alt={coverImagen?.alternativeText}
+            height={600}
+            width={800}
+          />
+        )}
       </div>
       <div class="py-14 max-w-2xl mx-auto text-center">
-        {
-          tags && tags.length > 0 && tags.map((tag: any) => (
-            <span class="uppercase text-base lg:text-xl text-green-600 hover:text-green-700 hover:underline">
-              {tag.title}
-            </span>
-          ))
-        }
-
-        <span
-          class="uppercase text-base lg:text-xl text-green-600 hover:text-green-700 hover:underline"
-        >
-        </span>
+        {tags && tags.length > 0 && tags.map((tag: any) => (
+          <span class="uppercase text-base lg:text-xl text-green-600 hover:text-green-700 hover:underline">
+            {tag.titulo}
+          </span>
+        ))}
         <div class="mt-2">
           <h2 class="mb-6 text-4xl lg:text-5xl font-bold font-heading">
             {titulo}
           </h2>
         </div>
       </div>
-      { descripcion && <Markdown data={{ text: descripcion, __component: "block.markdown" }} />} 
+      {descripcion && <Markdown data={{ text: descripcion, __component: "block.markdown" }} />}
     </div>
   </section>
   <BlockRenderer blocks={blocks} />
