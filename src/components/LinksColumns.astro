@@ -8,15 +8,6 @@ const linksInfo = [
         href: "/sobre-nosotros",
         showOnMobile: true,
       },
-      {
-        label: "",
-        href: "",
-      },
-      {
-        label: "Condiciones legales",
-        href: "",
-        showOnMobile: true,
-      },
     ],
   },
   {
@@ -25,21 +16,25 @@ const linksInfo = [
       {
         label: "Defensa del Consumidor",
         href: "https://autogestion.produccion.gob.ar/consumidores",
+        showOnMobile: true,
       },
-
+      {
+        label: "Denuncias contra una agencia de Turismo",
+        href: "https://www.argentina.gob.ar/servicio/presentar-una-denuncia-contra-una-agencia-de-viajes",
+      },
     ],
   },
 ]
 ---
 
 <div
-  class="px-[40px] gap-26 items-center md:justify-center md:items-start flex flex-col md:flex-row"
+  class="px-[40px] gap-6 md:gap-26 items-center md:justify-center md:items-start flex flex-col md:flex-row"
 >
   {
     linksInfo.map(({ title, links }, index) => {
       return (
-        <div class={`${index === 0 ? "" : "hidden sm:block"}`}>
-          <h2 class="text-gray-300 font-semibold text-[18px] hidden md:block mb-2">
+        <div>
+          <h2 class="text-white font-semibold text-[20px] underline underline-offset-[3px] hidden md:block mb-2">
             {title}
           </h2>
 
@@ -52,7 +47,7 @@ const linksInfo = [
                     showOnMobile ? "" : "hidden md:block",
                   ]}
                 >
-                  <a href={href} class="text-[14px] leading-6" target="_blank" rel="noopener noreferrer" aria-label={label}>
+                  <a href={href} class="text-[15px] leading-6" target="_blank" rel="noopener noreferrer" aria-label={label}>
                     {label}
                   </a>
                 </li>

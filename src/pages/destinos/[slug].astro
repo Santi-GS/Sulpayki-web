@@ -50,9 +50,12 @@ const { coverImagen, blocks, titulo, descripcion, tags } = articulo;
       </div>
       <div class="py-14 max-w-2xl mx-auto text-center">
         {tags && tags.length > 0 && tags.map((tag: any) => (
-          <span class="uppercase text-base lg:text-xl text-green-600 hover:text-green-700 hover:underline">
+          <span
+            class="rounded-full bg-green-300 px-2.5 py-0.5 text-xl whitespace-nowrap text-emerald-900"
+          >
             {tag.titulo}
           </span>
+
         ))}
         <div class="mt-2">
           <h2 class="mb-6 text-4xl lg:text-5xl font-bold font-heading">
