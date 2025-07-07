@@ -9,9 +9,7 @@ interface Props {
 }
 
 const { data } = Astro.props as Props;
-
-// Detecto si es destinos o eventos
-const isEventos = (data.__component === "block.eventos-destacados");
+const isEventos = data.__component === "block.eventos-destacados";
 const items = data.items ?? data.articulo_destinos ?? data.articulo_eventos ?? [];
 const baseHref = isEventos ? "/eventos/" : "/destinos/";
 ---
@@ -23,20 +21,30 @@ const baseHref = isEventos ? "/eventos/" : "/destinos/";
     background: linear-gradient(to top, #63B451, #6EE650);
   }
 
-  .card:hover .card-hover-content,
-  .card:focus-within .card-hover-content {
+  .group:hover .card-hover-content,
+  .group:focus-within .card-hover-content {
     transform: translateY(0);
   }
 
   .fade-wrapper {
-    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     transition: mask-image 0.3s ease, -webkit-mask-image 0.3s ease;
   }
 
   .fade-wrapper[data-fade="none"] {
     mask-image: none;
     -webkit-mask-image: none;
+  }
+
+  .fade-wrapper[data-fade="left"] {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 100%);
+  }
+
+  .fade-wrapper[data-fade="right"] {
+    mask-image: linear-gradient(to right, black 0%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 0%, black 95%, transparent 100%);
   }
 
   #scroll-container::-webkit-scrollbar {
@@ -51,9 +59,26 @@ const baseHref = isEventos ? "/eventos/" : "/destinos/";
   .scroll-btn:disabled {
     opacity: 0.3;
   }
+
+  .ver-mas-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    padding: 0.50rem 1rem;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #e9dbdb;
+    border-top: none;
+    border-radius: 0 0 0.75rem 0.75rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .group:hover .ver-mas-btn {
+    color: #46cf27;
+  }
 </style>
 
-<section class="py-12 relative">
+<section class=" relative">
   <div class="container mx-auto px-4">
     <div class="relative">
 
@@ -73,32 +98,45 @@ const baseHref = isEventos ? "/eventos/" : "/destinos/";
         <div id="scroll-container" class="flex gap-6 overflow-x-auto scroll-smooth px-4 md:px-12">
           {
             items.map((article) => (
+            <div class="relative w-[85%] sm:w-[340px] flex-shrink-0 group">
               <a
                 href={`${baseHref}${article.slug}`}
-                class="relative w-[85%] sm:w-[340px] h-[220px] rounded overflow-hidden bg-white shadow flex-shrink-0 card group transition-transform duration-300 focus:outline-none"
+                class="block overflow-hidden bg-white shadow transition-transform duration-300 focus:outline-none rounded-t"
                 tabindex="0"
               >
-                <StrapiImage
-                  src={article.coverImagen.url}
-                  alt={article.coverImagen.alternativeText}
-                  width={340}
-                  height={220}
-                  class="w-full h-full object-cover"
-                />
-                <div class="absolute bottom-0 left-0 w-full h-full text-white p-4 card-hover-content flex flex-col justify-center">
-                  <h3 class="text-xl font-bold mb-2">{article.titulo}</h3>
-                  <div class="text-sm mb-2 flex flex-wrap items-center gap-x-2">
-                    <span class="text-green-200 font-medium hover:text-green-100">
-                      {article.tags[0].titulo}
-                    </span>
-                    <span class="text-white">•</span>
-                    <span class="text-white">
-                      {formatDate(article.publishedAt)}
-                    </span>
+                <!-- Imagen con overlay -->
+                <div class="relative h-[220px]">
+                  <StrapiImage
+                    src={article.coverImagen.url}
+                    alt={article.coverImagen.alternativeText}
+                    width={340}
+                    height={220}
+                    class="w-full h-full object-cover"
+                  />
+                  <!-- Título permanente en la imagen -->
+                  <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/70 to-transparent">
+                    <h3 class="text-xl font-bold text-white mb-1">{article.titulo}</h3>
                   </div>
-                  <p class="text-gray-200 text-sm leading-snug">{article.descripcion}</p>
+                  <!-- Overlay de hover con información adicional -->
+                  <div class="absolute bottom-0 left-0 w-full h-full text-white p-4 card-hover-content flex flex-col justify-center">
+                    <h3 class="text-2xl font-bold mb-2">{article.titulo}</h3>
+                    <div class="text-sm mb-2 flex flex-wrap items-center gap-x-2">
+                      <span
+                        class="rounded-full bg-green-300 px-2.5 py-0.5 font-medium whitespace-nowrap text-emerald-900"
+                      >
+                        {article.tags[0].titulo}
+                      </span>
+                      <span class="text-white">•</span>
+                      <span class="text-white">{formatDate(article.publishedAt)}</span>
+                    </div>
+                    <p class="text-gray-50 text-md leading-snug">{article.descripcion}</p>
+                  </div>
                 </div>
               </a>
+
+              <!-- Botón Ver Más -->
+              <a href={`${baseHref}${article.slug}`} class="ver-mas-btn">Ver más</a>
+            </div>
             ))
           }
         </div>
@@ -119,10 +157,7 @@ const baseHref = isEventos ? "/eventos/" : "/destinos/";
 
 <script type="module">
   const scrollByAmount = 360;
-
-  function $(id) {
-    return document.getElementById(id);
-  }
+  const $ = (id) => document.getElementById(id);
 
   function scrollContent(dir) {
     const container = $("scroll-container");
@@ -135,6 +170,7 @@ const baseHref = isEventos ? "/eventos/" : "/destinos/";
     const leftBtn = $("scroll-left-btn");
     const rightBtn = $("scroll-right-btn");
     const wrapper = $("scroll-wrapper");
+
     if (!container || !leftBtn || !rightBtn || !wrapper) return;
 
     const scrollLeft = container.scrollLeft;
@@ -142,10 +178,17 @@ const baseHref = isEventos ? "/eventos/" : "/destinos/";
 
     leftBtn.disabled = scrollLeft <= 0;
     rightBtn.disabled = scrollLeft >= maxScroll - 1;
-    wrapper.dataset.fade = (scrollLeft <= 0 || scrollLeft >= maxScroll - 1) ? "none" : "both";
+
+    if (scrollLeft <= 0) {
+      wrapper.dataset.fade = "right";
+    } else if (scrollLeft >= maxScroll - 1) {
+      wrapper.dataset.fade = "left";
+    } else {
+      wrapper.dataset.fade = "both";
+    }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  function initializeScroll() {
     const container = $("scroll-container");
     const leftBtn = $("scroll-left-btn");
     const rightBtn = $("scroll-right-btn");
@@ -157,6 +200,9 @@ const baseHref = isEventos ? "/eventos/" : "/destinos/";
     container.addEventListener("scroll", updateUI);
     window.addEventListener("resize", updateUI);
     updateUI();
-  });
+  }
+
+  document.addEventListener("DOMContentLoaded", initializeScroll);
+  document.addEventListener("astro:page-load", initializeScroll);
 </script>
 

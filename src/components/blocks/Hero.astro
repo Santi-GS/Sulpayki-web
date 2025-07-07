@@ -55,8 +55,8 @@ import StrapiImage from "../StrapiImage.astro";
               
               {/* Overlay con título y texto */}
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
-                <h3 class="text-white text-xl font-bold mb-2">{item.card.titulo}</h3>
-                <p class="text-white/90 text-sm">{item.card.text}</p>
+                <h3 class="text-white text-xl md:text-5xl font-bold mb-2">{item.card.titulo}</h3>
+                <p class="text-white/90 text-sm md:text-xl">{item.card.text}</p>
               </div>
             </a>
           </div>
@@ -66,7 +66,7 @@ import StrapiImage from "../StrapiImage.astro";
   )}
 
   {/* Contenido centrado debajo del carrusel */}
-  <div class="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-screen-2xl px-4 py-10 sm:px-6 lg:px-8">
     <div class="text-center max-w-4xl mx-auto">
       {/* Heading */}
       <h2 class="text-3xl font-semibold text-gray-900 sm:text-4xl lg:text-5xl prose mb-8">
@@ -77,7 +77,7 @@ import StrapiImage from "../StrapiImage.astro";
       { links && (
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
           {links.map((link) => {
-            const isPrimary = link.type === "PRIMARY" ? "bg-[#AF8E63] hover:saturate-90 hover:scale-103 text-accent" : "bg-transparent border border-neutral hover:border-gray-500 hover:opacity-80 hover:scale-103 text-neutral-900";
+            const isPrimary = link.type === "PRIMARY" ? "bg-[#AF8E63] hover:saturate-90 hover:scale-103 text-neutral-900" : "bg-transparent border border-neutral hover:border-gray-500 hover:opacity-80 hover:scale-103 text-neutral-900";
             return <a class={`inline-block py-3 px-8 leading-loose ${isPrimary} font-semibold rounded-l-xl rounded-t-xl transition duration-200 text-lg`} href={link.href} target={link.isExternal ? "_blank" : "_self"}>{link.label}</a>
           })}
         </div>
