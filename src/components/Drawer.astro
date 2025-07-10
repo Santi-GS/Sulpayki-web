@@ -4,14 +4,25 @@ import Icon from "./ui/Icon.astro";
 const NavItems = [
   { title: "Inicio", link: "/", icon: "Home" },
   { title: "Destinos", link: "/destinos", icon: "Map-pins" },
-  { title: "Eventos", link: "/eventos", icon: "Calendar-event" },
+  {
+    title: "Servicios Turísticos",
+    link: "/servicios-turisticos",
+    icon: "Bus",
+    subItems: [
+      { title: "Turismo Industrial", link: "/servicios-turisticos/turismo-industrial" },
+      { title: "Turismo de Naturaleza", link: "/servicios-turisticos/turismo-naturaleza" },
+      { title: "Turismo cultural", link: "/servicios-turisticos/turismo-cultural" },
+      { title: "Gastronomía", link: "/servicios-turisticos/gastronomia" },
+      { title: "Transporte", link: "/servicios-turisticos/transporte" },
+    ]
+  },
   { title: "Sobre Nosotros", link: "/sobre-nosotros", icon: "Cactus" },
 ];
 ---
 
 <!-- Botón para abrir drawer -->
 <div class="block md:hidden">
-  <button id="drawer-toggle" class="p-2 text-gray-700 hover-verde transition">
+  <button id="drawer-toggle" class="p-2 text-[#F4E2B3] hover-verde rounded transition">
     <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
@@ -22,26 +33,62 @@ const NavItems = [
 <div id="drawer-backdrop" class="fixed inset-0 z-40 bg-white/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Drawer -->
-<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-[#714C06]/70" tabindex="-1">
+<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-[#714C06]/90" tabindex="-1">
 
   <div class="flex justify-between items-center mb-6">
-    <h5 class="text-xl font-bold text-black">Menú de Navegación</h5>
-    <button id="drawer-close" class="w-8 h-8 text-black">
-      ✕
-    </button>
+    <h5 class="text-xl font-bold text-[#F4E2B3] underline underline-offset-[3px]">Menú de Navegación</h5>
+    <button id="drawer-close" class="w-8 h-8 text-[#F4E2B3] font-bold">✕</button>
   </div>
 
   <ul class="space-y-3 font-semibold">
     {NavItems.map((item) => (
       <li>
-        <a href={item.link} class="w-full text-black rounded-md px-4 py-3 hover-verde flex items-center gap-3">
-          <Icon name={item.icon} class="w-5 h-5" />
-          {item.title}
-        </a>
+        {item.subItems ? (
+          <div class="flex flex-col">
+            <div class="flex items-center">
+              <a href={item.link} class="flex items-center text-[#F4E2B3] px-4 py-3 gap-3 rounded-md hover-verde">
+                <Icon name={item.icon} class="w-5 h-5" />
+                {item.title}
+              </a>
+              <button
+                type="button"
+                class="px-4 py-3 text-[#F4E2B3] rounded transition hover-verde"
+                aria-label="Toggle submenu"
+                data-toggle="drawer-submenu"
+              >
+                <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            <ul class="ml-7 mt-1 space-y-2 border-l-2 border-[#F4E2B3] overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-submenu>
+              {item.subItems.map((sub) => (
+                <li>
+                  <a href={sub.link} class="block px-2 py-2 text-[#F4E2B3] hover-verde rounded">{sub.title}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <a href={item.link} class="w-full text-[#F4E2B3] rounded-md px-4 py-3 hover-verde flex items-center gap-3">
+            <Icon name={item.icon} class="w-5 h-5" />
+            {item.title}
+          </a>
+        )}
       </li>
     ))}
   </ul>
 </div>
+
+<style>
+  .rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  [data-submenu] {
+    will-change: max-height;
+  }
+</style>
 
 <script type="module">
   const $ = (id) => document.getElementById(id);
@@ -66,11 +113,36 @@ const NavItems = [
     closeBtn.onclick = () => toggleDrawer(false);
     backdrop.onclick = () => toggleDrawer(false);
 
-    toggleDrawer(false); // Ensure closed on init
+    toggleDrawer(false);
+
+    // Submenu toggle logic
+    document.querySelectorAll('[data-toggle="drawer-submenu"]').forEach((btn) => {
+      const parentDiv = btn.closest(".flex.items-center");
+      const submenu = parentDiv?.nextElementSibling;
+      const icon = btn.querySelector("svg");
+
+      if (!submenu) return;
+
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const isOpen = submenu.classList.contains("open");
+
+        if (isOpen) {
+          submenu.style.maxHeight = submenu.scrollHeight + "px";
+          requestAnimationFrame(() => {
+            submenu.style.maxHeight = "0px";
+            submenu.classList.remove("open");
+            icon?.classList.remove("rotate-180");
+          });
+        } else {
+          submenu.classList.add("open");
+          submenu.style.maxHeight = submenu.scrollHeight + "px";
+          icon?.classList.add("rotate-180");
+        }
+      };
+    });
   }
 
   document.addEventListener("DOMContentLoaded", initializeDrawer);
   document.addEventListener("astro:page-load", initializeDrawer);
 </script>
-
-
