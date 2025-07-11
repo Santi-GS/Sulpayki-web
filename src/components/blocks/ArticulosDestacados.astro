@@ -1,17 +1,17 @@
 ---
 import type { DestinosDestacadosProps } from "../../lib/types";
-import type { EventosDestacadosProps } from "../../lib/types";
+import type { ServiciosDestacadosProps } from "../../lib/types";
 import { formatDate } from "../../lib/index";
 import StrapiImage from "../StrapiImage.astro";
 
 interface Props {
-  data: DestinosDestacadosProps | EventosDestacadosProps;
+  data: DestinosDestacadosProps | ServiciosDestacadosProps;
 }
 
 const { data } = Astro.props as Props;
-const isEventos = data.__component === "block.eventos-destacados";
-const items = data.items ?? data.articulo_destinos ?? data.articulo_eventos ?? [];
-const baseHref = isEventos ? "/eventos/" : "/destinos/";
+const isServicios = data.__component === "block.servicios-destacados";
+const items = data.items ?? data.articulo_destinos ?? data.servicio_de_turismos ?? [];
+const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
 ---
 
 <style>

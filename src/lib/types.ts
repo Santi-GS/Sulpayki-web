@@ -51,7 +51,7 @@ export interface Imagen {
     | "block.preguntas-frecuentes"
     | "block.bento-info"
     | "block.destinos-destacados"
-    | "block.eventos-destacados"
+    | "block.servicios-destacados"
     /*| "blocks.card-grid"
     | "blocks.person-card"
     | "blocks.newsletter"*/;
@@ -135,12 +135,12 @@ export interface ArticulosDestacadosItem {
 export interface DestacadosProps<T extends ComponentType> extends Base<T> {
   items?: ArticulosDestacadosItem[];
   articulo_destinos?: ArticulosDestacadosItem[];
-  articulo_eventos?: ArticulosDestacadosItem[];
+  servicio_de_turismos?: ArticulosDestacadosItem[];
 }
 
 // Alias para compatibilidad retroactiva
 export type DestinosDestacadosProps = DestacadosProps<"block.destinos-destacados">;
-export type EventosDestacadosProps = DestacadosProps<"block.eventos-destacados">;
+export type ServiciosDestacadosProps = DestacadosProps<"block.servicios-destacados">;
   
   /*export interface CardGridProps extends Base<"blocks.card-grid"> {
     card: {
@@ -175,7 +175,7 @@ export type EventosDestacadosProps = DestacadosProps<"block.eventos-destacados">
     | PreguntasFrecuentesProps
     | BentoInfoProps
     | DestinosDestacadosProps
-    | EventosDestacadosProps
+    | ServiciosDestacadosProps
     /*
     | CardGridProps
     | PersonCardProps

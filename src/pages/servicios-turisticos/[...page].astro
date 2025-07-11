@@ -1,0 +1,138 @@
+---
+import { formatDate } from "../../lib/index";
+import StrapiImage from "../../components/StrapiImage.astro";
+import Layout from "../../layouts/Layout.astro";
+import Pagination from "../../components/Pagination.astro";
+
+export const prerender = true;
+
+const PAGE_SIZE = 5;
+
+const pageParam = Astro.params.page as string | string[] | undefined;
+let currentPage = 1;
+if (typeof pageParam === "string") currentPage = parseInt(pageParam);
+else if (Array.isArray(pageParam) && pageParam.length > 0) currentPage = parseInt(pageParam[0]);
+
+// Fetch paginado desde Strapi para servicios turísticos
+const res = await fetch(
+  `${import.meta.env.VITE_STRAPI_HOST}/api/servicio-de-turismos?populate=*&pagination[page]=${currentPage}&pagination[pageSize]=${PAGE_SIZE}`,
+  {
+    headers: { Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}` },
+    cache: "no-store",
+  }
+);
+const data = await res.json();
+const servicios = data.data ?? [];
+const pagination = data.meta?.pagination ?? { page: 1, pageSize: PAGE_SIZE, pageCount: 1, total: 0 };
+
+const totalPages = pagination.pageCount;
+const prevPage = currentPage > 1 ? `/servicios-turisticos/${currentPage - 1 === 1 ? "" : currentPage - 1}` : null;
+const nextPage = currentPage < totalPages ? `/servicios-turisticos/${currentPage + 1}` : null;
+
+export async function getStaticPaths() {
+  const PAGE_SIZE = 5;
+  const res1 = await fetch(
+    `${import.meta.env.VITE_STRAPI_HOST}/api/servicio-de-turismos?pagination[page]=1&pagination[pageSize]=1`,
+    { headers: { Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}` } }
+  );
+  const { meta } = await res1.json();
+  const total = meta?.pagination?.total || 0;
+  const pageCount = Math.ceil(total / PAGE_SIZE);
+
+  const paths = [];
+  // El primer path debe ser sin page (para /servicios-turisticos)
+  paths.push({ params: { page: undefined } });
+  for (let i = 2; i <= pageCount; i++) {
+    paths.push({ params: { page: String(i) } });
+  }
+
+  return paths;
+}
+---
+
+<Layout title="Sulpayki Viajes y Turismo">
+  <section class="py-8">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-wrap justify-center mb-6">
+        <div class="flex flex-wrap -mx-3 mb-16">
+          {servicios.length > 0 && servicios[0]?.slug && (
+            <a href={`/servicios-turisticos/${servicios[0].slug}`} class="mb-6 lg:mb-0 w-full lg:w-1/2 px-3">
+              <div class="h-full flex flex-col rounded shadow">
+                <StrapiImage
+                  class="rounded-t object-cover h-80 lg:h-full w-full"
+                  src={servicios[0].coverImagen?.url}
+                  alt={servicios[0].coverImagen?.alternativeText || ""}
+                  height={800}
+                  width={800}
+                />
+                <div class="mt-auto p-6 rounded-b bg-white">
+                  <span class="text-sm text-gray-400">
+                    {formatDate(servicios[0].publishedAt)}
+                  </span>
+                  <h2 class="my-2 text-2xl font-bold">{servicios[0].titulo}</h2>
+                  <p class="mb-6 text-gray-400 leading-loose">{servicios[0].descripcion}</p>
+                  <div class="mb-2">
+                    {servicios[0].tags && servicios[0].tags.length > 0 && servicios[0].tags.map((tag: any) => (
+                      <span class="rounded-full bg-green-300 px-2.5 py-0.5 text-xs whitespace-nowrap text-emerald-900 mr-2">
+                        {tag.titulo}
+                      </span>
+                    ))}
+                  </div>
+                  <span class="text-green-600 hover:text-green-700 font-bold hover:underline">
+                    Ver Más
+                  </span>
+                </div>
+              </div>
+            </a>
+          )}
+
+          <div class="flex flex-wrap w-full lg:w-1/2">
+            {servicios.length > 1 &&
+              servicios.slice(1).map((servicio: any) =>
+                servicio?.slug ? (
+                  <a href={`/servicios-turisticos/${servicio.slug}`} class="mb-6 w-full lg:w-1/2 px-3">
+                    <div class="rounded overflow-hidden shadow">
+                      <StrapiImage
+                        class="lg:h-48 rounded-t"
+                        src={servicio.coverImagen?.url}
+                        alt={servicio.coverImagen?.alternativeText || ""}
+                        height={400}
+                        width={400}
+                      />
+                      <div class="p-6 rounded-b bg-white">
+                        <span class="text-sm text-gray-400">
+                          {formatDate(servicio.publishedAt)}
+                        </span>
+                        <h2 class="my-2 text-2xl font-bold">{servicio.titulo}</h2>
+                        <div class="mb-2">
+                          {servicio.tags && servicio.tags.length > 0 && servicio.tags.map((tag: any) => (
+                            <span class="rounded-full bg-green-300 px-2.5 py-0.5 text-xs whitespace-nowrap text-emerald-900 mr-2">
+                              {tag.titulo}
+                            </span>
+                          ))}
+                        </div>
+                        <span class="text-green-600 hover:text-green-700 font-bold hover:underline">
+                          Ver Más
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ) : null
+              )}
+          </div>
+        </div>
+
+        {servicios.length === 0 && (
+          <p class="text-center text-gray-500 w-full">No hay servicios turísticos en esta página.</p>
+        )}
+
+        <Pagination
+          previousPage={prevPage}
+          nextPage={nextPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+        />
+      </div>
+    </div>
+  </section>
+</Layout>
