@@ -1,0 +1,163 @@
+---
+const { servicios = [] } = Astro.props;
+---
+
+<div class="container mx-auto px-4">
+    <h1 class="text-center text-2xl sm:text-3xl font-extrabold text-neutral-700 mb-4">ELEGÍ TU PRÓXIMO VIAJE</h1>
+  <div class="border-t-2 border-green-700 w-40 mx-auto mb-6"></div>
+
+  <!-- TAGS -->
+  <div id="filtro-tags" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+
+  <!-- SEARCH -->
+  <div class="flex justify-center mb-6">
+    <div class="relative w-full max-w-xs">
+      <input
+        id="filtro-busqueda"
+        type="text"
+        placeholder="Buscar"
+        class="w-full border-b-2 border-green-300 focus:outline-none focus:border-green-600 py-1 px-2 text-gray-700"
+        
+      />
+      <svg class="absolute text-green-700 right-2 top-0" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" viewBox="0 0 24 24"><path d="M14.916 11.707A3 3 0 1 0 12 14"/><path d="M11.991 21.485a1.994 1.994 0 0 1-1.404-.585l-4.244-4.243a8 8 0 1 1 13.651-5.351"/><path d="M15 18a3 3 0 1 0 6 0 3 3 0 1 0-6 0M20.2 20.2 22 22"/></svg>
+    </div>
+    
+  </div>
+</div>
+
+<script define:vars={{ servicios }}>
+  // Datos de servicios pasados desde el servidor
+  const serviciosData = servicios || [];
+  let tagActivo = 'Todas';
+  let textoBusqueda = '';
+
+  function iniciarFiltro() {
+    // Obtener elementos del DOM
+    const tagsContainer = document.getElementById('filtro-tags');
+    const searchInput = document.getElementById('filtro-busqueda');
+    const grid = document.querySelector('#servicios-grid');
+
+    // Verificar que todos los elementos existan
+    if (!tagsContainer || !searchInput || !grid) {
+      return;
+    }
+
+    // Obtener el tag de la URL si existe
+    const urlParams = new URLSearchParams(window.location.search);
+    const tagFromUrl = urlParams.get('tag');
+    const tagFromUrlDecoded = tagFromUrl ? decodeURIComponent(tagFromUrl) : null;
+
+    // Extraer tags únicos de los servicios
+    const tagsUnicos = [...new Set(
+      serviciosData.flatMap(s => (s.tags || []).map(t => t.titulo))
+    )];
+
+    // Reiniciar estado del filtro
+    tagActivo = 'Todas';
+    textoBusqueda = '';
+    searchInput.value = '';
+
+    // Activar tag de la URL si existe en los tags disponibles
+    if (tagFromUrlDecoded && tagsUnicos.includes(tagFromUrlDecoded)) {
+      tagActivo = tagFromUrlDecoded;
+    }
+
+    // Función para normalizar texto (quitar acentos y convertir a minúsculas)
+    const normalizar = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    function crearBotonesTag() {
+      tagsContainer.innerHTML = '';
+      ['Todas', ...tagsUnicos].forEach(tag => {
+        const btn = document.createElement('button');
+        btn.textContent = tag;
+        btn.dataset.tag = tag;
+        btn.className = 'tag-btn px-4 py-1 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 flex items-center gap-2 border-2 focus:outline-none text-white';
+        btn.classList.add(tag === 'Todas' ? 'bg-green-600' : 'bg-green-300');
+        btn.classList.add(tag === 'Todas' ? 'border-green-600' : 'border-green-300');
+        btn.classList.add(tag === 'Todas' ? 'text-white' : 'text-emerald-900');
+
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.05" viewBox="0 0 24 24">
+            <path d="M6 9v1a3 3 0 0 0 3 3h1M18 8v5a3 3 0 0 1-3 3h-1M10 21V5a2 2 0 1 1 4 0v16M7 21h10"/>
+          </svg>
+          ${tag}
+        `;
+
+        btn.addEventListener('click', () => {
+          tagActivo = tag;
+          actualizarEstilosBotones();
+          filtrarServicios();
+        });
+
+        tagsContainer.appendChild(btn);
+      });
+    }
+
+    function actualizarEstilosBotones() {
+      tagsContainer.querySelectorAll('.tag-btn').forEach(btn => {
+        const esActivo = btn.dataset.tag === tagActivo;
+        btn.classList.toggle('bg-green-600', esActivo);
+        btn.classList.toggle('border-green-600', esActivo);
+        btn.classList.toggle('text-white', esActivo);
+        btn.classList.toggle('bg-green-300', !esActivo);
+        btn.classList.toggle('border-green-300', !esActivo);
+        btn.classList.toggle('text-emerald-900', !esActivo);
+      });
+    }
+
+    function filtrarServicios() {
+      const cards = grid.querySelectorAll('.servicio-card');
+      
+      cards.forEach(card => {
+        const tags = card.dataset.tags?.split(',').map(t => t.trim()) || [];
+        const titulo = card.dataset.title || '';
+        const coincideTag = tagActivo === 'Todas' || tags.includes(tagActivo);
+        const coincideTexto = !textoBusqueda || normalizar(titulo).includes(normalizar(textoBusqueda));
+        
+        card.style.display = coincideTag && coincideTexto ? 'block' : 'none';
+      });
+    }
+
+    // Crear botones de tags y configurar eventos
+    crearBotonesTag();
+    actualizarEstilosBotones();
+    
+    // Configurar evento de búsqueda
+    searchInput.addEventListener('input', () => {
+      textoBusqueda = searchInput.value.trim();
+      filtrarServicios();
+    });
+    
+    // Aplicar filtro inicial
+    filtrarServicios();
+  }
+
+  // Función para inicializar con delay para asegurar que todo esté listo
+  function inicializarConDelay() {
+    setTimeout(() => {
+      iniciarFiltro();
+    }, 100);
+  }
+
+  // Inicializar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarConDelay);
+  } else {
+    inicializarConDelay();
+  }
+
+  // Para navegación SPA de Astro
+  document.addEventListener('astro:page-load', inicializarConDelay);
+  
+  // Escuchar cambios en la URL para navegación SPA
+  let currentUrl = window.location.href;
+  setInterval(() => {
+    if (window.location.href !== currentUrl) {
+      currentUrl = window.location.href;
+      // Reinicializar con delay para asegurar que la URL esté completamente actualizada
+      setTimeout(() => {
+        inicializarConDelay();
+      }, 200);
+    }
+  }, 100);
+</script>

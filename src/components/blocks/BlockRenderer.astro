@@ -7,13 +7,6 @@ import EncabezadoDeSeccion from "./EncabezadoDeSeccion.astro";
 import Hero from "./Hero.astro";
 import Markdown from "./Markdown.astro";
 import PreguntasFrecuentes from "./PreguntasFrecuentes.astro";
-/*import HeadingSection from "./SectionHeading.astro";
-import CardGrid from "./CardsGrid.astro";
-import ContentWithImage from "./ContentWithImage.astro";
-import Faqs from "./Faqs.astro";
-import PersonCard from "./PersonCard.astro";
-import FeaturedArticles from "./FeaturedArticles.astro";
-import Newsletter from "./Newsletter.astro"*/;
 
 
 const componentMap: Record<ComponentType, any> = {
@@ -25,9 +18,6 @@ const componentMap: Record<ComponentType, any> = {
   "block.bento-info": BentoInfo,
   "block.destinos-destacados": ArticulosDestacados,
   "block.servicios-destacados": ArticulosDestacados,
- /*"blocks.card-grid": CardGrid,
-  "blocks.person-card": PersonCard,
-  "blocks.newsletter": Newsletter,*/
 };
 
 const { blocks } = Astro.props;
