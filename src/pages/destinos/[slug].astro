@@ -3,6 +3,7 @@ import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
 import Markdown from "../../components/blocks/Markdown.astro";
 import BlockRenderer from "../../components/blocks/BlockRenderer.astro";
+import Icon from "../../components/ui/Icon.astro";
 
 export async function getStaticPaths() {
   const res = await fetch(`${import.meta.env.VITE_STRAPI_HOST}/api/articles?populate=*`, {
@@ -31,7 +32,7 @@ const articulo = data.data?.[0];
 
 if (!articulo) throw new Error("Destino no encontrado");
 
-const { coverImagen, blocks, titulo, descripcion, tags } = articulo;
+const { coverImagen, blocks, titulo, descripcion, tags, publishedAt } = articulo;
 ---
 
 <Layout title="Sulpayki">
@@ -48,19 +49,31 @@ const { coverImagen, blocks, titulo, descripcion, tags } = articulo;
           />
         )}
       </div>
-      <div class="py-14 max-w-2xl mx-auto text-center">
+      <div class="pt-10 pb-5 max-w-2xl mx-auto text-center">
         {tags && tags.length > 0 && tags.map((tag: any) => (
           <span
-            class="rounded-full bg-green-300 px-2.5 py-0.5 text-xl whitespace-nowrap text-emerald-900"
+            class="rounded-full bg-green-300 px-2.5 py-0.5 text-xl whitespace-nowrap text-emerald-900 mr-2"
           >
             {tag.titulo}
           </span>
-
         ))}
         <div class="mt-2">
-          <h2 class="mb-6 text-4xl lg:text-5xl font-bold font-heading">
+          <h1 class="mb-6 text-4xl lg:text-5xl font-bold font-heading">
             {titulo}
-          </h2>
+          </h1>
+          {publishedAt && (
+            <span class="block text-gray-400 text-sm mb-2">Publicado el: {new Date(publishedAt).toLocaleDateString()}</span>
+          )}
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a 
+              class="inline-flex items-center gap-2 py-3 px-8 leading-loose bg-verde hover:saturate-90 hover:scale-103 text-neutral-900 font-semibold rounded-l-xl rounded-t-xl transition duration-200 text-lg"
+              href={`https://wa.me/5493804679492?text=Hola, quiero más información sobre los servicios turísticos que hay en \"${titulo}\". Vengo de la página web.🌵`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Contactanos <Icon name="Whatsapp" />
+            </a>
+          </div>
         </div>
       </div>
       {descripcion && <Markdown data={{ text: descripcion, __component: "block.markdown" }} />}
