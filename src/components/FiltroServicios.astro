@@ -107,11 +107,12 @@ const { servicios = [] } = Astro.props;
 
     function filtrarServicios() {
       const cards = grid.querySelectorAll('.servicio-card');
+      const tagActivoNormalizado = normalizar(tagActivo);
       
       cards.forEach(card => {
-        const tags = card.dataset.tags?.split(',').map(t => t.trim()) || [];
+        const tags = card.dataset.tags?.split(',').map(t => normalizar(t.trim())) || [];
         const titulo = card.dataset.title || '';
-        const coincideTag = tagActivo === 'Todas' || tags.includes(tagActivo);
+        const coincideTag = tagActivo === 'Todas' || tags.includes(tagActivoNormalizado);
         const coincideTexto = !textoBusqueda || normalizar(titulo).includes(normalizar(textoBusqueda));
         
         card.style.display = coincideTag && coincideTexto ? 'block' : 'none';
