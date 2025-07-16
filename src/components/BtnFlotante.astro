@@ -1,334 +1,278 @@
 ---
 import Icon from "./ui/Icon.astro";
-const hoverSocialNetworks = "transition-transform hover:scale-110";
 ---
 
-<div class="contenedor">
-  <!-- Botón principal -->
-  <button class="botonF1" type="button" id="botonF1">
-    <span class="icon-center" id="mainIcon"></span>
-  </button>
-
-  <!-- Botones secundarios -->
-  <a
-    href="https://wa.me/5493804679492?text=Hola, quiero más información sobre los servicios de turismo. Vengo de la página web."
-    class={`btn whatsapp-button ${hoverSocialNetworks}`}
-    aria-label="Contactanos por Whatsapp."
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <div class="icon-center">
-      <Icon name="Whatsapp">
+<div class="social-button" title="expand social media options">
+  <div class="icon-wrapper" id="social-icon" style="cursor:pointer;">
+    <svg id="main-fab-svg" xmlns="http://www.w3.org/2000/svg" class="share-icon" width="46" height="46" viewBox="-2 -3 33 33" fill="currentColor" style="display:block;margin:auto;">
+      <path d="M21 0a5 5 0 0 0-5 5c0 .086.027.164.031.25L8.188 9.188C7.32 8.457 6.223 8 5 8a5 5 0 1 0 0 10c1.223 0 2.32-.457 3.188-1.188l7.843 3.938c-.004.086-.031.164-.031.25a5 5 0 1 0 5-5c-1.223 0-2.32.457-3.188 1.188L9.97 13.25c.004-.086.031-.164.031-.25s-.027-.164-.031-.25l7.844-3.938C18.68 9.543 19.776 10 21 10a5 5 0 1 0 0-10Z"/>
+    </svg>
+  </div>
+  <a  class="social-point" href="https://wa.me/5493804679492?text=Hola,%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20turismo.%20Vengo%20de%20la%20p%C3%A1gina%20web." 
+    target="_blank" rel="nofollow" title="Whatsapp">
+    <div class="icon-wrapper"><Icon name="whatsapp" class="whatsapp" /></div>
   </a>
-
-  <a
-    href="https://www.facebook.com/profile.php?id=61551433251415"
-    class={`btn facebook-button ${hoverSocialNetworks}`}
-    aria-label="Visítanos en Facebook."
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <div class="icon-center">
-      <Icon name="Facebook">
-    </div>
+  <a  class="social-point gmail-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com"
+    target="_blank" 
+    rel="nofollow" 
+    title="Gmail">
+    <div class="icon-wrapper"><Icon name="gmail" class="gmail" /></div>
   </a>
-
-  <a
-    href="https://www.instagram.com/sulpayki_viajesyturismo/"
-    class={`btn instagram-button ${hoverSocialNetworks}`}
-    aria-label="Visítanos en Instagram."
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <div class="icon-center">
-      <Icon name="Instagram">
-    </div>
+  <a  class="social-point" 
+    href="https://www.instagram.com/sulpayki_viajesyturismo/" 
+    target="_blank" rel="nofollow" title="Instagram">
+    <div class="icon-wrapper"><Icon name="instagram" class="instagram" /></div>
   </a>
-
-  <a
-    id="gmailBtn"
-    href="mailto:sulpaykiviajesyturismo@gmail.com"
-    class={`btn gmail-button ${hoverSocialNetworks}`}
-    aria-label="Contactanos por correo."
-  >
-    <div class="icon-center">
-      <Icon name="Gmail">
-    </div>
+  <a class="social-point" 
+    href="https://www.facebook.com/profile.php?id=61551433251415" 
+    target="_blank" 
+    rel="nofollow" 
+    title="Facebook">
+    <div class="icon-wrapper"><Icon name="facebook" class="facebook" /></div>
   </a>
 </div>
 
 <style>
-  * {
-    margin: 0;
-  }
-
-  .contenedor {
-    width: 90px;
-    height: 240px;
+  .social-button {
+    transition: all 0.4s;
     position: fixed;
-    right: 0;
-    bottom: 0;
-    z-index: 20;
-    pointer-events: none;
-  }
-
-  .botonF1 {
+    right: 25px;
+    bottom: 25px;
     width: 60px;
     height: 60px;
+    text-align: center;
+    line-height: 60px;
     border-radius: 50%;
-    position: absolute;
-    right: 16px;
-    bottom: 16px;
-    border: none;
+    background-color: #1479d8;
     color: #fff;
-    background: #1e293b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 21;
-    pointer-events: auto;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    transition: 0.3s;
+    font-size: 24px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    transition-delay: 1s;
+    z-index: 20;
+  }
+  .social-button-open {
+    transition-delay: 0s;
+    bottom: 85px;
+    background-color: #d81558;
+    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.28), 0 4px 15px 0 rgba(0, 0, 0, 0.25);
+  }
+  .social-button .social-point{
+    transition: all 0.4s;
+    opacity: 0;
+    width: 0px;
+    height: 0px;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 24px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    visibility: hidden;
+  }
+  .social-button .social-point:hover {
+    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.28), 0 4px 15px 0 rgba(0, 0, 0, 0.25);
+  }
+  .social-button .social-point:nth-child(2) {
+    transition-delay: 0.3s;
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+    background-color: #25D366;
+  }
+  .social-button .social-point:nth-child(3) {
+    transition-delay: 0.4s;
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+    background-color: #FF9800;
+  }
+  .social-button .social-point:nth-child(4) {
+    transition-delay: 0.5s;
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+    background-color: #8a3ab9;
+  }
+  .social-button .social-point:nth-child(5) {
+    transition-delay: 0.6s;
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+    background-color: #1877f3;
   }
 
-  .btn {
+  .social-button-open .social-point-open{
+    opacity: 1;
     width: 50px;
     height: 50px;
-    border-radius: 50%;
-    position: absolute;
-    right: 20px;
-    bottom: 0;
-    transform: scale(0);
+    visibility: visible;
+  }
+  .social-button-open .social-point-open:nth-child(2) {
+    right: 5px;
+    bottom: 80px;
+  }
+  .social-button-open .social-point-open:nth-child(2):hover {
+    transition-delay: 0s;
+    background-color: #1EA551;
+  }
+  .social-button-open .social-point-open:nth-child(3) {
+    right: 65px;
+    bottom: 65px;
+  }
+  .social-button-open .social-point-open:nth-child(3):hover {
+    transition-delay: 0s;
+    background-color: #eb5814;
+  }
+  .social-button-open .social-point-open:nth-child(4) {
+    right: 80px;
+    bottom: 5px;
+  }
+  .social-button-open .social-point-open:nth-child(4):hover {
+    transition-delay: 0s;
+    background-color: #521aee;
+  }
+  .social-button-open .social-point-open:nth-child(5) {
+    right: 50px;
+    bottom: -55px;
+  }
+  .social-button-open .social-point-open:nth-child(5):hover {
+    transition-delay: 0s;
+    background-color: #0d3dda;
+  }
+
+  .icon-wrapper {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: auto;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    transition: 0.3s;
   }
-
-  /* Centramos y ajustamos todos los iconos */
-  .icon-center {
-    width: 80%;
-    height: 80%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .icon-svg,
-  .icon-center img {
-    width: 70%;
-    height: 70%;
-    object-fit: contain;
+  #main-fab-svg {
+    width: 60%;
+    height: 60%;
     display: block;
+    margin: auto;
   }
 
-  /* Distancia entre botones */
-  .btn:nth-of-type(1) {
-    margin-bottom: 85px;
-    transition: 0.5s;
-  }
-  .btn:nth-of-type(2) {
-    margin-bottom: 140px;
-    transition: 0.7s;
-  }
-  .btn:nth-of-type(3) {
-    margin-bottom: 195px;
-    transition: 0.9s;
-  }
-  .btn:nth-of-type(4) {
-    margin-bottom: 250px;
-    transition: 0.99s;
-  }
-
+  /* --- DESKTOP --- */
   @media (min-width: 768px) {
-    .botonF1 {
-      width: 75px;
-      height: 75px;
+    .social-button {
+      width: auto;
+      height: auto;
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      right: 25px;
+      bottom: 25px;
     }
-    .btn {
-      width: 56px;
-      height: 56px;
+    #social-icon {
+      display: none !important;
     }
-    .btn:nth-of-type(1) {
-      margin-bottom: 100px;
+    .social-point {
+      position: static !important;
+      opacity: 1 !important;
+      width: 50px !important;
+      height: 50px !important;
+      visibility: visible !important;
+      margin: 0 0 8px 0;
+      transition: none !important;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
     }
-    .btn:nth-of-type(2) {
-      margin-bottom: 160px;
+    .social-point:last-child {
+      margin-bottom: 0;
     }
-    .btn:nth-of-type(3) {
-      margin-bottom: 220px;
-    }
-    .btn:nth-of-type(4) {
-      margin-bottom: 280px;
+    .social-point-open {
+      /* No efecto en desktop */
     }
   }
-
-  .animacionVer {
-    transform: scale(1);
-  }
-
-  /* Colores */
-  .whatsapp-button {
-    background: #25d366;
-  }
-  .facebook-button {
-    background: #1877f3;
-  }
-  .instagram-button {
-    background: #a833b9;
-  }
-  .gmail-button {
-    background: #ff9800;
+  @media (max-width: 767px) {
+    .gmail-link {
+      href: mailto:sulpaykiviajesyturismo@gmail.com;
+    }
   }
 </style>
 
 <script>
-  let btnFlotanteCleanup: (() => void) | null = null;
+var social_open = false;
 
-  function initBtnFlotante() {
-    if (btnFlotanteCleanup) btnFlotanteCleanup();
+function initSocialFab() {
+  const menu = document.querySelector('.social-button');
+  if (!menu) return;
 
-    const contenedor = document.querySelector(".contenedor");
-    const botonF1 = document.getElementById("botonF1");
-    const botones = document.querySelectorAll(".btn");
-    const mainIconContainer = document.getElementById("mainIcon");
-    const gmailBtn = document.getElementById("gmailBtn");
+  const iconWrapper = document.getElementById('social-icon');
+  if (!iconWrapper) return;
 
-    let isOpen = false;
-    let hideTimeout: ReturnType<typeof setTimeout> | null = null;
-    let iconInterval: ReturnType<typeof setInterval> | null = null;
-    let currentIcon = 0;
+  // Evitar múltiples listeners
+  iconWrapper.replaceWith(iconWrapper.cloneNode(true));
+  const newIconWrapper = document.getElementById('social-icon');
+  if (!newIconWrapper) return;
 
-    const rawSVGs = {
-      Whatsapp: `<svg class="icon-svg" viewBox="0 0 50 50"><path fill="#fff" d="m4.868 43.303 2.694-9.835a18.941 18.941 0 0 1-2.535-9.489C5.032 13.514 13.548 5 24.014 5a18.867 18.867 0 0 1 13.43 5.566A18.866 18.866 0 0 1 43 23.994c-.004 10.465-8.522 18.98-18.986 18.98-.001 0 0 0 0 0h-.008a18.965 18.965 0 0 1-9.073-2.311l-10.065 2.64z"/><path fill="#fff" d="M4.868 43.803a.499.499 0 0 1-.482-.631l2.639-9.636a19.48 19.48 0 0 1-2.497-9.556C4.532 13.238 13.273 4.5 24.014 4.5a19.367 19.367 0 0 1 13.784 5.713A19.362 19.362 0 0 1 43.5 23.994c-.004 10.741-8.746 19.48-19.486 19.48a19.535 19.535 0 0 1-9.144-2.277l-9.875 2.589a.457.457 0 0 1-.127.017z"/><path fill="#cfd8dc" d="M24.014 5a18.867 18.867 0 0 1 13.43 5.566A18.866 18.866 0 0 1 43 23.994c-.004 10.465-8.522 18.98-18.986 18.98h-.008a18.965 18.965 0 0 1-9.073-2.311l-10.065 2.64 2.694-9.835a18.941 18.941 0 0 1-2.535-9.489C5.032 13.514 13.548 5 24.014 5m0-1C12.998 4 4.032 12.962 4.027 23.979a20.01 20.01 0 0 0 2.461 9.622L3.903 43.04a.998.998 0 0 0 1.219 1.231l9.687-2.54a20.026 20.026 0 0 0 9.197 2.244c11.024 0 19.99-8.963 19.995-19.98A19.856 19.856 0 0 0 38.153 9.86 19.869 19.869 0 0 0 24.014 4z"/><path fill="#40c351" d="M35.176 12.832a15.673 15.673 0 0 0-11.157-4.626c-8.704 0-15.783 7.076-15.787 15.774a15.738 15.738 0 0 0 2.413 8.396l.376.597-1.595 5.821 5.973-1.566.577.342a15.75 15.75 0 0 0 8.032 2.199h.006c8.698 0 15.777-7.077 15.78-15.776a15.68 15.68 0 0 0-4.618-11.161z"/><path fill="#fff" fill-rule="evenodd" d="M19.268 16.045c-.355-.79-.729-.806-1.068-.82-.277-.012-.593-.011-.909-.011-.316 0-.83.119-1.265.594-.435.475-1.661 1.622-1.661 3.956 0 2.334 1.7 4.59 1.937 4.906.237.316 3.282 5.259 8.104 7.161 4.007 1.58 4.823 1.266 5.693 1.187.87-.079 2.807-1.147 3.202-2.255.395-1.108.395-2.057.277-2.255-.119-.198-.435-.316-.909-.554s-2.807-1.385-3.242-1.543c-.435-.158-.751-.237-1.068.238-.316.474-1.225 1.543-1.502 1.859-.277.317-.554.357-1.028.119s-2.002-.738-3.815-2.354c-1.41-1.257-2.362-2.81-2.639-3.285-.277-.474-.03-.731.208-.968.213-.213.474-.554.712-.831.237-.277.316-.475.474-.791.158-.317.079-.594-.04-.831-.117-.238-1.039-2.584-1.461-3.522z" clip-rule="evenodd"/></svg>`,
-      Facebook: `<svg class="icon-svg" viewBox="0 0 50 50"><path fill="#039be5" d="M24 5a19 19 0 1 0 0 38 19 19 0 1 0 0-38Z"/><path fill="#fff" d="M26.572 29.036h4.917l.772-4.995h-5.69v-2.73c0-2.075.678-3.915 2.619-3.915h3.119v-4.359c-.548-.074-1.707-.236-3.897-.236-4.573 0-7.254 2.415-7.254 7.917v3.323h-4.701v4.995h4.701v13.729c.931.14 1.874.235 2.842.235.875 0 1.729-.08 2.572-.194v-13.77z"/></svg>`,
-      Instagram: `<svg class="icon-svg" viewBox="0 0 50 50"><radialGradient id="a" cx="19.38" cy="42.035" r="44.899" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fd5"/><stop offset=".328" stop-color="#ff543f"/><stop offset=".348" stop-color="#fc5245"/><stop offset=".504" stop-color="#e64771"/><stop offset=".643" stop-color="#d53e91"/><stop offset=".761" stop-color="#cc39a4"/><stop offset=".841" stop-color="#c837ab"/></radialGradient><path fill="url(#a)" d="m34.017 41.99-20 .019c-4.4.004-8.003-3.592-8.008-7.992l-.019-20c-.004-4.4 3.592-8.003 7.992-8.008l20-.019c4.4-.004 8.003 3.592 8.008 7.992l.019 20c.005 4.401-3.592 8.004-7.992 8.008z"/><radialGradient id="b" cx="11.786" cy="5.54" r="29.813" gradientTransform="matrix(1 0 0 .6663 0 1.849)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4168c9"/><stop offset=".999" stop-color="#4168c9" stop-opacity="0"/></radialGradient><path fill="url(#b)" d="m34.017 41.99-20 .019c-4.4.004-8.003-3.592-8.008-7.992l-.019-20c-.004-4.4 3.592-8.003 7.992-8.008l20-.019c4.4-.004 8.003 3.592 8.008 7.992l.019 20c.005 4.401-3.592 8.004-7.992 8.008z"/><path fill="#fff" d="M24 31c-3.859 0-7-3.14-7-7s3.141-7 7-7 7 3.14 7 7-3.141 7-7 7zm0-12c-2.757 0-5 2.243-5 5s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5z"/><circle cx="31.5" cy="16.5" r="1.5" fill="#fff"/><path fill="#fff" d="M30 37H18c-3.859 0-7-3.14-7-7V18c0-3.86 3.141-7 7-7h12c3.859 0 7 3.14 7 7v12c0 3.86-3.141 7-7 7zM18 13c-2.757 0-5 2.243-5 5v12c0 2.757 2.243 5 5 5h12c2.757 0 5-2.243 5-5V18c0-2.757-2.243-5-5-5H18z"/></svg>`,
-      Gmail: `<svg class="icon-svg" viewBox="0 0 50 50"><path fill="#4caf50" d="m45 16.2-5 2.75-5 4.75V40h7a3 3 0 0 0 3-3V16.2z"/><path fill="#1e88e5" d="m3 16.2 3.614 1.71L13 23.7V40H6a3 3 0 0 1-3-3V16.2z"/><path fill="#e53935" d="m35 11.2-11 8.25-11-8.25-1 5.8 1 6.7 11 8.25 11-8.25 1-6.7z"/><path fill="#c62828" d="M3 12.298V16.2l10 7.5V11.2L9.876 8.859A4.298 4.298 0 0 0 3 12.298z"/><path fill="#fbc02d" d="M45 12.298V16.2l-10 7.5V11.2l3.124-2.341A4.298 4.298 0 0 1 45 12.298z"/></svg>`,
-    };
-    const iconList = ["Whatsapp", "Facebook", "Instagram", "Gmail"];
-    const faviconHTML = `<img src="/favicon.svg" alt="Logo" style="width:80%;height:80%;object-fit:contain;display:block;" />`;
+  newIconWrapper.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const svg = newIconWrapper.querySelector('svg');
+    if (!svg) return;
 
-    function setMainIcon(name: string) {
-      if (mainIconContainer) mainIconContainer.innerHTML = rawSVGs[name as keyof typeof rawSVGs] || "";
+    // Cambia el icono principal
+    if (social_open) {
+      svg.outerHTML = `<svg id=\"main-fab-svg\" xmlns=\"http://www.w3.org/2000/svg\" class=\"share-icon\" width=\"36\" height=\"36\" viewBox=\"-2 -3 33 33\" fill=\"currentColor\" style=\"display:block;margin:auto;\"><path d=\"M21 0a5 5 0 0 0-5 5c0 .086.027.164.031.25L8.188 9.188C7.32 8.457 6.223 8 5 8a5 5 0 1 0 0 10c1.223 0 2.32-.457 3.188-1.188l7.843 3.938c-.004.086-.031.164-.031.25a5 5 0 1 0 5-5c-1.223 0-2.32.457-3.188 1.188L9.97 13.25c.004-.086.031-.164.031-.25s-.027-.164-.031-.25l7.844-3.938C18.68 9.543 19.776 10 21 10a5 5 0 1 0 0-10Z\"/></svg>`;
+    } else {
+      svg.outerHTML = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"26\" height=\"26\" fill=\"currentColor\" style=\"display:block;margin:auto;\"><path d=\"m21.734 19.64-2.097 2.094a.983.983 0 0 1-1.395 0L13 16.496l-5.238 5.238a.988.988 0 0 1-1.399 0l-2.097-2.093a.988.988 0 0 1 0-1.399L9.504 13 4.266 7.762a.995.995 0 0 1 0-1.399l2.097-2.097a.988.988 0 0 1 1.399 0L13 9.508l5.242-5.242a.983.983 0 0 1 1.395 0l2.097 2.093a.996.996 0 0 1 .004 1.403L16.496 13l5.238 5.242a.988.988 0 0 1 0 1.399Z\"/></svg>`;
     }
 
-    const showButtons = () => {
-      botones.forEach((btn, i) =>
-        setTimeout(() => btn.classList.add("animacionVer"), i * 80)
-      );
-    };
-    const hideButtons = () => {
-      botones.forEach((btn) => btn.classList.remove("animacionVer"));
-    };
-
-    const startIconCycle = () => {
-      if (iconInterval) clearInterval(iconInterval);
-      setMainIcon(iconList[currentIcon]);
-      iconInterval = setInterval(() => {
-        currentIcon = (currentIcon + 1) % iconList.length;
-        setMainIcon(iconList[currentIcon]);
-      }, 3000);
-    };
-
-    const stopIconCycle = () => {
-    if (iconInterval) clearInterval(iconInterval);
-    if (mainIconContainer) {
-      mainIconContainer.innerHTML = faviconHTML;
+    // Lógica para expandir/contraer los botones sociales
+    const menuEl = menu as HTMLElement;
+    if (social_open === true) {
+      social_open = false;
+      if (typeof menuEl.title === 'string') {
+        menuEl.title = menuEl.title.replace(/hide/, 'expand');
+      }
+      menuEl.classList.remove('social-button-open');
+      const menu_point = document.querySelectorAll('.social-point');
+      for (let i = 0; i < menu_point.length; i++) {
+        const point = menu_point[i] as HTMLElement;
+        point.classList.remove('social-point-open');
+        setTimeout(function () {
+          point.hidden = true;
+        }, 800);
+      }
+    } else {
+      social_open = true;
+      if (typeof menuEl.title === 'string') {
+        menuEl.title = menuEl.title.replace(/expand/, 'hide');
+      }
+      menuEl.classList.add('social-button-open');
+      const menu_point = document.querySelectorAll('.social-point');
+      for (let i = 0; i < menu_point.length; i++) {
+        const point = menu_point[i] as HTMLElement;
+        point.hidden = false;
+        setTimeout(function () {
+          point.classList.add('social-point-open');
+        }, 200);
+      }
     }
-  };
+  });
+}
 
-    // Cuando se reinicia el ciclo, vuelve a mostrar el icono
-    function resetMainIcon() {
-    if (mainIconContainer) {
-      mainIconContainer.innerHTML = "";
-      setMainIcon(iconList[currentIcon]);
-    }
+document.addEventListener("DOMContentLoaded", initSocialFab);
+document.addEventListener("astro:page-load", initSocialFab);
+
+// Al cargar en móvil, cambia el href del botón Gmail
+function updateGmailHrefForMobile() {
+  var gmailBtn = document.querySelector('.gmail-link');
+  if (!gmailBtn) return;
+  if (window.innerWidth < 768) {
+    gmailBtn.setAttribute('href', 'mailto:sulpaykiviajesyturismo@gmail.com');
+  } else {
+    gmailBtn.setAttribute('href', 'https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com');
   }
-
-    function updateGmailBtnVisibility() {
-      if (!gmailBtn) return;
-      const a = gmailBtn as HTMLAnchorElement;
-      if (window.innerWidth <= 768) {
-        a.href = "mailto:sulpaykiviajesyturismo@gmail.com";
-        a.removeAttribute("target");
-        a.removeAttribute("rel");
-      } else {
-        a.href = "https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com";
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-      }
-    }
-
-    hideButtons();
-    resetMainIcon();
-    startIconCycle();
-    updateGmailBtnVisibility();
-
-    function mouseEnterHandler(this: HTMLElement, e: Event) {
-      if (window.innerWidth > 768) {
-        if (hideTimeout) clearTimeout(hideTimeout);
-        stopIconCycle();
-        showButtons();
-      }
-    }
-    function mouseLeaveHandler(this: HTMLElement, e: Event) {
-      if (window.innerWidth > 768) {
-        hideTimeout = setTimeout(() => {
-          hideButtons();
-          startIconCycle();
-        }, 300);
-      }
-    }
-    function clickHandler(e: Event) {
-      if (window.innerWidth <= 768) {
-        e.preventDefault();
-        isOpen = !isOpen;
-        if (isOpen) {
-          stopIconCycle();
-          if (mainIconContainer) mainIconContainer.innerHTML = faviconHTML; // Mostrar favicon SIEMPRE en móvil cuando está abierto
-          showButtons();
-        } else {
-          hideButtons();
-          startIconCycle(); // Al cerrar, reiniciar ciclo de SVGs
-        }
-      }
-    }
-    function docClickHandler(e: Event) {
-      if (window.innerWidth <= 768 && isOpen && contenedor) {
-        if (!contenedor.contains(e.target as Node)) {
-          hideButtons();
-          startIconCycle();
-          isOpen = false;
-        }
-      }
-    }
-
-    if (contenedor) {
-      contenedor.addEventListener("mouseenter", mouseEnterHandler);
-      contenedor.addEventListener("mouseleave", mouseLeaveHandler);
-    }
-    if (botonF1) {
-      botonF1.addEventListener("click", clickHandler);
-    }
-    document.addEventListener("click", docClickHandler);
-    window.addEventListener("resize", updateGmailBtnVisibility);
-
-    btnFlotanteCleanup = () => {
-      if (contenedor) {
-        contenedor.removeEventListener("mouseenter", mouseEnterHandler);
-        contenedor.removeEventListener("mouseleave", mouseLeaveHandler);
-      }
-      if (botonF1) {
-        botonF1.removeEventListener("click", clickHandler);
-      }
-      document.removeEventListener("click", docClickHandler);
-      window.removeEventListener("resize", updateGmailBtnVisibility);
-      if (iconInterval) clearInterval(iconInterval);
-    };
-  }
-
-  document.addEventListener("DOMContentLoaded", initBtnFlotante);
-  document.addEventListener("astro:page-load", initBtnFlotante);
+}
+window.addEventListener('DOMContentLoaded', updateGmailHrefForMobile);
+window.addEventListener('resize', updateGmailHrefForMobile);
+document.addEventListener('astro:page-load', updateGmailHrefForMobile);
 </script>
