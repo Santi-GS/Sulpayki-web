@@ -1,5 +1,6 @@
 ---                               
  import '/src/styles/global.css';
+ import '@fontsource-variable/montserrat';
  import { ClientRouter } from 'astro:transitions';
  import Header from '../components/Header.astro'
  import Footer from '../components/Footer.astro'
@@ -40,12 +41,13 @@ description= 'Sulpayki Viajes y Turismo ofrece servicios online especializados e
 
 <style is:global>
 body {
+	font-family: 'Montserrat Variable', sans-serif;
     background: radial-gradient(
       circle at top right,
-      #fdf6ee,   /* beige claro */
-      #ecf7fb,   /* celeste muy pálido */
-      #eaf4f8    /* celeste grisáceo */
-    );
+	  #FAF8F1,  /* Crema Suave: el tono principal y más luminoso */
+	  #F5F0E6,  /* Blanco Almendra: un tono intermedio y natural */
+	  #fdf6ee  /* Beige Cálido: el que ya tenías, aporta profundidad */
+	 );
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
