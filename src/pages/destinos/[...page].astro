@@ -58,65 +58,95 @@ export async function getStaticPaths() {
       <div class="border-t-2 border-green-700 w-40 mx-auto mb-6"></div>
     </div>
     <div class="container mx-auto px-4">
-      <div class="flex flex-wrap justify-center mb-6">
-        <div class="flex flex-wrap -mx-3 mb-16">
-          {articles.length > 0 && articles[0]?.slug && (
-            <a href={`/destinos/${articles[0].slug}`} class="mb-6 lg:mb-0 w-full lg:w-1/2 px-3">
-              <div class="h-full flex flex-col rounded shadow">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+        {articles.length > 0 && articles[0]?.slug && (
+          <a href={`/destinos/${articles[0].slug}`} class="group">
+            <div class="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+              <div class="relative">
                 <StrapiImage
-                  class="rounded-t object-cover h-80 lg:h-full w-full"
+                  class="w-full h-96 object-cover"
                   src={articles[0].coverImagen?.url}
                   alt={articles[0].coverImagen?.alternativeText || ""}
                   height={800}
                   width={800}
                 />
-                <div class="mt-auto p-6 rounded-b bg-white">
-                  <span class="text-sm text-gray-400">
-                    {formatDate(articles[0].publishedAt)}
-                  </span>
-                  <h2 class="my-2 text-2xl font-bold">{articles[0].titulo}</h2>
-                  <p class="mb-6 text-gray-400 leading-loose">{articles[0].descripcion}</p>
-                  <span class="text-green-600 hover:text-green-700 font-bold hover:underline">
-                    Ver Más
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              </div>
+              <div class="p-8">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-sm text-gray-500 font-medium">
+                    • Publicado: {formatDate(articles[0].publishedAt)}
                   </span>
                 </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-colors duration-200">
+                  {articles[0].titulo}
+                </h2>
+                <p class="text-gray-600 leading-relaxed mb-6 line-clamp-3">
+                  {articles[0].descripcion}
+                </p>
+                <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
+                  <span>Explorar destino</span>
+                  <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                  </svg>
+                </div>
               </div>
-            </a>
-          )}
+            </div>
+          </a>
+        )}
 
-          <div class="flex flex-wrap w-full lg:w-1/2">
-            {articles.length > 1 &&
-              articles.slice(1).map((article: any) =>
-                article?.slug ? (
-                  <a href={`/destinos/${article.slug}`} class="mb-6 w-full lg:w-1/2 px-3">
-                    <div class="rounded overflow-hidden shadow">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {articles.length > 1 &&
+            articles.slice(1).map((article: any) =>
+              article?.slug ? (
+                <a href={`/destinos/${article.slug}`} class="group">
+                  <div class="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                    <div class="relative">
                       <StrapiImage
-                        class="lg:h-48 rounded-t"
+                        class="w-full h-48 object-cover"
                         src={article.coverImagen?.url}
                         alt={article.coverImagen?.alternativeText || ""}
                         height={400}
                         width={400}
                       />
-                      <div class="p-6 rounded-b bg-white">
-                        <span class="text-sm text-gray-400">
-                          {formatDate(article.publishedAt)}
-                        </span>
-                        <h2 class="my-2 text-2xl font-bold">{article.titulo}</h2>
-                        <span class="text-green-600 hover:text-green-700 font-bold hover:underline">
-                          Ver Más
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                      <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500 font-medium">
+                          • Publicado: {formatDate(article.publishedAt)}
                         </span>
                       </div>
+                      <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors duration-200 line-clamp-2">
+                        {article.titulo}
+                      </h3>
+                      <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
+                        <span>Ver más</span>
+                        <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                      </div>
                     </div>
-                  </a>
-                ) : null
-              )}
+                  </div>
+                </a>
+              ) : null
+            )}
+        </div>
+      </div>
+
+      {articles.length === 0 && (
+        <div class="text-center py-16">
+          <div class="max-w-md mx-auto">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
+            </svg>
+            <p class="text-gray-500 text-lg font-medium">No hay destinos disponibles en esta página</p>
+            <p class="text-gray-400 text-sm mt-2">Intenta con otra página o vuelve más tarde</p>
           </div>
         </div>
+      )}
 
-        {articles.length === 0 && (
-          <p class="text-center text-gray-500 w-full">No hay artículos en esta página.</p>
-        )}
-
+      <div class="flex justify-center">
         <Pagination
           previousPage={prevPage}
           nextPage={nextPage}
