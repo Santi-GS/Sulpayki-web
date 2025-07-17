@@ -25,6 +25,9 @@ const { servicios = [] } = Astro.props;
   </div>
 </div>
 
+<!-- MENSAJE DE NO RESULTADOS -->
+<div id="filtro-no-resultados" class="text-center text-gray-500 text-lg font-medium my-8" style="display:none"></div>
+
 <script define:vars={{ servicios }}>
   // Datos de servicios pasados desde el servidor
   const serviciosData = servicios || [];
@@ -108,15 +111,28 @@ const { servicios = [] } = Astro.props;
     function filtrarServicios() {
       const cards = grid.querySelectorAll('.servicio-card');
       const tagActivoNormalizado = normalizar(tagActivo);
-      
+      let encontrados = 0;
+
       cards.forEach(card => {
         const tags = card.dataset.tags?.split(',').map(t => normalizar(t.trim())) || [];
         const titulo = card.dataset.title || '';
         const coincideTag = tagActivo === 'Todas' || tags.includes(tagActivoNormalizado);
         const coincideTexto = !textoBusqueda || normalizar(titulo).includes(normalizar(textoBusqueda));
-        
-        card.style.display = coincideTag && coincideTexto ? 'block' : 'none';
+        const visible = coincideTag && coincideTexto;
+        card.style.display = visible ? 'block' : 'none';
+        if (visible) encontrados++;
       });
+
+      // Mostrar mensaje si no hay resultados y hay texto de búsqueda
+      const mensaje = document.getElementById('filtro-no-resultados');
+      if (mensaje) {
+        if (encontrados === 0 && textoBusqueda) {
+          mensaje.style.display = '';
+          mensaje.textContent = `No se encontró "${textoBusqueda}"`;
+        } else {
+          mensaje.style.display = 'none';
+        }
+      }
     }
 
     // Crear botones de tags y configurar eventos
