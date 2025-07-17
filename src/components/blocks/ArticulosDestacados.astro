@@ -76,6 +76,20 @@ const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
   .group:hover .ver-mas-btn {
     color: #46cf27;
   }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 </style>
 
 <section class=" relative">
@@ -118,8 +132,8 @@ const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
                     <h3 class="text-xl font-bold text-white mb-1">{article.titulo}</h3>
                   </div>
                   <!-- Overlay de hover con información adicional -->
-                  <div class="absolute bottom-0 left-0 w-full h-full text-white p-4 card-hover-content flex flex-col justify-center">
-                    <h3 class="text-2xl font-bold mb-2">{article.titulo}</h3>
+                  <div class="absolute bottom-0 left-0 w-full h-full text-white p-4 card-hover-content flex flex-col justify-center overflow-hidden">
+                    <h3 class="text-xl font-bold mb-2 line-clamp-2 leading-tight">{article.titulo}</h3>
                     <div class="text-sm mb-2 flex flex-wrap items-center gap-x-2">
                       <span
                         class="rounded-full bg-green-300 px-2.5 py-0.5 font-medium whitespace-nowrap text-emerald-900"
@@ -129,7 +143,7 @@ const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
                       <span class="text-white">•</span>
                       <span class="text-white">{formatDate(article.publishedAt)}</span>
                     </div>
-                    <p class="text-gray-50 text-md leading-snug">{article.descripcion}</p>
+                    <p class="text-gray-50 text-sm leading-relaxed line-clamp-3 flex-1">{article.descripcion}</p>
                   </div>
                 </div>
               </a>
