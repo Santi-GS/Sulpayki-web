@@ -33,7 +33,7 @@ const NavItems = [
 <div id="drawer-backdrop" class="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Drawer -->
-<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-[#e6d6b1]/90" tabindex="-1">
+<div id="drawer" class="fixed top-0 right-0 z-50 w-80 bg-[#e5ba59]/90 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm" tabindex="-1">
 
   <div class="flex justify-between items-center mb-6">
     <h5 class="text-xl font-bold text-neutral-900 underline underline-offset-[3px]">Menú de Navegación</h5>
@@ -81,7 +81,7 @@ const NavItems = [
 </div>
 
 <style>
-  .rotate-180 {
+  .rotate {
     transform: rotate(180deg);
   }
 
@@ -132,12 +132,12 @@ const NavItems = [
           requestAnimationFrame(() => {
             submenu.style.maxHeight = "0px";
             submenu.classList.remove("open");
-            icon?.classList.remove("rotate-180");
+            icon?.classList.remove("rotate");
           });
         } else {
           submenu.classList.add("open");
           submenu.style.maxHeight = submenu.scrollHeight + "px";
-          icon?.classList.add("rotate-180");
+          icon?.classList.add("rotate");
         }
       };
     });
