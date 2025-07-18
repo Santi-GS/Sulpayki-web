@@ -22,7 +22,7 @@ const NavItems = [
 
 <!-- Botón para abrir drawer -->
 <div class="block md:hidden">
-  <button id="drawer-toggle" class="p-2 text-[#F4E2B3] hover-verde rounded transition">
+  <button id="drawer-toggle" class="p-2 text-neutral-900 hover-verde rounded transition">
     <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
@@ -30,14 +30,14 @@ const NavItems = [
 </div>
 
 <!-- Backdrop -->
-<div id="drawer-backdrop" class="fixed inset-0 z-40 bg-white/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+<div id="drawer-backdrop" class="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
 <!-- Drawer -->
-<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-[#714C06]/90" tabindex="-1">
+<div id="drawer" class="fixed top-0 right-0 z-50 w-80 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm bg-[#e6d6b1]/90" tabindex="-1">
 
   <div class="flex justify-between items-center mb-6">
-    <h5 class="text-xl font-bold text-[#F4E2B3] underline underline-offset-[3px]">Menú de Navegación</h5>
-    <button id="drawer-close" class="w-8 h-8 text-[#F4E2B3] font-bold">✕</button>
+    <h5 class="text-xl font-bold text-neutral-900 underline underline-offset-[3px]">Menú de Navegación</h5>
+    <button id="drawer-close" class="w-8 h-8 text-neutral-900 font-bold">✕</button>
   </div>
 
   <ul class="space-y-3 font-semibold">
@@ -46,13 +46,13 @@ const NavItems = [
         {item.subItems ? (
           <div class="flex flex-col">
             <div class="flex items-center">
-              <a href={item.link} class="flex items-center text-[#F4E2B3] px-4 py-3 gap-3 rounded-md hover-verde">
+              <a href={item.link} class="flex items-center text-neutral-900 px-4 py-3 gap-3 rounded-md hover-verde">
                 <Icon name={item.icon} class="w-5 h-5" />
                 {item.title}
               </a>
               <button
                 type="button"
-                class="px-4 py-3 text-[#F4E2B3] rounded transition hover-verde"
+                class="px-4 py-3 text-neutral-900 rounded transition hover-verde"
                 aria-label="Toggle submenu"
                 data-toggle="drawer-submenu"
               >
@@ -61,16 +61,16 @@ const NavItems = [
                 </svg>
               </button>
             </div>
-            <ul class="ml-7 mt-1 space-y-2 border-l-2 border-[#F4E2B3] overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-submenu>
+            <ul class="ml-7 mt-1 space-y-2 border-l-2 border-neutral-700 overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-submenu>
               {item.subItems.map((sub) => (
                 <li>
-                  <a href={sub.link} class="block px-2 py-2 text-[#F4E2B3] hover-verde rounded">{sub.title}</a>
+                  <a href={sub.link} class="block px-2 py-2 text-neutral-900 hover-verde rounded">{sub.title}</a>
                 </li>
               ))}
             </ul>
           </div>
         ) : (
-          <a href={item.link} class="w-full text-[#F4E2B3] rounded-md px-4 py-3 hover-verde flex items-center gap-3">
+          <a href={item.link} class="w-full text-neutral-900 rounded-md px-4 py-3 hover-verde flex items-center gap-3">
             <Icon name={item.icon} class="w-5 h-5" />
             {item.title}
           </a>
