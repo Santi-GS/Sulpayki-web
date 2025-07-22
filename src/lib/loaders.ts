@@ -72,6 +72,17 @@ const blocksPopulate = {
         },
       }
     },
+    "block.carrusel-de-imagenes":{
+                populate:{
+                    imagen:{
+                        populate:{
+                            imagen:{
+                                fields:["alternativeText", "url"]
+                            }, 
+                        }  
+                    }
+                }
+            },
 
   }
 };

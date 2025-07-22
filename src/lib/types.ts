@@ -52,9 +52,7 @@ export interface Imagen {
     | "block.bento-info"
     | "block.destinos-destacados"
     | "block.servicios-destacados"
-    /*| "blocks.card-grid"
-    | "blocks.person-card"
-    | "blocks.newsletter"*/;
+    | "block.carrusel-de-imagenes";
   
   export interface Base<
     T extends ComponentType,
@@ -141,31 +139,13 @@ export interface DestacadosProps<T extends ComponentType> extends Base<T> {
 // Alias para compatibilidad retroactiva
 export type DestinosDestacadosProps = DestacadosProps<"block.destinos-destacados">;
 export type ServiciosDestacadosProps = DestacadosProps<"block.servicios-destacados">;
-  
-  /*export interface CardGridProps extends Base<"blocks.card-grid"> {
-    card: {
-      id: number;
-      heading: string;
-      text: string;
-      image: Image;
-    }[];
-  }
-  
-  export interface PersonCardProps extends Base<"blocks.person-card"> {
-    personName: string;
-    personJob: string;
-    image: Image;
-    text: string;
-  }
-  
-  
-  export interface NewsletterProps extends Base<"blocks.newsletter"> {
-    heading: string;
-    text: string;
-    placeholder: string;
-    label: string;
-    formId: string;
-  }*/
+
+export interface CarruselDeImagenesProps extends Base<"block.carrusel-de-imagenes"> {
+  imagen: {
+      imagen:Imagen;
+  }[];
+}
+
   
   export type BlockData =
     | HeroProps
@@ -176,8 +156,4 @@ export type ServiciosDestacadosProps = DestacadosProps<"block.servicios-destacad
     | BentoInfoProps
     | DestinosDestacadosProps
     | ServiciosDestacadosProps
-    /*
-    | CardGridProps
-    | PersonCardProps
-    | FeaturedArticlesProps
-    | NewsletterProps*/;
+    | CarruselDeImagenesProps;

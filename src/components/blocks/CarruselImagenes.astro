@@ -1,0 +1,189 @@
+---
+import StrapiImage from "../StrapiImage.astro";
+// No importo los CSS de Swiper desde npm, los cargo desde CDN abajo
+
+const { data: { imagen } } = Astro.props;
+const images = Array.isArray(imagen) ? imagen : [];
+---
+
+<!-- Swiper CDN CSS y JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.8.4/swiper-bundle.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.8.4/swiper-bundle.min.js"></script>
+
+<div class="gallery shadow-xl rounded-3xl bg-[#f5f1eb] p-2 sm:p-4 w-full max-w-5xl mx-auto">
+  <!-- Carrusel principal -->
+  <div class="swiper-container gallery-slider rounded-3xl overflow-hidden">
+    <div class="swiper-wrapper">
+      {images.map((item) => (
+        <div class="swiper-slide">
+          <div class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] transition-transform duration-300 group">
+            <StrapiImage
+              src={item.imagen.url}
+              alt={item.imagen.alternativeText || "Imagen carrusel"}
+              height={1080}
+              width={1920}
+              class="w-full h-full object-contain bg-[#e5e5e5] rounded-3xl shadow-md transition-transform duration-300"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="swiper-button-prev hidden sm:flex"></div>
+    <div class="swiper-button-next hidden sm:flex"></div>
+  </div>
+
+  <!-- Miniaturas -->
+  <div class="swiper-container gallery-thumbs mt-4">
+    <div class="swiper-wrapper">
+      {images.map((item) => (
+        <div class="swiper-slide">
+          <div class="w-24 h-16 sm:w-28 sm:h-20 rounded-xl overflow-hidden transition-transform duration-300">
+            <StrapiImage
+              src={item.imagen.url}
+              alt={item.imagen.alternativeText || "Miniatura"}
+              height={60}
+              width={90}
+              class="w-full h-full object-cover rounded-xl"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+.gallery {
+  width: 100%;
+  max-width: 900px;
+  margin: 40px auto;
+  background: #f5f1eb;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
+}
+.gallery-slider {
+  width: 100%;
+  height: auto;
+  margin: 0 0 10px 0;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.gallery-slider .swiper-slide {
+  width: auto;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.gallery-slider .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+  transition: transform 0.3s;
+}
+.gallery-slider .swiper-slide .group:hover img {
+  transform: scale(1.05);
+}
+.gallery-thumbs {
+  width: 100%;
+  padding: 8px 0 8px 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.gallery-thumbs .swiper-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.gallery-thumbs .swiper-slide {
+  width: 96px;
+  height: 64px;
+  text-align: center;
+  overflow: hidden;
+  opacity: .5;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease, transform 0.3s;
+  border: 2px solid transparent;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gallery-thumbs .swiper-slide-active {
+  opacity: 1;
+  border: 2px solid #22c55e;
+  box-shadow: 0 0 0 3px #22c55e33;
+  transform: scale(1.08);
+  z-index: 2;
+}
+.gallery-thumbs .swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.75rem;
+}
+.swiper-button-next, .swiper-button-prev {
+  color: #22c55e;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+  width: 44px;
+  height: 44px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  padding: 0;
+}
+.swiper-button-next:after, .swiper-button-prev:after {
+  font-size: 22px;
+  line-height: 2;
+}
+.swiper-button-next:hover, .swiper-button-prev:hover {
+  background: #22c55e;
+  color: #fff;
+}
+@media (max-width: 640px) {
+  .gallery-slider .swiper-slide .group {
+    height: 300px !important;
+  }
+  .swiper-button-next, .swiper-button-prev {
+    display: none !important;
+  }
+}
+</style>
+
+<script is:inline>
+  document.addEventListener("astro:page-load", () => {
+    var slider = new window.Swiper('.gallery-slider', {
+      slidesPerView: 1,
+      centeredSlides: true,
+      loop: true,
+      loopedSlides: document.querySelectorAll('.gallery-slider .swiper-slide').length,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+
+    var thumbs = new window.Swiper('.gallery-thumbs', {
+      slidesPerView: 'auto',
+      spaceBetween: 10,
+      centeredSlides: true,
+      loop: true,
+      slideToClickedSlide: true,
+    });
+
+    slider.controller.control = thumbs;
+    thumbs.controller.control = slider;
+  });
+</script>
