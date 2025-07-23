@@ -14,17 +14,17 @@ const {
 // Definir el tipo para BentoElement
 const BentoElement: Record<string, { image: { src: string; alt: string; width: number; height: number } }> = {
   "bento1": {
-    "image": {"src": "/bus-turistico-diseño.webp",
-      "alt": "Bus Turístico",
-      "width": 400,
-      "height": 400,
+    "image": {"src": "/bus-turistico-gente.webp",
+      "alt": "Servicios Turisticos, Sulpayki Viajes y Turismo",
+      "width": 800,
+      "height": 800,
     },
   },
   "bento2": {
-    "image": {"src": "/destinos-sulpayki.webp",
-      "alt": "Eventos Sulpayki Viajes y Turismo",
-      "width": 400,
-      "height": 400,
+    "image": {"src": "/estatua-facundo-quiroga.webp",
+      "alt": "Destinos, Sulpayki Viajes y Turismo",
+      "width": 800,
+      "height": 800,
     },
   },
   "bento3": {
@@ -47,14 +47,14 @@ const validBentoComponents = Array.isArray(bentoComponent) ? bentoComponent.filt
 
 // Definir las clases CSS para cada posición del bento grid
 const BENTO_CLASSES = [
-  "bg-gradient-to-r from-[#fdf4c1] to-[#f7d977] text-neutral-900 md:aspect-[12/6] md:col-span-2 md:row-span-1 h-full",
-  "bg-gradient-to-r from-[#d6f0e6] to-[#abe5d1] text-neutral-900 md:col-start-3 md:row-span-2 md:h-full",
-  "bg-gradient-to-r from-[#f3bf86] to-[#e78c2a] text-neutral-900 md:aspect-[12/6] md:col-span-2 md:row-span-1 h-full",
+  "md:aspect-[10/4] md:col-span-2 md:row-span-1 h-full",
+  "md:col-start-3 md:row-span-2 md:h-full",
+  "bg-gradient-to-r from-[#d6f0e6] to-[#abe5d1] md:aspect-[10/4] md:col-span-2 md:row-span-1 h-full",
 ];
 
 const BENTO_IMAGE_CLASSES = [
-  "w-auto h-auto max-h-[65%] object-contain md:absolute md:bottom-0 md:max-h-[100%] mr-10",
-  "w-auto h-auto max-h-[80%] object-contain object-[center_30%] md:object-center md:max-w-[140%] md:mb-10 md:-mr-20",
+  "h-full w-auto object-cover md:object-contain md:w-full md:h-auto md:max-w-[100%] md:mx-0 md:-mb-5",
+  "w-auto h-auto max-w-[100%] -mb-20 object-contain object-[center_30%] md:max-w-[150%]  md:-mr-3",
   "w-3/4 h-auto object-contain mb-3 mr-6",
 ];
 ---
@@ -74,20 +74,22 @@ const BENTO_IMAGE_CLASSES = [
               BENTO_CLASSES[index] || BENTO_CLASSES[0],
             ]}
           >
-            <div class="absolute inset-0 flex overflow-hidden p-0 items-end justify-end">
+            {/* Círculo decorativo en la esquina superior izquierda */}
+            <div class="absolute top-0 left-0 z-5 w-110 h-36 md:w-90 md:h-45 rounded-full bg-verde shadow-lg" style="transform: translate(-25%,-25%);"></div>
+            <div class="absolute inset-0 flex w-full h-full overflow-hidden p-0 items-end justify-end">
               <img
                 src={bentoImage?.src}
                 alt={bentoImage?.alt}
                 height={bentoImage?.height}
                 width={bentoImage?.width}
                 class:list={[
-                  "transition-transform duration-300 ease-in-out group-hover:scale-110",
+                  "transition-transform duration-300 ease-in-out group-hover:scale-103 md:brightness-80 md:group-hover:brightness-100 object-contain",
                   BENTO_IMAGE_CLASSES[index] || BENTO_IMAGE_CLASSES[0],
                 ]}
               />
             </div>
-            <div class="absolute inset-0 p-4 flex flex-col justify-start items-start z-10">
-              <span class="font-medium text-3xl text-left text-pretty tracking-separated pr-3 md:max-w-64">
+            <div class="absolute inset-0 p-4 flex flex-col justify-start items-start md:pt-8 z-10">
+              <span class="font-semibold text-white text-3xl text-left text-pretty tracking-separated pr-3 md:max-w-64">
                 {component.titulo}
               </span>
             </div>
