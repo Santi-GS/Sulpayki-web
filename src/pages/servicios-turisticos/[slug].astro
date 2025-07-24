@@ -42,12 +42,12 @@ const { coverImagen, blocks, titulo, descripcion, tags, publishedAt } = servicio
 ---
 
 <Layout title="Sulpayki">
-  <section class="my-6">
+  <section class="mb-5">
     <div class="container mx-auto">
       <div>
         {coverImagen && (
           <StrapiImage
-            class="w-full h-110 object-cover rounded-lg"
+            class="w-full h-110 object-cover rounded p-2 shadow"
             src={coverImagen.url}
             alt={coverImagen?.alternativeText}
             height={600}
@@ -82,8 +82,8 @@ const { coverImagen, blocks, titulo, descripcion, tags, publishedAt } = servicio
           </div>
         </div>
       </div>
-      {descripcion && <Markdown data={{ text: descripcion, __component: "block.markdown" }} />}
     </div>
   </section>
+  {descripcion && <Markdown data={{ text: descripcion, __component: "block.markdown" }} />}
   <BlockRenderer blocks={blocks} />
 </Layout>

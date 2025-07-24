@@ -100,7 +100,7 @@ export async function getStaticPaths() {
             articles.slice(1).map((article: any) =>
               article?.slug ? (
                 <a href={`/destinos/${article.slug}`} class="group">
-                  <div class="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                  <div class="h-full max-h-85 bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div class="relative">
                       <StrapiImage
                         class="w-full h-48 object-cover"
@@ -131,7 +131,7 @@ export async function getStaticPaths() {
                 </a>
               ) : null
             )}
-        </div>
+          </div>
       </div>
 
       {articles.length === 0 && (
