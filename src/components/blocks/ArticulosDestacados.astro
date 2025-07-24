@@ -3,6 +3,7 @@ import type { DestinosDestacadosProps } from "../../lib/types";
 import type { ServiciosDestacadosProps } from "../../lib/types";
 import { formatDate } from "../../lib/index";
 import StrapiImage from "../StrapiImage.astro";
+import Icon from "../ui/Icon.astro";
 
 interface Props {
   data: DestinosDestacadosProps | ServiciosDestacadosProps;
@@ -155,6 +156,15 @@ const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
           }
         </div>
       </div>
+
+      <div class="flex justify-start md:pl-8">
+        <a href={`${baseHref}`} class="flex items-center px-5 pt-5 text-green-600 font-semibold hover:text-green-700 hover:underline hover:underline-offset-[3px] transition-colors duration-200 group">
+          <span>Explorar Más</span>
+          <Icon name="Flechita" />
+        </a>
+      </div>
+
+      
 
       <!-- Botón derecho -->
       <button

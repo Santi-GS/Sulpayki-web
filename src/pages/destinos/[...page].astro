@@ -3,6 +3,7 @@ import { formatDate } from "../../lib/index";
 import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
 import Pagination from "../../components/Pagination.astro";
+import Icon from "../../components/ui/Icon.astro";
 
 // Configuración de prerender (si estás generando estáticamente)
 export const prerender = true;
@@ -86,9 +87,7 @@ export async function getStaticPaths() {
                 </p>
                 <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
                   <span>Explorar destino</span>
-                  <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                  </svg>
+                  <Icon name="Flechita" />
                 </div>
               </div>
             </div>
@@ -122,9 +121,7 @@ export async function getStaticPaths() {
                       </h3>
                       <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
                         <span>Explorar destino</span>
-                        <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
+                        <Icon name="Flechita" />
                       </div>
                     </div>
                   </div>
