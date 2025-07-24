@@ -7,6 +7,7 @@ import ContenidoConImagen from "./ContenidoConImagen.astro";
 import EncabezadoDeSeccion from "./EncabezadoDeSeccion.astro";
 import Hero from "./Hero.astro";
 import Markdown from "./Markdown.astro";
+import PaqueteCard from "./PaqueteCard.astro";
 import PreguntasFrecuentes from "./PreguntasFrecuentes.astro";
 
 
@@ -20,6 +21,7 @@ const componentMap: Record<ComponentType, any> = {
   "block.destinos-destacados": ArticulosDestacados,
   "block.servicios-destacados": ArticulosDestacados,
   "block.carrusel-de-imagenes": CarruselImagenes,
+  "block.tarjeta-paquete-turistico": PaqueteCard,
 };
 
 const { blocks } = Astro.props;

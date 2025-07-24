@@ -52,7 +52,8 @@ export interface Imagen {
     | "block.bento-info"
     | "block.destinos-destacados"
     | "block.servicios-destacados"
-    | "block.carrusel-de-imagenes";
+    | "block.carrusel-de-imagenes"
+    | "block.tarjeta-paquete-turistico";
   
   export interface Base<
     T extends ComponentType,
@@ -139,13 +140,13 @@ export interface DestacadosProps<T extends ComponentType> extends Base<T> {
 // Alias para compatibilidad retroactiva
 export type DestinosDestacadosProps = DestacadosProps<"block.destinos-destacados">;
 export type ServiciosDestacadosProps = DestacadosProps<"block.servicios-destacados">;
+export type TarjetaPaqueteTuristicoProps = DestacadosProps<"block.tarjeta-paquete-turistico">;
 
 export interface CarruselDeImagenesProps extends Base<"block.carrusel-de-imagenes"> {
   imagen: {
       imagen:Imagen;
   }[];
 }
-
   
   export type BlockData =
     | HeroProps
@@ -156,4 +157,5 @@ export interface CarruselDeImagenesProps extends Base<"block.carrusel-de-imagene
     | BentoInfoProps
     | DestinosDestacadosProps
     | ServiciosDestacadosProps
-    | CarruselDeImagenesProps;
+    | CarruselDeImagenesProps
+    | TarjetaPaqueteTuristicoProps;

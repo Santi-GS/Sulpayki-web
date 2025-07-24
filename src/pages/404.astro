@@ -1,31 +1,28 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import SectionTopContainer from "../components/SectionTopContainer.astro";
+import SectionContainer from "../components/SectionContainer.astro";
 ---
 
 <Layout title="Sulpayki Viajes y Turismo - Página 404">
-    <SectionTopContainer>
-        <section class="py-20">
-            <div class="container mx-auto px-4">
-                <div class="max-w-xl mx-auto">
-                    <div class="py-12 px-6 bg-white rounded-xl shadow">
-                        <div class="text-center">
-                            <span class="mb-6 text-4xl text-green-600 font-bold">Whoops!</span>
-                            <h3 class="mb-2 text-4xl font-bold">Ha ocurrido un error!</h3>
-                            <p class="mb-8 text-gray-400">
-                            Lamentamos decir que no hemos encontrado la página.
-                            </p>
-                            <div>
-                                <a
-                                    class="w-full lg:w-auto mb-2 lg:mb-0 lg:mr-4 inline-block py-2 px-6 rounded-l-xl rounded-t-xl font-bold leading-loose text-gray-50 bg-green-600 hover:bg-green-700"
-                                    href="/">Volver al Inicio</a
-                                >
-                            </div>
+    <SectionContainer>
+        <div class="container mx-auto px-4 py-20 pt-30">
+            <div class="max-w-xl mx-auto">
+                <div class="py-12 px-6 bg-white rounded-xl shadow">
+                    <div class="text-center">
+                        <span class="mb-6 text-4xl text-green-600 font-bold">Whoops!</span>
+                        <h3 class="mb-2 text-4xl font-bold">Ha ocurrido un error!</h3>
+                        <p class="mb-8 text-gray-400">
+                        Lamentamos decir que no hemos encontrado la página.
+                        </p>
+                        <div>
+                            <a
+                                class="w-full lg:w-auto mb-2 lg:mb-0 lg:mr-4 inline-block py-2 px-6 rounded-l-xl rounded-t-xl font-bold leading-loose text-gray-50 bg-green-600 hover:bg-green-700"
+                                href="/">Volver al Inicio</a
+                            >
                         </div>
                     </div>
                 </div>
             </div>
-        </section>  
-    </SectionTopContainer>
-    
+        </div>
+    </SectionContainer>
 </Layout>
