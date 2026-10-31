@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { count, eq } from "drizzle-orm";
-import { getDb, getLibsqlClient } from "./client";
+import { getDb, getLibsqlClient, isUsingRemoteTurso } from "./client";
 import { articles, articleTags, homeHero, media, pages, siteState, tags, users } from "./schema";
 import { slugify } from "../lib/index";
 
@@ -104,20 +104,15 @@ async function runSchemaAndSeed(): Promise<void> {
     });
   }
 
-  // 2. Usuarios iniciales (Superadmin + Editor para el cliente)
+  // 2. Usuarios iniciales (Superadmin + Editor opcional para el cliente)
   const [{ value: userCount }] = await db.select({ value: count() }).from(users);
   if (userCount === 0) {
     const superEmail = getEnv("INITIAL_SUPERADMIN_EMAIL", "admin@sulpayki.com").toLowerCase();
     const superPass = getEnv("INITIAL_SUPERADMIN_PASSWORD", "SulpaykiAdmin2026!");
     const superName = getEnv("INITIAL_SUPERADMIN_NAME", "Administrador General");
-    const editorEmail = getEnv("INITIAL_EDITOR_EMAIL", "cliente@sulpayki.com").toLowerCase();
-    const editorPass = getEnv("INITIAL_EDITOR_PASSWORD", "SulpaykiEditor2026!");
-    const editorName = getEnv("INITIAL_EDITOR_NAME", "Equipo Sulpayki");
-
     const superHash = await bcrypt.hash(superPass, 10);
-    const editorHash = await bcrypt.hash(editorPass, 10);
 
-    await db.insert(users).values([
+    const initialUsers: (typeof users.$inferInsert)[] = [
       {
         email: superEmail,
         name: superName,
@@ -125,14 +120,27 @@ async function runSchemaAndSeed(): Promise<void> {
         role: "SUPERADMIN",
         createdAt: now,
       },
-      {
+    ];
+
+    // En producción con Turso, solo se crea el editor si definís explícitamente INITIAL_EDITOR_EMAIL.
+    // En entorno local de pruebas (sin Turso remoto) se crea por defecto para permitir probar ambos roles.
+    const defaultEditorEmail = isUsingRemoteTurso() ? "" : "cliente@sulpayki.com";
+    const editorEmail = getEnv("INITIAL_EDITOR_EMAIL", defaultEditorEmail).toLowerCase();
+    const editorPass = getEnv("INITIAL_EDITOR_PASSWORD", "SulpaykiEditor2026!");
+    const editorName = getEnv("INITIAL_EDITOR_NAME", "Equipo Sulpayki");
+
+    if (editorEmail && editorEmail.length > 0 && editorPass && editorPass.length > 0) {
+      const editorHash = await bcrypt.hash(editorPass, 10);
+      initialUsers.push({
         email: editorEmail,
         name: editorName,
         passwordHash: editorHash,
         role: "EDITOR",
         createdAt: now,
-      },
-    ]);
+      });
+    }
+
+    await db.insert(users).values(initialUsers);
   }
 
   // 3. Etiquetas oficiales alineadas con el menú de Header.astro
