@@ -24,22 +24,23 @@ const linksInfo = [
       },
     ],
   },
-]
+];
 ---
 
 <div
   class="px-[40px] gap-6 md:gap-26 items-center md:justify-center md:items-start flex flex-col md:flex-row"
 >
   {
-    linksInfo.map(({ title, links }, index) => {
+    linksInfo.map(({ title, links }) => {
       return (
         <div>
           <h2 class="text-white font-semibold text-[20px] underline underline-offset-[3px] hidden md:block mb-2">
             {title}
           </h2>
 
-          <ul class="flex flex-row  md:flex-col underline md:no-underline gap-4 md:gap-0">
+          <ul class="flex flex-row md:flex-col underline md:no-underline gap-4 md:gap-0">
             {links.map(({ label, href, showOnMobile }) => {
+              const isExternal = href.startsWith("http://") || href.startsWith("https://");
               return (
                 <li
                   class:list={[
@@ -47,15 +48,20 @@ const linksInfo = [
                     showOnMobile ? "" : "hidden md:block",
                   ]}
                 >
-                  <a href={href} class="text-[15px] leading-6" target="_blank" rel="noopener noreferrer" aria-label={label}>
+                  <a
+                    href={href}
+                    class="text-[15px] leading-6"
+                    target={isExternal ? "_blank" : "_self"}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                  >
                     {label}
                   </a>
                 </li>
-              )
+              );
             })}
           </ul>
         </div>
-      )
+      );
     })
   }
 </div>

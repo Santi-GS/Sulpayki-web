@@ -2,36 +2,37 @@
 import Layout from "../../layouts/Layout.astro";
 import SectionContainer from "../../components/SectionContainer.astro";
 import BlockRenderer from "../../components/blocks/BlockRenderer.astro";
+import { getAllPages } from "../../lib/loaders";
+import type { BlockData } from "../../lib/types";
+
+export const prerender = true;
 
 export async function getStaticPaths() {
-  const res = await fetch(`${import.meta.env.VITE_STRAPI_HOST}/api/paginas?populate=*`, {
-    headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}`,
-    },
-  });
-  const data = await res.json();
-  return data.data
-    .filter((item: any) => item?.slug)
-    .map((item: any) => ({
+  const allPages = await getAllPages();
+  return allPages
+    .filter((item) => item?.slug)
+    .map((item) => ({
       params: { slug: item.slug },
+      props: { page: item },
     }));
 }
 
-const { slug } = Astro.params;
+interface Props {
+  page: {
+    slug: string;
+    title: string;
+    description: string;
+    blocks: BlockData[];
+  };
+}
 
-const res = await fetch(`${import.meta.env.VITE_STRAPI_HOST}/api/paginas?filters[slug][$eq]=${slug}&populate=*`, {
-  headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}`,
-  },
-  cache: "no-store",
-});
-const data = await res.json();
-const page = data.data?.[0];
-
-if (!page) throw new Error("Página no encontrada");
+const { page } = Astro.props;
 ---
 
-<Layout title={page.titulo || "Sulpayki Viajes y Turismo"}>
+<Layout
+  title={page.title ? `${page.title} - Sulpayki Viajes y Turismo` : "Sulpayki Viajes y Turismo"}
+  description={page.description || undefined}
+>
   <SectionContainer>
     <BlockRenderer blocks={page.blocks || []} />
   </SectionContainer>

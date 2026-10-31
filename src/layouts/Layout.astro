@@ -1,53 +1,67 @@
----                               
- import '/src/styles/global.css';
- import '@fontsource-variable/montserrat';
- import { ClientRouter } from 'astro:transitions';
- import Header from '../components/Header.astro'
- import Footer from '../components/Footer.astro'
- import BtnFlotante from '../components/BtnFlotante.astro'
- import { fixedTitle } from '../consts/pageTitles'
- import  SpeedInsights  from "@vercel/speed-insights/astro"
+---
+import "/src/styles/global.css";
+import "@fontsource-variable/montserrat";
+import { ClientRouter } from "astro:transitions";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BtnFlotante from "../components/BtnFlotante.astro";
+import { fixedTitle } from "../consts/pageTitles";
+import SpeedInsights from "@vercel/speed-insights/astro";
 
- interface Props {
-  title: string
-  description?: string
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
 }
 
-const { title={fixedTitle}, 
-description= 'Sulpayki Viajes y Turismo ofrece servicios online especializados en turismo industrial, transporte, alojamiento y experiencias personalizadas.' } = Astro.props
----  
+const {
+  title = fixedTitle,
+  description = "Sulpayki Viajes y Turismo ofrece servicios online especializados en turismo industrial, transporte, alojamiento y experiencias personalizadas en La Rioja.",
+  noindex = false,
+} = Astro.props;
+
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : undefined;
+---
 
 <!doctype html>
-<html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<ClientRouter />
-	</head>
-	<body>
-		<Header />
-		<main>
-		  <slot />
-		</main>
-		<Footer />
-		<BtnFlotante />
-		<SpeedInsights />
-	</body>
+<html lang="es-AR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <ClientRouter />
+  </head>
+  <body>
+    <a
+      href="#contenido-principal"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-semibold focus:text-neutral-900 focus:shadow-lg"
+    >
+      Saltar al contenido principal
+    </a>
+    <Header />
+    <main id="contenido-principal">
+      <slot />
+    </main>
+    <Footer />
+    <BtnFlotante />
+    <SpeedInsights />
+  </body>
 </html>
 
 <style is:global>
-body {
-	font-family: 'Montserrat Variable', sans-serif;
+  body {
+    font-family: "Montserrat Variable", sans-serif;
     background: radial-gradient(
       circle at top right,
-	  #FAF8F1,  /* Crema Suave: el tono principal y más luminoso */
-	  #F5F0E6,  /* Blanco Almendra: un tono intermedio y natural */
-	  #fdf6ee  /* Beige Cálido: el que ya tenías, aporta profundidad */
-	 );
+      #faf8f1,
+      #f5f0e6,
+      #fdf6ee
+    );
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;

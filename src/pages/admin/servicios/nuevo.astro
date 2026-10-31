@@ -1,0 +1,14 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import ArticleEditorForm from "../../../components/admin/ArticleEditorForm.astro";
+import { getAllTags } from "../../../lib/loaders";
+
+export const prerender = false;
+
+const tags = await getAllTags();
+---
+
+<AdminLayout title="Nuevo Servicio Turístico" activeSection="servicios">
+  <ArticleEditorForm articleType="SERVICIO" tags={tags} />
+</AdminLayout>
+

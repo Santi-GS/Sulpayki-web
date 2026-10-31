@@ -1,0 +1,312 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { getHomeHeroRaw } from "../../lib/loaders";
+
+export const prerender = false;
+
+const hero = await getHomeHeroRaw();
+---
+
+<AdminLayout title="Portada de Inicio (Hero)" activeSection="inicio">
+  <form id="hero-editor-form" class="space-y-6">
+    <!-- Nota explicativa sobre la estructura fija de Inicio -->
+    <div class="rounded-2xl border border-[#E2E0D8] bg-white p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h2 class="text-base font-bold text-[#1F2421]">Novedades principales a primera vista</h2>
+        <p class="text-sm text-neutral-600 mt-0.5">
+          Desde acá modificás el carrusel superior y el mensaje de bienvenida de la página principal. El resto de la página de inicio mantiene su diseño fijo automáticamente.
+        </p>
+      </div>
+      <button
+        type="submit"
+        id="save-hero-btn"
+        class="rounded-xl bg-[#3B8730] hover:bg-[#317227] px-6 py-2.5 text-sm font-semibold text-white transition whitespace-nowrap min-h-[42px]"
+      >
+        Guardar portada
+      </button>
+    </div>
+
+    <div
+      id="hero-feedback"
+      role="alert"
+      class="hidden rounded-xl border px-4 py-3 text-sm font-medium"
+    ></div>
+
+    <!-- Diapositivas del carrusel -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E0D8] pb-3">
+        <div>
+          <h3 class="text-lg font-bold text-[#1F2421]">Diapositivas del carrusel</h3>
+          <p class="text-xs text-neutral-600">
+            Mostrá las promociones, excursiones o novedades más recientes con imágenes de alta calidad.
+          </p>
+        </div>
+        <button
+          type="button"
+          id="add-slide-btn"
+          class="rounded-xl bg-[#1D261F] hover:bg-neutral-800 px-4 py-2 text-xs font-semibold text-white transition"
+        >
+          + Agregar diapositiva
+        </button>
+      </div>
+
+      <div id="slides-container" class="space-y-4"></div>
+    </section>
+
+    <!-- Encabezado debajo del carrusel y botones -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-5">
+      <h3 class="text-lg font-bold text-[#1F2421] border-b border-[#E2E0D8] pb-3">
+        Título de bienvenida y botones principales
+      </h3>
+
+      <div>
+        <label for="hero-heading" class="block text-sm font-semibold text-neutral-800 mb-1.5">
+          Frase principal debajo del carrusel
+        </label>
+        <input
+          id="hero-heading"
+          type="text"
+          required
+          value={hero.heading}
+          class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 focus:border-[#3B8730] focus:outline-none"
+        />
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-semibold text-neutral-800">Botones de acción (máx. 4)</span>
+          <button
+            type="button"
+            id="add-cta-btn"
+            class="rounded-lg border border-neutral-300 bg-[#F7F6F2] px-3 py-1.5 text-xs font-semibold text-neutral-800 hover:bg-neutral-200/70"
+          >
+            + Agregar botón
+          </button>
+        </div>
+        <div id="links-container" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <script type="application/json" id="hero-initial-data" set:html={JSON.stringify(hero)}></script>
+  </form>
+
+  <script is:inline>
+    (function () {
+      function escapeAttr(str) {
+        return String(str || "")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function initHeroEditor() {
+        const seedEl = document.getElementById("hero-initial-data");
+        const slidesContainer = document.getElementById("slides-container");
+        const linksContainer = document.getElementById("links-container");
+        const form = document.getElementById("hero-editor-form");
+        const feedback = document.getElementById("hero-feedback");
+        const saveBtn = document.getElementById("save-hero-btn");
+
+        if (!seedEl || !slidesContainer || !linksContainer || !form) return;
+
+        const initial = JSON.parse(seedEl.textContent || "{}");
+        let slides = Array.isArray(initial.slides) ? initial.slides : [];
+        let links = Array.isArray(initial.links) ? initial.links : [];
+
+        function renderSlides() {
+          slidesContainer.innerHTML = "";
+          slides.forEach((slide, idx) => {
+            const card = document.createElement("div");
+            card.className = "rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 space-y-3";
+            card.innerHTML = `
+              <div class="flex items-center justify-between border-b border-[#E2E0D8] pb-2">
+                <span class="text-sm font-bold text-[#1F2421]">Diapositiva #${idx + 1}</span>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" data-up class="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold disabled:opacity-40" ${idx === 0 ? "disabled" : ""}>Subir</button>
+                  <button type="button" data-down class="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold disabled:opacity-40" ${idx === slides.length - 1 ? "disabled" : ""}>Bajar</button>
+                  <button type="button" data-del class="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800 hover:bg-red-100" ${slides.length <= 1 ? "disabled" : ""}>Quitar</button>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                  <div class="aspect-[16/10] rounded-xl border border-neutral-300 bg-white overflow-hidden flex items-center justify-center">
+                    ${
+                      slide.imageUrl
+                        ? `<img src="${escapeAttr(slide.imageUrl)}" alt="" class="w-full h-full object-cover" />`
+                        : `<span class="text-xs text-neutral-400">Sin imagen</span>`
+                    }
+                  </div>
+                  <button type="button" data-pick class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs font-semibold hover:bg-neutral-100">
+                    Subir o cambiar imagen
+                  </button>
+                </div>
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Título de la novedad</label>
+                    <input type="text" data-titulo value="${escapeAttr(slide.titulo)}" required placeholder="Ej. Temporada de Talampaya" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Bajada o subtítulo</label>
+                    <input type="text" data-text value="${escapeAttr(slide.text)}" placeholder="Breve descripción que acompaña la imagen..." class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Enlace al hacer clic</label>
+                    <input type="text" data-href value="${escapeAttr(slide.linkHref || "/destinos")}" placeholder="/destinos" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Texto alternativo de imagen</label>
+                    <input type="text" data-alt value="${escapeAttr(slide.imageAlt)}" placeholder="Descripción de la foto" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                  </div>
+                </div>
+              </div>
+            `;
+
+            card.querySelector("[data-up]").onclick = () => {
+              if (idx === 0) return;
+              [slides[idx - 1], slides[idx]] = [slides[idx], slides[idx - 1]];
+              renderSlides();
+            };
+            card.querySelector("[data-down]").onclick = () => {
+              if (idx === slides.length - 1) return;
+              [slides[idx + 1], slides[idx]] = [slides[idx], slides[idx + 1]];
+              renderSlides();
+            };
+            card.querySelector("[data-del]").onclick = () => {
+              if (slides.length <= 1) return;
+              slides.splice(idx, 1);
+              renderSlides();
+            };
+            card.querySelector("[data-pick]").onclick = () => {
+              window.openSulpaykiMediaPicker?.((media) => {
+                slide.imageUrl = media.url;
+                if (!slide.imageAlt && media.altText) slide.imageAlt = media.altText;
+                renderSlides();
+              });
+            };
+            card.querySelector("[data-titulo]").oninput = (e) => { slide.titulo = e.target.value; };
+            card.querySelector("[data-text]").oninput = (e) => { slide.text = e.target.value; };
+            card.querySelector("[data-href]").oninput = (e) => { slide.linkHref = e.target.value; };
+            card.querySelector("[data-alt]").oninput = (e) => { slide.imageAlt = e.target.value; };
+
+            slidesContainer.appendChild(card);
+          });
+        }
+
+        function renderLinks() {
+          linksContainer.innerHTML = "";
+          links.forEach((lnk, idx) => {
+            const row = document.createElement("div");
+            row.className = "grid grid-cols-1 sm:grid-cols-4 gap-2.5 items-end rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-3";
+            row.innerHTML = `
+              <div>
+                <label class="block text-xs font-semibold text-neutral-700 mb-1">Texto del botón</label>
+                <input type="text" data-label value="${escapeAttr(lnk.label)}" class="w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-neutral-700 mb-1">Destino (URL)</label>
+                <input type="text" data-url value="${escapeAttr(lnk.href)}" class="w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-neutral-700 mb-1">Estilo</label>
+                <select data-type class="w-full rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm">
+                  <option value="PRIMARY" ${lnk.type === "PRIMARY" ? "selected" : ""}>Principal (Dorado)</option>
+                  <option value="SECONDARY" ${lnk.type === "SECONDARY" ? "selected" : ""}>Secundario (Borde)</option>
+                </select>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" data-del-link class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-800 hover:bg-red-100">Quitar botón</button>
+              </div>
+            `;
+
+            row.querySelector("[data-label]").oninput = (e) => { lnk.label = e.target.value; };
+            row.querySelector("[data-url]").oninput = (e) => {
+              lnk.href = e.target.value;
+              lnk.isExternal = e.target.value.startsWith("http");
+            };
+            row.querySelector("[data-type]").onchange = (e) => { lnk.type = e.target.value; };
+            row.querySelector("[data-del-link]").onclick = () => {
+              links.splice(idx, 1);
+              renderLinks();
+            };
+
+            linksContainer.appendChild(row);
+          });
+        }
+
+        document.getElementById("add-slide-btn").onclick = () => {
+          slides.push({
+            id: Date.now(),
+            titulo: "",
+            text: "",
+            imageUrl: "",
+            imageAlt: "",
+            linkHref: "/destinos",
+          });
+          renderSlides();
+        };
+
+        document.getElementById("add-cta-btn").onclick = () => {
+          if (links.length >= 4) return;
+          links.push({
+            label: "Conocer más",
+            href: "/servicios-turisticos",
+            type: "SECONDARY",
+            isExternal: false,
+          });
+          renderLinks();
+        };
+
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          feedback.classList.add("hidden");
+
+          const missingImg = slides.some((s) => !s.imageUrl || !s.imageUrl.trim());
+          if (missingImg) {
+            feedback.textContent = "Todas las diapositivas del carrusel deben tener una imagen seleccionada.";
+            feedback.className = "rounded-xl border border-red-300 bg-red-50 text-red-900 px-4 py-3 text-sm font-medium";
+            feedback.classList.remove("hidden");
+            return;
+          }
+
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Guardando...";
+
+          try {
+            const res = await fetch("/api/admin/hero", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                heading: document.getElementById("hero-heading").value.trim(),
+                slides,
+                links,
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "No se pudo guardar.");
+
+            window.markSulpaykiPendingChanges?.();
+            feedback.textContent =
+              'Portada guardada con éxito. Pulsá "Publicar cambios en la web" en la esquina superior derecha para actualizar la página pública.';
+            feedback.className = "rounded-xl border border-green-300 bg-green-50 text-green-950 px-4 py-3 text-sm font-medium";
+            feedback.classList.remove("hidden");
+          } catch (err) {
+            feedback.textContent = err.message || "Error al guardar la portada.";
+            feedback.className = "rounded-xl border border-red-300 bg-red-50 text-red-900 px-4 py-3 text-sm font-medium";
+            feedback.classList.remove("hidden");
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Guardar portada";
+          }
+        };
+
+        renderSlides();
+        renderLinks();
+      }
+
+      document.addEventListener("DOMContentLoaded", initHeroEditor);
+      document.addEventListener("astro:page-load", initHeroEditor);
+    })();
+  </script>
+</AdminLayout>
+

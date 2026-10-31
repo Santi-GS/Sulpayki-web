@@ -1,0 +1,107 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { getAllTags } from "../../lib/loaders";
+
+export const prerender = false;
+
+const tags = await getAllTags();
+---
+
+<AdminLayout title="Etiquetas y Categorías" activeSection="etiquetas">
+  <div class="space-y-6">
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6">
+      <h2 class="text-base font-bold text-[#1F2421] mb-1">Crear nueva categoría</h2>
+      <p class="text-sm text-neutral-600 mb-4">
+        Las etiquetas permiten clasificar los Destinos y Servicios Turísticos en los filtros del catálogo.
+      </p>
+
+      <form id="create-tag-form" class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+        <div>
+          <label for="tag-titulo" class="block text-xs font-semibold text-neutral-700 mb-1">
+            Nombre de la etiqueta
+          </label>
+          <input
+            id="tag-titulo"
+            type="text"
+            required
+            placeholder="Ej. Turismo Aventura"
+            class="w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2 text-sm"
+          />
+        </div>
+        <div>
+          <label for="tag-desc" class="block text-xs font-semibold text-neutral-700 mb-1">
+            Descripción (opcional)
+          </label>
+          <input
+            id="tag-desc"
+            type="text"
+            placeholder="Breve referencia interna..."
+            class="w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2 text-sm"
+          />
+        </div>
+        <button
+          type="submit"
+          class="rounded-xl bg-[#3B8730] hover:bg-[#317227] px-5 py-2.5 text-sm font-semibold text-white transition"
+        >
+          + Agregar etiqueta
+        </button>
+      </form>
+      <p id="tag-error" role="alert" class="hidden mt-3 text-sm font-medium text-red-800"></p>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] overflow-hidden">
+      <ul class="divide-y divide-[#E2E0D8]">
+        {tags.map((tag) => (
+          <li class="px-6 py-4 flex items-center justify-between gap-4">
+            <div>
+              <p class="font-bold text-sm text-[#1F2421]">{tag.titulo}</p>
+              {tag.descripcion && <p class="text-xs text-neutral-500 mt-0.5">{tag.descripcion}</p>}
+            </div>
+            <button
+              type="button"
+              data-delete-tag={tag.id}
+              class="rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-800"
+            >
+              Eliminar
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+
+  <script is:inline>
+    const form = document.getElementById("create-tag-form");
+    const errEl = document.getElementById("tag-error");
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errEl.classList.add("hidden");
+      const titulo = document.getElementById("tag-titulo").value.trim();
+      const descripcion = document.getElementById("tag-desc").value.trim();
+
+      const res = await fetch("/api/admin/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ titulo, descripcion }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        errEl.textContent = data.error || "No se pudo crear la etiqueta.";
+        errEl.classList.remove("hidden");
+        return;
+      }
+      window.location.reload();
+    });
+
+    document.querySelectorAll("[data-delete-tag]").forEach((btn) => {
+      btn.onclick = async () => {
+        const id = btn.getAttribute("data-delete-tag");
+        if (!window.confirm("¿Eliminar esta etiqueta? Se quitará de los artículos que la tengan asignada.")) return;
+        const res = await fetch(`/api/admin/tags/${id}`, { method: "DELETE" });
+        if (res.ok) window.location.reload();
+      };
+    });
+  </script>
+</AdminLayout>
+

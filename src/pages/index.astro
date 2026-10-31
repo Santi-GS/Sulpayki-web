@@ -1,20 +1,74 @@
 ---
-import BlockRenderer from "../components/blocks/BlockRenderer.astro";
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/blocks/Hero.astro";
+import BentoInfo from "../components/blocks/BentoInfo.astro";
+import EncabezadoDeSeccion from "../components/blocks/EncabezadoDeSeccion.astro";
+import ArticulosDestacados from "../components/blocks/ArticulosDestacados.astro";
+import type { BentoInfoProps, EncabezadoDeSeccionProps } from "../lib/types";
+import { getFeaturedArticleItems, getHomeHeroProps } from "../lib/loaders";
 
-import { getLandingPageData } from "../lib/loaders";
+const [heroData, serviciosDestacados, destinosDestacados] = await Promise.all([
+  getHomeHeroProps(),
+  getFeaturedArticleItems("SERVICIO"),
+  getFeaturedArticleItems("DESTINO"),
+]);
 
-const data = await getLandingPageData();
+// Estructura fija de BentoInfo en la página de inicio
+const fixedBentoData: BentoInfoProps = {
+  __component: "block.bento-info",
+  bentoComponent: [
+    {
+      titulo: "Servicios Turísticos",
+      link: { href: "/servicios-turisticos" },
+    },
+    {
+      titulo: "Destinos",
+      link: { href: "/destinos" },
+    },
+    {
+      titulo: "Sobre Nosotros",
+      link: { href: "/sobre-nosotros" },
+    },
+  ],
+};
 
-const landingPage = data?.data;
+// Encabezados fijos definidos para las dos secciones de carruseles
+const encabezadoServicios: EncabezadoDeSeccionProps = {
+  __component: "block.encabezado-de-seccion",
+  subencabezado: "Sulpayki Viajes y Turismo",
+  encabezado: "Servicios de turismo",
+  anchorLink: "servicios-de-turismo",
+};
 
-if (!landingPage) throw new Error("Landing page not found");
+const encabezadoDestinos: EncabezadoDeSeccionProps = {
+  __component: "block.encabezado-de-seccion",
+  subencabezado: "Sulpayki Viajes y Turismo",
+  encabezado: "Destinos destacados",
+  anchorLink: "destinos-destacados",
+};
 
-import Layout from '../layouts/Layout.astro';
-
-const description = "Sulpayki Viajes y Turismo ofrece servicios online especializados en turismo industrial, transporte, alojamiento y experiencias personalizadas."
+const description =
+  "Sulpayki Viajes y Turismo ofrece servicios online especializados en turismo industrial, transporte, alojamiento y experiencias personalizadas.";
 ---
 
-<Layout title="Sulpayki Viajes y Turismo - Diseñamos junto a vos tu viaje inolvidable."
-description={description}>
-	<BlockRenderer blocks={landingPage.blocks} />
+<Layout
+  title="Sulpayki Viajes y Turismo - Diseñamos junto a vos tu viaje inolvidable."
+  description={description}
+>
+  <Hero data={heroData} />
+  <BentoInfo data={fixedBentoData} />
+  <EncabezadoDeSeccion data={encabezadoServicios} />
+  <ArticulosDestacados
+    data={{
+      __component: "block.servicios-destacados",
+      items: serviciosDestacados,
+    }}
+  />
+  <EncabezadoDeSeccion data={encabezadoDestinos} />
+  <ArticulosDestacados
+    data={{
+      __component: "block.destinos-destacados",
+      items: destinosDestacados,
+    }}
+  />
 </Layout>

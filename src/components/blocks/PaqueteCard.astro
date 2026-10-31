@@ -1,6 +1,5 @@
 ---
 import type { TarjetaPaqueteTuristicoProps } from "../../lib/types";
-import { formatDate } from "../../lib/index";
 import StrapiImage from "../StrapiImage.astro";
 import Icon from "../ui/Icon.astro";
 import SectionContainer from "../SectionContainer.astro";
@@ -23,6 +22,7 @@ const grupos = [
   },
 ];
 ---
+
 <SectionContainer>
   <div class="flex flex-col gap-8">
     {grupos.map(
@@ -33,17 +33,17 @@ const grupos = [
             <div class="flex flex-col gap-8">
               {grupo.items.map((article) => (
                 <div class="bg-white rounded-2xl shadow hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col sm:flex-row sm:h-full sm:max-h-[250px]">
-                  {/* Imagen */}
                   <div class="w-full sm:w-1/2 relative h-auto sm:h-full sm:max-h-[250px]">
-                    <StrapiImage
-                      src={article.coverImagen.url}
-                      alt={article.coverImagen.alternativeText}
-                      width={340}
-                      height={220}
-                      class="w-full h-auto sm:h-full max-h-[250px] object-cover"
-                    />
+                    {article.coverImagen?.url && (
+                      <StrapiImage
+                        src={article.coverImagen.url}
+                        alt={article.coverImagen.alternativeText || article.titulo}
+                        width={340}
+                        height={220}
+                        class="w-full h-auto sm:h-full max-h-[250px] object-cover"
+                      />
+                    )}
                   </div>
-                  {/* Contenido */}
                   <div class="flex flex-col justify-between w-full sm:w-1/2 p-4 sm:p-6 h-auto sm:h-full sm:max-h-[250px] overflow-hidden">
                     <div>
                       <h3 class="text-lg sm:text-xl font-extrabold text-gray-800 mb-2 line-clamp-2">
@@ -54,7 +54,10 @@ const grupos = [
                       </p>
                     </div>
                     <div class="flex justify-start md:pl-8">
-                      <a href={`${grupo.baseHref}${article.slug}`} class="flex items-center px-5 pt-5 text-green-600 font-semibold hover:text-green-700 hover:underline hover:underline-offset-[3px] hover:stroke-3 transition-colors duration-200 group">
+                      <a
+                        href={`${grupo.baseHref}${article.slug}`}
+                        class="flex items-center px-5 pt-5 text-green-700 font-semibold hover:text-green-800 hover:underline hover:underline-offset-[3px] transition-colors duration-200 group"
+                      >
                         <span>Explorar Más</span>
                         <Icon name="Flechita" />
                       </a>

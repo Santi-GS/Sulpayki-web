@@ -1,0 +1,84 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { getDatabaseUrl, isUsingRemoteTurso } from "../../db/client";
+import { isCloudinaryConfigured } from "../../lib/cloudinary";
+import { getSitePublishState } from "../../lib/loaders";
+import { formatDate } from "../../lib/index";
+
+export const prerender = false;
+
+const remoteTurso = isUsingRemoteTurso();
+const dbUrl = getDatabaseUrl();
+const cloudinaryOk = isCloudinaryConfigured();
+const publishState = await getSitePublishState();
+---
+
+<AdminLayout title="Sistema y Respaldos" activeSection="sistema">
+  <div class="space-y-6">
+    <!-- Estado de integraciones -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-4">
+      <h2 class="text-base font-bold text-[#1F2421] border-b border-[#E2E0D8] pb-3">
+        Estado de servicios conectados
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-sm font-bold text-[#1F2421]">Base de Datos (Turso)</span>
+            <span class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${remoteTurso ? "bg-green-100 text-emerald-950" : "bg-amber-100 text-amber-950"}`}>
+              {remoteTurso ? "Turso Cloud" : "SQLite Local"}
+            </span>
+          </div>
+          <p class="text-xs text-neutral-600 break-all">
+            {remoteTurso ? dbUrl : `Modo local (${dbUrl}). Configurá TURSO_DATABASE_URL y TURSO_AUTH_TOKEN en Vercel.`}
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-sm font-bold text-[#1F2421]">Imágenes (Cloudinary)</span>
+            <span class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${cloudinaryOk ? "bg-green-100 text-emerald-950" : "bg-amber-100 text-amber-950"}`}>
+              {cloudinaryOk ? "Conectado" : "Modo Local"}
+            </span>
+          </div>
+          <p class="text-xs text-neutral-600">
+            {cloudinaryOk
+              ? "Optimización automática WebP/AVIF activa en la nube."
+              : "Configurá CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET en Vercel."}
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-sm font-bold text-[#1F2421]">Vercel Deploy Hook</span>
+            <span class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${publishState.deployHookConfigured ? "bg-green-100 text-emerald-950" : "bg-amber-100 text-amber-950"}`}>
+              {publishState.deployHookConfigured ? "Configurado" : "No definido"}
+            </span>
+          </div>
+          <p class="text-xs text-neutral-600">
+            {publishState.deployHookConfigured
+              ? `Última publicación: ${publishState.lastPublishedAt ? formatDate(publishState.lastPublishedAt) : "Reciente"}`
+              : "Agregá VERCEL_DEPLOY_HOOK_URL en Vercel para que el botón 'Publicar cambios en la web' regenere las páginas estáticas."}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Respaldo descargable -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-base font-bold text-[#1F2421]">Copia de seguridad del contenido</h2>
+        <p class="text-sm text-neutral-600 mt-0.5">
+          Descargá un archivo JSON con toda la portada, destinos, servicios, etiquetas, páginas y biblioteca multimedia.
+        </p>
+      </div>
+      <a
+        href="/api/admin/backup"
+        class="inline-flex items-center justify-center rounded-xl bg-[#1D261F] hover:bg-neutral-800 px-5 py-2.5 text-sm font-semibold text-white transition whitespace-nowrap"
+      >
+        Descargar respaldo JSON
+      </a>
+    </section>
+  </div>
+</AdminLayout>
+

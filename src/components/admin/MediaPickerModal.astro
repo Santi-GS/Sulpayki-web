@@ -1,0 +1,235 @@
+---
+---
+
+<dialog
+  id="sulpayki-media-modal"
+  aria-labelledby="media-modal-title"
+  class="backdrop:bg-black/55 rounded-2xl border border-[#E2E0D8] bg-white p-0 shadow-2xl w-[94vw] max-w-4xl max-h-[88vh] m-auto text-[#1F2421]"
+>
+  <div class="flex flex-col max-h-[88vh]">
+    <!-- Cabecera -->
+    <div class="flex items-center justify-between border-b border-[#E2E0D8] px-6 py-4">
+      <div>
+        <h2 id="media-modal-title" class="text-lg font-bold text-[#1F2421]">
+          Biblioteca de imágenes
+        </h2>
+        <p class="text-sm text-neutral-600">
+          Subí una foto nueva o seleccioná una imagen ya cargada.
+        </p>
+      </div>
+      <button
+        type="button"
+        id="close-media-modal"
+        aria-label="Cerrar selector de imágenes"
+        class="rounded-lg p-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 min-w-[40px] min-h-[40px] flex items-center justify-center font-bold"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Zona de subida rápida -->
+    <div class="border-b border-[#E2E0D8] bg-[#F7F6F2] px-6 py-4">
+      <form id="modal-upload-form" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+        <div class="flex-1">
+          <label for="modal-file-input" class="block text-sm font-semibold text-neutral-800 mb-1">
+            Subir nueva imagen (JPG, PNG, WebP o AVIF, máx. 10 MB)
+          </label>
+          <input
+            id="modal-file-input"
+            name="file"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+            required
+            class="block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-800 file:mr-3 file:rounded-lg file:border-0 file:bg-[#1D261F] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-neutral-800"
+          />
+        </div>
+        <div class="sm:w-64">
+          <label for="modal-alt-input" class="block text-sm font-semibold text-neutral-800 mb-1">
+            Descripción breve (opcional)
+          </label>
+          <input
+            id="modal-alt-input"
+            name="altText"
+            type="text"
+            placeholder="Ej. Parque Nacional Talampaya"
+            class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900"
+          />
+        </div>
+        <button
+          type="submit"
+          id="modal-upload-btn"
+          class="rounded-xl bg-[#3B8730] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#317227] transition min-h-[42px] whitespace-nowrap"
+        >
+          Subir y usar
+        </button>
+      </form>
+      <p id="modal-upload-status" role="status" aria-live="polite" class="text-sm mt-2 hidden"></p>
+    </div>
+
+    <!-- Grilla de imágenes existentes -->
+    <div class="overflow-y-auto p-6 flex-1">
+      <div id="modal-media-loading" class="text-center py-10 text-neutral-600 text-sm">
+        Cargando biblioteca de imágenes...
+      </div>
+      <div id="modal-media-empty" class="hidden text-center py-10 text-neutral-600 text-sm">
+        Todavía no hay imágenes guardadas. Subí la primera usando el formulario de arriba.
+      </div>
+      <div id="modal-media-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+    </div>
+  </div>
+</dialog>
+
+<script is:inline>
+  (function () {
+    let activeCallback = null;
+
+    function getElements() {
+      return {
+        dialog: document.getElementById("sulpayki-media-modal"),
+        closeBtn: document.getElementById("close-media-modal"),
+        uploadForm: document.getElementById("modal-upload-form"),
+        fileInput: document.getElementById("modal-file-input"),
+        altInput: document.getElementById("modal-alt-input"),
+        uploadBtn: document.getElementById("modal-upload-btn"),
+        statusEl: document.getElementById("modal-upload-status"),
+        loadingEl: document.getElementById("modal-media-loading"),
+        emptyEl: document.getElementById("modal-media-empty"),
+        gridEl: document.getElementById("modal-media-grid"),
+      };
+    }
+
+    function showStatus(msg, isError) {
+      const { statusEl } = getElements();
+      if (!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.className = `text-sm mt-2 font-medium ${isError ? "text-red-700" : "text-green-800"}`;
+      statusEl.classList.remove("hidden");
+    }
+
+    async function loadMediaGrid() {
+      const { loadingEl, emptyEl, gridEl, dialog } = getElements();
+      if (!gridEl || !loadingEl || !emptyEl) return;
+
+      loadingEl.classList.remove("hidden");
+      emptyEl.classList.add("hidden");
+      gridEl.innerHTML = "";
+
+      try {
+        const res = await fetch("/api/admin/media");
+        const data = await res.json();
+        const items = Array.isArray(data.items) ? data.items : [];
+
+        loadingEl.classList.add("hidden");
+        if (items.length === 0) {
+          emptyEl.classList.remove("hidden");
+          return;
+        }
+
+        items.forEach((item) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className =
+            "group text-left rounded-xl border border-[#E2E0D8] overflow-hidden bg-white hover:border-[#3B8730] focus:border-[#3B8730] transition flex flex-col";
+
+          const imgWrap = document.createElement("div");
+          imgWrap.className = "aspect-[4/3] w-full bg-neutral-100 overflow-hidden";
+
+          const img = document.createElement("img");
+          img.src = item.url;
+          img.alt = item.altText || "Imagen subida";
+          img.loading = "lazy";
+          img.className = "w-full h-full object-cover group-hover:scale-105 transition-transform";
+          imgWrap.appendChild(img);
+
+          const caption = document.createElement("div");
+          caption.className = "p-2.5 text-xs text-neutral-700 truncate w-full font-medium";
+          caption.textContent = item.altText || item.url.split("/").pop() || "Seleccionar imagen";
+
+          btn.appendChild(imgWrap);
+          btn.appendChild(caption);
+
+          btn.onclick = () => {
+            if (typeof activeCallback === "function") {
+              activeCallback({ url: item.url, altText: item.altText || "" });
+            }
+            dialog?.close();
+          };
+
+          gridEl.appendChild(btn);
+        });
+      } catch (err) {
+        loadingEl.textContent = "No se pudo cargar la biblioteca de imágenes.";
+      }
+    }
+
+    function bindModalEvents() {
+      const { dialog, closeBtn, uploadForm, fileInput, altInput, uploadBtn, statusEl } = getElements();
+      if (!dialog) return;
+
+      closeBtn.onclick = () => dialog.close();
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      uploadForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const file = fileInput.files?.[0];
+        if (!file) {
+          showStatus("Seleccioná una imagen primero.", true);
+          return;
+        }
+
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = "Subiendo...";
+        showStatus("Optimizando y subiendo imagen...", false);
+
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("altText", altInput.value || "");
+
+          const res = await fetch("/api/admin/media", {
+            method: "POST",
+            body: formData,
+          });
+          const payload = await res.json();
+
+          if (!res.ok) {
+            throw new Error(payload.error || "Error al subir la imagen.");
+          }
+
+          uploadForm.reset();
+          statusEl.classList.add("hidden");
+
+          if (typeof activeCallback === "function" && payload.item) {
+            activeCallback({
+              url: payload.item.url,
+              altText: payload.item.altText || "",
+            });
+            dialog.close();
+          } else {
+            await loadMediaGrid();
+          }
+        } catch (err) {
+          showStatus(err.message || "No se pudo subir la imagen.", true);
+        } finally {
+          uploadBtn.disabled = false;
+          uploadBtn.textContent = "Subir y usar";
+        }
+      };
+    }
+
+    window.openSulpaykiMediaPicker = function (onSelect) {
+      activeCallback = onSelect;
+      const { dialog, statusEl } = getElements();
+      if (!dialog) return;
+      if (statusEl) statusEl.classList.add("hidden");
+      dialog.showModal();
+      loadMediaGrid();
+    };
+
+    document.addEventListener("DOMContentLoaded", bindModalEvents);
+    document.addEventListener("astro:page-load", bindModalEvents);
+  })();
+</script>
+

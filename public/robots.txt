@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Bloquear panel administrativo y endpoints internos
+Disallow: /admin/
+Disallow: /api/
+

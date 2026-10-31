@@ -1,0 +1,125 @@
+---
+import "/src/styles/global.css";
+import "@fontsource-variable/montserrat";
+
+export const prerender = false;
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Iniciar sesión — Panel Sulpayki</title>
+  </head>
+  <body class="min-h-screen bg-[#F7F6F2] text-[#1F2421] font-['Montserrat_Variable',sans-serif] flex items-center justify-center p-4">
+    <main class="w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#E2E0D8] p-8 shadow-sm">
+        <div class="text-center mb-7">
+          <a href="/" class="inline-block mb-3">
+            <img
+              src="/sulpayki-logo-grande.webp"
+              alt="Sulpayki Viajes y Turismo"
+              class="h-16 w-auto mx-auto"
+            />
+          </a>
+          <h1 class="text-2xl font-bold text-[#1F2421]">Panel de Administración</h1>
+          <p class="text-sm text-neutral-600 mt-1">
+            Ingresá con tu cuenta para gestionar el contenido del sitio.
+          </p>
+        </div>
+
+        <div
+          id="login-error"
+          role="alert"
+          class="hidden mb-5 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-900"
+        ></div>
+
+        <form id="login-form" class="space-y-5">
+          <div>
+            <label for="email" class="block text-sm font-semibold text-neutral-800 mb-1.5">
+              Correo electrónico
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autocomplete="username"
+              placeholder="nombre@sulpayki.com"
+              class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-neutral-900 focus:border-[#3B8730] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-semibold text-neutral-800 mb-1.5">
+              Contraseña
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autocomplete="current-password"
+              placeholder="Ingresá tu contraseña"
+              class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-neutral-900 focus:border-[#3B8730] focus:outline-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            id="login-submit"
+            class="w-full rounded-xl bg-[#3B8730] hover:bg-[#317227] text-white font-semibold py-3 px-4 transition min-h-[46px]"
+          >
+            Ingresar al panel
+          </button>
+        </form>
+
+        <div class="mt-6 pt-5 border-t border-neutral-100 text-center">
+          <a href="/" class="text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:underline">
+            Volver a la página principal
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <script is:inline>
+      const form = document.getElementById("login-form");
+      const errorBox = document.getElementById("login-error");
+      const submitBtn = document.getElementById("login-submit");
+
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorBox.classList.add("hidden");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Verificando...";
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          const res = await fetch("/api/admin/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Credenciales inválidas.");
+          }
+
+          window.location.href = "/admin";
+        } catch (err) {
+          errorBox.textContent = err.message || "No se pudo iniciar sesión.";
+          errorBox.classList.remove("hidden");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Ingresar al panel";
+        }
+      });
+    </script>
+  </body>
+</html>
+

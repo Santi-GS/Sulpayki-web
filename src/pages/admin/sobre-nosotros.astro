@@ -1,0 +1,126 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import BlocksEditor from "../../components/admin/BlocksEditor.astro";
+import { getPageBySlug } from "../../lib/loaders";
+
+export const prerender = false;
+
+const pageData = await getPageBySlug("sobre-nosotros");
+---
+
+<AdminLayout title="Página Sobre Nosotros" activeSection="sobre-nosotros">
+  <form id="about-page-form" class="space-y-6">
+    <div class="bg-white rounded-2xl border border-[#E2E0D8] p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <h2 class="text-base font-bold text-[#1F2421]">Presentación institucional de la agencia</h2>
+        <p class="text-sm text-neutral-600 mt-0.5">
+          Personalizá la historia, valores, imágenes, ubicación y preguntas frecuentes de Sulpayki.
+        </p>
+      </div>
+      <button
+        type="submit"
+        id="save-about-btn"
+        class="rounded-xl bg-[#3B8730] hover:bg-[#317227] px-6 py-2.5 text-sm font-semibold text-white transition whitespace-nowrap min-h-[42px]"
+      >
+        Guardar página
+      </button>
+    </div>
+
+    <div
+      id="about-feedback"
+      role="alert"
+      class="hidden rounded-xl border px-4 py-3 text-sm font-medium"
+    ></div>
+
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-4">
+      <h3 class="text-lg font-bold text-[#1F2421] border-b border-[#E2E0D8] pb-3">
+        Título y resumen para buscadores
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="about-title" class="block text-sm font-semibold text-neutral-800 mb-1">
+            Título de la página
+          </label>
+          <input
+            id="about-title"
+            type="text"
+            required
+            value={pageData.title}
+            class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900"
+          />
+        </div>
+        <div>
+          <label for="about-description" class="block text-sm font-semibold text-neutral-800 mb-1">
+            Descripción breve para Google (máx. 320 caracteres)
+          </label>
+          <input
+            id="about-description"
+            type="text"
+            maxlength="320"
+            value={pageData.description}
+            class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900"
+          />
+        </div>
+      </div>
+    </section>
+
+    <BlocksEditor
+      initialBlocks={pageData.blocks}
+      heading="Contenido de Sobre Nosotros"
+      helperText="Armá la página combinando secciones con imagen, textos, mapas de ubicación y preguntas frecuentes."
+    />
+  </form>
+
+  <script is:inline>
+    (function () {
+      function initAboutForm() {
+        const form = document.getElementById("about-page-form");
+        const saveBtn = document.getElementById("save-about-btn");
+        const feedback = document.getElementById("about-feedback");
+        if (!form) return;
+
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          feedback.classList.add("hidden");
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Guardando...";
+
+          try {
+            const payload = {
+              title: document.getElementById("about-title").value.trim(),
+              description: document.getElementById("about-description").value.trim(),
+              blocks: window.getSulpaykiBlocks ? window.getSulpaykiBlocks() : [],
+            };
+
+            const res = await fetch("/api/admin/pages/sobre-nosotros", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "No se pudo guardar.");
+
+            window.markSulpaykiPendingChanges?.();
+            feedback.textContent =
+              'Página Sobre Nosotros guardada correctamente. Recordá pulsar "Publicar cambios en la web" para actualizar el sitio público.';
+            feedback.className =
+              "rounded-xl border border-green-300 bg-green-50 text-green-950 px-4 py-3 text-sm font-medium";
+            feedback.classList.remove("hidden");
+          } catch (err) {
+            feedback.textContent = err.message || "Error al guardar.";
+            feedback.className =
+              "rounded-xl border border-red-300 bg-red-50 text-red-900 px-4 py-3 text-sm font-medium";
+            feedback.classList.remove("hidden");
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Guardar página";
+          }
+        };
+      }
+
+      document.addEventListener("DOMContentLoaded", initAboutForm);
+      document.addEventListener("astro:page-load", initAboutForm);
+    })();
+  </script>
+</AdminLayout>
+

@@ -1,0 +1,432 @@
+---
+import type { BlockData } from "../../lib/types";
+
+interface Props {
+  initialBlocks?: BlockData[];
+  heading?: string;
+  helperText?: string;
+}
+
+const {
+  initialBlocks = [],
+  heading = "Secciones adicionales de contenido",
+  helperText = "Opcional: podés sumar galerías de fotos, mapas, preguntas frecuentes o bloques con imagen y cambiar su orden con un clic.",
+} = Astro.props;
+---
+
+<section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-5">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#E2E0D8] pb-4">
+    <div>
+      <h2 class="text-lg font-bold text-[#1F2421]">{heading}</h2>
+      <p class="text-sm text-neutral-600 mt-0.5">{helperText}</p>
+    </div>
+  </div>
+
+  <!-- Contenedor dinámico de bloques -->
+  <div id="sulpayki-blocks-list" class="space-y-4"></div>
+
+  <div id="sulpayki-blocks-empty" class="rounded-xl border border-dashed border-neutral-300 bg-[#F7F6F2] p-6 text-center text-sm text-neutral-600">
+    No agregaste secciones adicionales todavía. Usá los botones de abajo si querés sumar una galería, preguntas frecuentes o más contenido.
+  </div>
+
+  <!-- Barra para agregar nuevos bloques -->
+  <div class="pt-2">
+    <p class="text-xs font-semibold text-neutral-700 mb-2">Agregar nueva sección:</p>
+    <div class="flex flex-wrap gap-2">
+      <button
+        type="button"
+        data-add-block="block.markdown"
+        class="rounded-xl border border-[#E2E0D8] bg-[#F7F6F2] hover:bg-neutral-200/70 px-3.5 py-2 text-sm font-medium text-[#1F2421] transition"
+      >
+        + Texto o Mapa de Google
+      </button>
+      <button
+        type="button"
+        data-add-block="block.contenido-con-imagen"
+        class="rounded-xl border border-[#E2E0D8] bg-[#F7F6F2] hover:bg-neutral-200/70 px-3.5 py-2 text-sm font-medium text-[#1F2421] transition"
+      >
+        + Imagen con Texto
+      </button>
+      <button
+        type="button"
+        data-add-block="block.carrusel-de-imagenes"
+        class="rounded-xl border border-[#E2E0D8] bg-[#F7F6F2] hover:bg-neutral-200/70 px-3.5 py-2 text-sm font-medium text-[#1F2421] transition"
+      >
+        + Galería de Fotos
+      </button>
+      <button
+        type="button"
+        data-add-block="block.preguntas-frecuentes"
+        class="rounded-xl border border-[#E2E0D8] bg-[#F7F6F2] hover:bg-neutral-200/70 px-3.5 py-2 text-sm font-medium text-[#1F2421] transition"
+      >
+        + Preguntas Frecuentes
+      </button>
+      <button
+        type="button"
+        data-add-block="block.encabezado-de-seccion"
+        class="rounded-xl border border-[#E2E0D8] bg-[#F7F6F2] hover:bg-neutral-200/70 px-3.5 py-2 text-sm font-medium text-[#1F2421] transition"
+      >
+        + Título Separador
+      </button>
+    </div>
+  </div>
+
+  <script type="application/json" id="sulpayki-initial-blocks" set:html={JSON.stringify(initialBlocks)}></script>
+</section>
+
+<script is:inline>
+  (function () {
+    const BLOCK_LABELS = {
+      "block.markdown": "Texto enriquecido / Mapa de Google",
+      "block.contenido-con-imagen": "Sección de Imagen con Texto",
+      "block.carrusel-de-imagenes": "Galería de Fotos (Carrusel)",
+      "block.preguntas-frecuentes": "Preguntas Frecuentes",
+      "block.encabezado-de-seccion": "Título Separador de Sección",
+    };
+
+    function createDefaultBlock(type) {
+      switch (type) {
+        case "block.encabezado-de-seccion":
+          return {
+            __component: "block.encabezado-de-seccion",
+            subencabezado: "Sulpayki Viajes y Turismo",
+            encabezado: "",
+            anchorLink: "",
+          };
+        case "block.contenido-con-imagen":
+          return {
+            __component: "block.contenido-con-imagen",
+            titulo: "",
+            texto: "",
+            imagen: { url: "", alternativeText: "" },
+            invertido: false,
+            link: { label: "", href: "", isExternal: false },
+          };
+        case "block.carrusel-de-imagenes":
+          return {
+            __component: "block.carrusel-de-imagenes",
+            imagen: [],
+          };
+        case "block.preguntas-frecuentes":
+          return {
+            __component: "block.preguntas-frecuentes",
+            pyr: [{ id: 1, pregunta: "", respuesta: { id: 1, text: "" } }],
+          };
+        case "block.markdown":
+        default:
+          return {
+            __component: "block.markdown",
+            text: "",
+          };
+      }
+    }
+
+    function escapeAttr(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function initBlocksEditor() {
+      const listEl = document.getElementById("sulpayki-blocks-list");
+      const emptyEl = document.getElementById("sulpayki-blocks-empty");
+      const jsonSeed = document.getElementById("sulpayki-initial-blocks");
+      if (!listEl || !emptyEl || !jsonSeed) return;
+
+      let blocks = [];
+      try {
+        const parsed = JSON.parse(jsonSeed.textContent || "[]");
+        if (Array.isArray(parsed)) {
+          blocks = parsed.filter((b) => b && BLOCK_LABELS[b.__component]);
+        }
+      } catch {
+        blocks = [];
+      }
+
+      function render() {
+        listEl.innerHTML = "";
+        emptyEl.classList.toggle("hidden", blocks.length > 0);
+
+        blocks.forEach((block, index) => {
+          const card = document.createElement("div");
+          card.className = "rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 space-y-4";
+
+          // Cabecera del bloque con botones Subir / Bajar / Eliminar (accesible WCAG 2.5.7)
+          const header = document.createElement("div");
+          header.className = "flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E0D8] pb-3";
+          header.innerHTML = `
+            <span class="text-sm font-bold text-[#1F2421]">
+              ${BLOCK_LABELS[block.__component] || block.__component}
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button type="button" data-move-up class="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 disabled:opacity-40 min-h-[32px]" ${index === 0 ? "disabled" : ""} aria-label="Mover sección hacia arriba">Subir</button>
+              <button type="button" data-move-down class="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 disabled:opacity-40 min-h-[32px]" ${index === blocks.length - 1 ? "disabled" : ""} aria-label="Mover sección hacia abajo">Bajar</button>
+              <button type="button" data-remove-block class="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800 hover:bg-red-100 min-h-[32px]">Quitar</button>
+            </div>
+          `;
+
+          header.querySelector("[data-move-up]").onclick = () => {
+            if (index === 0) return;
+            const tmp = blocks[index - 1];
+            blocks[index - 1] = blocks[index];
+            blocks[index] = tmp;
+            render();
+          };
+          header.querySelector("[data-move-down]").onclick = () => {
+            if (index === blocks.length - 1) return;
+            const tmp = blocks[index + 1];
+            blocks[index + 1] = blocks[index];
+            blocks[index] = tmp;
+            render();
+          };
+          header.querySelector("[data-remove-block]").onclick = () => {
+            blocks.splice(index, 1);
+            render();
+          };
+
+          card.appendChild(header);
+
+          const body = document.createElement("div");
+          body.className = "space-y-3";
+
+          if (block.__component === "block.encabezado-de-seccion") {
+            body.innerHTML = `
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-neutral-700 mb-1">Subencabezado superior</label>
+                  <input type="text" data-field="subencabezado" value="${escapeAttr(block.subencabezado)}" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-neutral-700 mb-1">Título de la sección</label>
+                  <input type="text" data-field="encabezado" value="${escapeAttr(block.encabezado)}" placeholder="Ej. Itinerario del recorrido" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                </div>
+              </div>
+            `;
+            body.querySelector('[data-field="subencabezado"]').oninput = (e) => {
+              block.subencabezado = e.target.value;
+            };
+            body.querySelector('[data-field="encabezado"]').oninput = (e) => {
+              block.encabezado = e.target.value;
+            };
+          } else if (block.__component === "block.markdown") {
+            body.innerHTML = `
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="text-xs font-semibold text-neutral-700">Contenido de texto (soporta subtítulos, listas y mapas)</label>
+                <button type="button" data-insert-map class="rounded-lg bg-white border border-neutral-300 px-3 py-1 text-xs font-semibold text-neutral-800 hover:bg-neutral-100">
+                  Insertar mapa de Google
+                </button>
+              </div>
+              <textarea rows="5" data-field="text" placeholder="Escribí el texto aquí..." class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm"></textarea>
+            `;
+            const textarea = body.querySelector('[data-field="text"]');
+            textarea.value = block.text || "";
+            textarea.oninput = (e) => {
+              block.text = e.target.value;
+            };
+            body.querySelector("[data-insert-map]").onclick = () => {
+              const rawIframe = window.prompt(
+                "Pegá el código iframe o enlace de Google Maps (Compartir -> Insertar un mapa):"
+              );
+              if (!rawIframe) return;
+              const mapTitle = window.prompt("Título opcional para el mapa (ej. Punto de encuentro):") || "";
+              let url = rawIframe.trim();
+              const srcMatch = url.match(/src="([^"]+)"/);
+              if (srcMatch?.[1]) url = srcMatch[1];
+              const snippet = mapTitle.trim()
+                ? `\n[map:${url}|${mapTitle.trim()}]\n`
+                : `\n[map:${url}]\n`;
+              textarea.value = (textarea.value || "") + snippet;
+              block.text = textarea.value;
+            };
+          } else if (block.__component === "block.contenido-con-imagen") {
+            const imgUrl = block.imagen?.url || "";
+            const imgAlt = block.imagen?.alternativeText || "";
+            body.innerHTML = `
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                  <span class="block text-xs font-semibold text-neutral-700">Imagen del bloque</span>
+                  <div class="aspect-[4/3] rounded-xl border border-neutral-300 bg-white overflow-hidden flex items-center justify-center">
+                    ${
+                      imgUrl
+                        ? `<img src="${escapeAttr(imgUrl)}" alt="${escapeAttr(imgAlt)}" class="w-full h-full object-cover" />`
+                        : `<span class="text-xs text-neutral-400">Sin imagen seleccionada</span>`
+                    }
+                  </div>
+                  <button type="button" data-pick-img class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-xs font-semibold text-neutral-800 hover:bg-neutral-100">
+                    Elegir o subir imagen
+                  </button>
+                </div>
+                <div class="md:col-span-2 space-y-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Título</label>
+                    <input type="text" data-field="titulo" value="${escapeAttr(block.titulo)}" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-neutral-700 mb-1">Texto descriptivo</label>
+                    <textarea rows="4" data-field="texto" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm"></textarea>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs font-semibold text-neutral-700 mb-1">Texto de botón (opcional)</label>
+                      <input type="text" data-field="linkLabel" value="${escapeAttr(block.link?.label || "")}" placeholder="Ej. Consultar fechas" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-neutral-700 mb-1">Enlace del botón (opcional)</label>
+                      <input type="text" data-field="linkHref" value="${escapeAttr(block.link?.href || "")}" placeholder="Ej. /servicios-turisticos" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm" />
+                    </div>
+                  </div>
+                  <label class="inline-flex items-center gap-2 text-xs font-medium text-neutral-800 pt-1">
+                    <input type="checkbox" data-field="invertido" ${block.invertido ? "checked" : ""} class="rounded border-neutral-300" />
+                    Mostrar la imagen a la derecha en pantallas grandes
+                  </label>
+                </div>
+              </div>
+            `;
+            const txtEl = body.querySelector('[data-field="texto"]');
+            txtEl.value = block.texto || "";
+            txtEl.oninput = (e) => { block.texto = e.target.value; };
+            body.querySelector('[data-field="titulo"]').oninput = (e) => { block.titulo = e.target.value; };
+            body.querySelector('[data-field="linkLabel"]').oninput = (e) => {
+              block.link = block.link || { label: "", href: "", isExternal: false };
+              block.link.label = e.target.value;
+            };
+            body.querySelector('[data-field="linkHref"]').oninput = (e) => {
+              block.link = block.link || { label: "", href: "", isExternal: false };
+              block.link.href = e.target.value;
+              block.link.isExternal = e.target.value.startsWith("http");
+            };
+            body.querySelector('[data-field="invertido"]').onchange = (e) => {
+              block.invertido = e.target.checked;
+            };
+            body.querySelector("[data-pick-img]").onclick = () => {
+              window.openSulpaykiMediaPicker?.((media) => {
+                block.imagen = {
+                  url: media.url,
+                  alternativeText: media.altText || block.titulo || "",
+                };
+                render();
+              });
+            };
+          } else if (block.__component === "block.carrusel-de-imagenes") {
+            const imgs = Array.isArray(block.imagen) ? block.imagen : [];
+            const galleryWrap = document.createElement("div");
+            galleryWrap.className = "space-y-3";
+
+            const grid = document.createElement("div");
+            grid.className = "grid grid-cols-2 sm:grid-cols-4 gap-3";
+
+            imgs.forEach((entry, imgIdx) => {
+              const thumb = document.createElement("div");
+              thumb.className = "relative rounded-xl border border-neutral-300 bg-white overflow-hidden group";
+              thumb.innerHTML = `
+                <img src="${escapeAttr(entry.imagen?.url)}" alt="${escapeAttr(entry.imagen?.alternativeText)}" class="w-full h-24 object-cover" />
+                <button type="button" class="absolute top-1.5 right-1.5 rounded-lg bg-black/75 text-white text-xs px-2 py-1 hover:bg-red-600" aria-label="Quitar foto de la galería">Quitar</button>
+              `;
+              thumb.querySelector("button").onclick = () => {
+                block.imagen.splice(imgIdx, 1);
+                render();
+              };
+              grid.appendChild(thumb);
+            });
+
+            const addImgBtn = document.createElement("button");
+            addImgBtn.type = "button";
+            addImgBtn.className =
+              "rounded-xl border border-neutral-300 bg-white px-4 py-2 text-xs font-semibold text-neutral-800 hover:bg-neutral-100";
+            addImgBtn.textContent = "+ Agregar foto a la galería";
+            addImgBtn.onclick = () => {
+              window.openSulpaykiMediaPicker?.((media) => {
+                block.imagen = Array.isArray(block.imagen) ? block.imagen : [];
+                block.imagen.push({
+                  imagen: {
+                    url: media.url,
+                    alternativeText: media.altText || "Imagen de galería",
+                  },
+                });
+                render();
+              });
+            };
+
+            if (imgs.length > 0) galleryWrap.appendChild(grid);
+            galleryWrap.appendChild(addImgBtn);
+            body.appendChild(galleryWrap);
+          } else if (block.__component === "block.preguntas-frecuentes") {
+            const listFaq = document.createElement("div");
+            listFaq.className = "space-y-3";
+            block.pyr = Array.isArray(block.pyr) ? block.pyr : [];
+
+            block.pyr.forEach((faqItem, faqIdx) => {
+              const row = document.createElement("div");
+              row.className = "rounded-xl border border-neutral-200 bg-white p-3 space-y-2";
+              row.innerHTML = `
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold text-neutral-600">Pregunta #${faqIdx + 1}</span>
+                  <button type="button" data-del-faq class="text-xs text-red-700 font-semibold hover:underline">Eliminar</button>
+                </div>
+                <input type="text" data-faq-q value="${escapeAttr(faqItem.pregunta)}" placeholder="Escribí la pregunta frecuente..." class="w-full rounded-lg border border-neutral-300 px-3 py-1.5 text-sm" />
+                <textarea rows="2" data-faq-a placeholder="Escribí la respuesta..." class="w-full rounded-lg border border-neutral-300 px-3 py-1.5 text-sm"></textarea>
+              `;
+              const ansEl = row.querySelector("[data-faq-a]");
+              const currentAns = Array.isArray(faqItem.respuesta)
+                ? faqItem.respuesta[0]?.text || ""
+                : faqItem.respuesta?.text || "";
+              ansEl.value = currentAns;
+
+              row.querySelector("[data-faq-q]").oninput = (e) => {
+                faqItem.pregunta = e.target.value;
+              };
+              ansEl.oninput = (e) => {
+                faqItem.respuesta = { id: faqIdx + 1, text: e.target.value };
+              };
+              row.querySelector("[data-del-faq]").onclick = () => {
+                block.pyr.splice(faqIdx, 1);
+                render();
+              };
+              listFaq.appendChild(row);
+            });
+
+            const addFaqBtn = document.createElement("button");
+            addFaqBtn.type = "button";
+            addFaqBtn.className =
+              "rounded-xl border border-neutral-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-800 hover:bg-neutral-100";
+            addFaqBtn.textContent = "+ Agregar otra pregunta";
+            addFaqBtn.onclick = () => {
+              block.pyr.push({
+                id: Date.now(),
+                pregunta: "",
+                respuesta: { id: Date.now(), text: "" },
+              });
+              render();
+            };
+
+            body.appendChild(listFaq);
+            body.appendChild(addFaqBtn);
+          }
+
+          card.appendChild(body);
+          listEl.appendChild(card);
+        });
+      }
+
+      document.querySelectorAll("[data-add-block]").forEach((btn) => {
+        btn.onclick = () => {
+          const type = btn.getAttribute("data-add-block");
+          blocks.push(createDefaultBlock(type));
+          render();
+        };
+      });
+
+      window.getSulpaykiBlocks = function () {
+        return blocks;
+      };
+
+      render();
+    }
+
+    document.addEventListener("DOMContentLoaded", initBlocksEditor);
+    document.addEventListener("astro:page-load", initBlocksEditor);
+  })();
+</script>
+

@@ -1,0 +1,478 @@
+---
+import type { ArticleType } from "../../db/schema";
+import type { FullArticle } from "../../lib/loaders";
+import Reload from "../../icons/Reload.astro";
+import BlocksEditor from "./BlocksEditor.astro";
+
+interface TagOption {
+  id: number;
+  titulo: string;
+}
+
+interface Props {
+  articleType: ArticleType;
+  article?: FullArticle | null;
+  tags: TagOption[];
+}
+
+const { articleType, article = null, tags } = Astro.props;
+const isServicio = articleType === "SERVICIO";
+const nounSingular = isServicio ? "servicio turístico" : "destino";
+const backHref = isServicio ? "/admin/servicios" : "/admin/destinos";
+const publicPrefix = isServicio ? "/servicios-turisticos/" : "/destinos/";
+---
+
+<form id="article-editor-form" class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <a href={backHref} class="text-sm font-semibold text-neutral-600 hover:text-neutral-900 hover:underline">
+      ← Volver al listado de {isServicio ? "servicios" : "destinos"}
+    </a>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      {article && (
+        <>
+          <a
+            href={`/admin/preview/${isServicio ? "servicio" : "destino"}/${article.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rounded-xl border border-[#E2E0D8] bg-white px-4 py-2.5 text-sm font-semibold text-[#1F2421] hover:bg-neutral-100 transition"
+          >
+            Vista previa
+          </a>
+          <button
+            type="button"
+            id="delete-article-btn"
+            class="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-800 hover:bg-red-100 transition"
+          >
+            Eliminar
+          </button>
+        </>
+      )}
+      <button
+        type="submit"
+        id="save-article-btn"
+        class="rounded-xl bg-[#3B8730] hover:bg-[#317227] px-6 py-2.5 text-sm font-semibold text-white transition min-h-[42px]"
+      >
+        {article ? `Guardar cambios` : `Crear ${nounSingular}`}
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="article-form-feedback"
+    role="alert"
+    class="hidden rounded-xl border px-4 py-3 text-sm font-medium"
+  ></div>
+
+  <!-- Datos principales guiados -->
+  <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-5">
+    <h2 class="text-lg font-bold text-[#1F2421] border-b border-[#E2E0D8] pb-3">
+      Información principal del {nounSingular}
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label for="art-titulo" class="block text-sm font-semibold text-neutral-800 mb-1.5">
+          Título
+        </label>
+        <input
+          id="art-titulo"
+          type="text"
+          required
+          value={article?.titulo ?? ""}
+          placeholder={isServicio ? "Ej. Excursión a medida a Talampaya" : "Ej. Parque Nacional Talampaya"}
+          class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 focus:border-[#3B8730] focus:outline-none"
+        />
+      </div>
+
+      <div>
+        <label for="art-slug" class="block text-sm font-semibold text-neutral-800 mb-1.5">
+          Dirección web (se genera sola a partir del título)
+        </label>
+        <div class="flex items-center rounded-xl border border-neutral-300 bg-[#F7F6F2] px-3 py-2 text-sm">
+          <span class="text-neutral-500 select-none text-xs">{publicPrefix}</span>
+          <input
+            id="art-slug"
+            type="text"
+            value={article?.slug ?? ""}
+            placeholder="nombre-del-articulo"
+            class="w-full bg-transparent text-neutral-900 focus:outline-none text-sm font-medium"
+          />
+          <button
+            type="button"
+            id="reload-slug-btn"
+            title="Reescribir dirección web a partir del título"
+            aria-label="Reescribir dirección web a partir del título"
+            class="ml-1.5 shrink-0 rounded-lg p-0.5 hover:bg-neutral-200/70 transition cursor-pointer [&_svg]:w-4 [&_svg]:h-4"
+          >
+            <Reload />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado y destacado en Inicio -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+      <label class="flex items-start gap-3 rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 cursor-pointer">
+        <input
+          id="art-published"
+          type="checkbox"
+          checked={article ? article.published : true}
+          class="mt-1 h-4 w-4 rounded border-neutral-300 text-[#3B8730]"
+        />
+        <span>
+          <span class="block text-sm font-semibold text-[#1F2421]">Visible en la web pública</span>
+          <span class="block text-xs text-neutral-600 mt-0.5">
+            Si lo desmarcás, quedará guardado como borrador privado.
+          </span>
+        </span>
+      </label>
+
+      <label class="flex items-start gap-3 rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 cursor-pointer">
+        <input
+          id="art-featured"
+          type="checkbox"
+          checked={article ? article.featured : true}
+          class="mt-1 h-4 w-4 rounded border-neutral-300 text-[#3B8730]"
+        />
+        <span>
+          <span class="block text-sm font-semibold text-[#1F2421]">Destacar en la Página de Inicio</span>
+          <span class="block text-xs text-neutral-600 mt-0.5">
+            Aparecerá en el carrusel de "{isServicio ? "Servicios de turismo" : "Destinos destacados"}" del inicio.
+          </span>
+        </span>
+      </label>
+    </div>
+
+    <!-- Categorías / Etiquetas -->
+    <div>
+      <span class="block text-sm font-semibold text-neutral-800 mb-2">
+        Categorías asociadas
+      </span>
+      <div class="flex flex-wrap gap-2.5">
+        {tags.map((tag) => {
+          const checked = article?.tagIds.includes(tag.id) ?? false;
+          return (
+            <label class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-3.5 py-1.5 text-sm font-medium text-neutral-800 cursor-pointer hover:border-[#3B8730] has-[:checked]:bg-green-50 has-[:checked]:border-[#3B8730] has-[:checked]:text-emerald-950">
+              <input
+                type="checkbox"
+                name="tagIds"
+                value={tag.id}
+                checked={checked}
+                class="h-4 w-4 rounded border-neutral-300"
+              />
+              {tag.titulo}
+            </label>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Imagen de portada -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+      <div class="space-y-2">
+        <span class="block text-sm font-semibold text-neutral-800">Imagen de portada</span>
+        <div
+          id="cover-preview-box"
+          class="aspect-[16/10] w-full rounded-xl border border-neutral-300 bg-[#F7F6F2] overflow-hidden flex items-center justify-center"
+        >
+          {article?.coverImagen?.url ? (
+            <img
+              id="cover-preview-img"
+              src={article.coverImagen.url}
+              alt={article.coverImagen.alternativeText || article.titulo}
+              class="w-full h-full object-cover"
+            />
+          ) : (
+            <span id="cover-preview-placeholder" class="text-xs text-neutral-500 px-4 text-center">
+              Todavía no seleccionaste imagen de portada
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          id="pick-cover-btn"
+          class="w-full rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 px-4 py-2.5 text-sm font-semibold text-[#1F2421] transition"
+        >
+          Subir o elegir imagen de portada
+        </button>
+      </div>
+
+      <div class="md:col-span-2 space-y-4">
+        <input type="hidden" id="art-cover-url" value={article?.coverImagen?.url ?? ""} />
+
+        <div>
+          <label for="art-cover-alt" class="block text-sm font-semibold text-neutral-800 mb-1">
+            Descripción de la imagen (accesibilidad y Google)
+          </label>
+          <input
+            id="art-cover-alt"
+            type="text"
+            value={article?.coverImagen?.alternativeText ?? ""}
+            placeholder="Ej. Vista panorámica de los paredones rojizos de Talampaya"
+            class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm text-neutral-900"
+          />
+        </div>
+
+        <div>
+          <label for="art-resumen" class="block text-sm font-semibold text-neutral-800 mb-1">
+            Resumen corto para las tarjetas (máx. 320 caracteres)
+          </label>
+          <textarea
+            id="art-resumen"
+            rows="3"
+            maxlength="320"
+            placeholder="Breve invitación que se verá en las tarjetas del catálogo y en buscadores..."
+            class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm text-neutral-900"
+          >{article?.resumen ?? ""}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción completa + asistente de Mapa -->
+    <div class="pt-2">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+        <label for="art-descripcion" class="text-sm font-semibold text-neutral-800">
+          Descripción principal detallada
+        </label>
+        <div class="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            id="btn-md-subtitle"
+            class="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-700 hover:bg-neutral-100"
+          >
+            + Subtítulo
+          </button>
+          <button
+            type="button"
+            id="btn-md-list"
+            class="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-700 hover:bg-neutral-100"
+          >
+            + Lista
+          </button>
+          <button
+            type="button"
+            id="btn-md-map"
+            class="rounded-lg border border-neutral-300 bg-white px-2.5 py-1 text-xs font-semibold text-neutral-800 hover:bg-neutral-100"
+          >
+            + Mapa de Google
+          </button>
+        </div>
+      </div>
+      <textarea
+        id="art-descripcion"
+        rows="8"
+        placeholder="Contá todos los detalles, horarios, recomendaciones o qué incluye..."
+        class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 leading-relaxed"
+      >{article?.descripcion ?? ""}</textarea>
+    </div>
+  </section>
+
+  <!-- Bloques ordenables adicionales -->
+  <BlocksEditor initialBlocks={article?.blocks ?? []} />
+</form>
+
+<script
+  is:inline
+  define:vars={{
+    articleId: article?.id ?? null,
+    articleType,
+    backHref,
+    nounSingular,
+  }}
+>
+  (function () {
+    function slugifyLocal(text) {
+      return String(text || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/[\s_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    function initArticleForm() {
+      const form = document.getElementById("article-editor-form");
+      if (!form) return;
+
+      const titleInput = document.getElementById("art-titulo");
+      const slugInput = document.getElementById("art-slug");
+      const reloadSlugBtn = document.getElementById("reload-slug-btn");
+      const coverUrlInput = document.getElementById("art-cover-url");
+      const coverAltInput = document.getElementById("art-cover-alt");
+      const previewBox = document.getElementById("cover-preview-box");
+      const pickCoverBtn = document.getElementById("pick-cover-btn");
+      const descArea = document.getElementById("art-descripcion");
+      const feedback = document.getElementById("article-form-feedback");
+      const saveBtn = document.getElementById("save-article-btn");
+      const deleteBtn = document.getElementById("delete-article-btn");
+
+      let slugManuallyEdited = Boolean(articleId);
+
+      slugInput?.addEventListener("input", () => {
+        slugManuallyEdited = slugInput.value.trim().length > 0;
+      });
+
+      titleInput?.addEventListener("input", () => {
+        if (!slugManuallyEdited && slugInput) {
+          slugInput.value = slugifyLocal(titleInput.value);
+        }
+      });
+
+      reloadSlugBtn?.addEventListener("click", () => {
+        if (titleInput && slugInput) {
+          slugInput.value = slugifyLocal(titleInput.value);
+        }
+      });
+
+      pickCoverBtn?.addEventListener("click", () => {
+        window.openSulpaykiMediaPicker?.((media) => {
+          coverUrlInput.value = media.url;
+          if (!coverAltInput.value && media.altText) {
+            coverAltInput.value = media.altText;
+          }
+          previewBox.innerHTML = `<img src="${media.url}" alt="" class="w-full h-full object-cover" />`;
+        });
+      });
+
+      document.getElementById("btn-md-subtitle")?.addEventListener("click", () => {
+        descArea.value += "\n### Subtítulo de sección\n";
+        descArea.focus();
+      });
+
+      document.getElementById("btn-md-list")?.addEventListener("click", () => {
+        descArea.value += "\n- Primer punto importante\n- Segundo punto importante\n";
+        descArea.focus();
+      });
+
+      document.getElementById("btn-md-map")?.addEventListener("click", () => {
+        const raw = window.prompt(
+          "Pegá el código iframe o URL de Google Maps (Compartir -> Insertar un mapa):"
+        );
+        if (!raw) return;
+        const mapTitle = window.prompt("Título opcional para el mapa:") || "";
+        let url = raw.trim();
+        const match = url.match(/src="([^"]+)"/);
+        if (match?.[1]) url = match[1];
+        descArea.value += mapTitle.trim()
+          ? `\n[map:${url}|${mapTitle.trim()}]\n`
+          : `\n[map:${url}]\n`;
+        descArea.focus();
+      });
+
+      function showMessage(msg, isError) {
+        feedback.textContent = msg;
+        feedback.className = `rounded-xl border px-4 py-3 text-sm font-medium ${
+          isError
+            ? "border-red-300 bg-red-50 text-red-900"
+            : "border-green-300 bg-green-50 text-green-950"
+        }`;
+        feedback.classList.remove("hidden");
+        feedback.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        feedback.classList.add("hidden");
+
+        const coverUrl = coverUrlInput.value.trim();
+        if (!coverUrl) {
+          showMessage("Seleccioná o subí una imagen de portada antes de guardar.", true);
+          return;
+        }
+
+        const checkedTags = Array.from(form.querySelectorAll('input[name="tagIds"]:checked')).map(
+          (el) => Number(el.value)
+        );
+
+        const payload = {
+          type: articleType,
+          titulo: titleInput.value.trim(),
+          slug: slugInput.value.trim() || slugifyLocal(titleInput.value),
+          resumen: document.getElementById("art-resumen").value.trim(),
+          descripcion: descArea.value,
+          coverUrl,
+          coverAlt: coverAltInput.value.trim() || titleInput.value.trim(),
+          published: document.getElementById("art-published").checked,
+          featured: document.getElementById("art-featured").checked,
+          tagIds: checkedTags,
+          blocks: window.getSulpaykiBlocks ? window.getSulpaykiBlocks() : [],
+        };
+
+        saveBtn.disabled = true;
+        const prevLabel = saveBtn.textContent;
+        saveBtn.textContent = "Guardando...";
+
+        try {
+          const endpoint = articleId ? `/api/admin/articles/${articleId}` : "/api/admin/articles";
+          const method = articleId ? "PUT" : "POST";
+
+          const res = await fetch(endpoint, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "No se pudo guardar.");
+          }
+
+          window.markSulpaykiPendingChanges?.();
+
+          if (!articleId && data.id) {
+            window.location.href = `${backHref}/${data.id}?saved=1`;
+            return;
+          }
+
+          if (data.slug && slugInput) {
+            slugInput.value = data.slug;
+          }
+          showMessage(
+            `Cambios guardados. Recordá pulsar "Publicar cambios en la web" arriba a la derecha cuando termines tus ediciones.`,
+            false
+          );
+        } catch (err) {
+          showMessage(err.message || "Error al guardar.", true);
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = prevLabel;
+        }
+      };
+
+      deleteBtn?.addEventListener("click", async () => {
+        if (!articleId) return;
+        const ok = window.confirm(
+          `¿Seguro que querés eliminar este ${nounSingular}? Esta acción no se puede deshacer.`
+        );
+        if (!ok) return;
+
+        deleteBtn.disabled = true;
+        try {
+          const res = await fetch(`/api/admin/articles/${articleId}`, {
+            method: "DELETE",
+          });
+          if (!res.ok) throw new Error("No se pudo eliminar.");
+          window.location.href = backHref;
+        } catch (err) {
+          showMessage(err.message || "No se pudo eliminar.", true);
+          deleteBtn.disabled = false;
+        }
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("saved") === "1") {
+        showMessage(
+          `¡Listo! Se creó el ${nounSingular} correctamente. Cuando termines tus cambios, pulsá "Publicar cambios en la web".`,
+          false
+        );
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", initArticleForm);
+    document.addEventListener("astro:page-load", initArticleForm);
+  })();
+</script>
+

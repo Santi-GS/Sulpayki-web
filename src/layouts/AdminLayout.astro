@@ -1,0 +1,295 @@
+---
+import "/src/styles/global.css";
+import "@fontsource-variable/montserrat";
+import MediaPickerModal from "../components/admin/MediaPickerModal.astro";
+import { getSitePublishState } from "../lib/loaders";
+import { isUsingRemoteTurso } from "../db/client";
+import { isCloudinaryConfigured } from "../lib/cloudinary";
+
+interface Props {
+  title: string;
+  activeSection?:
+    | "resumen"
+    | "inicio"
+    | "destinos"
+    | "servicios"
+    | "sobre-nosotros"
+    | "medios"
+    | "etiquetas"
+    | "usuarios"
+    | "sistema";
+}
+
+const { title, activeSection = "resumen" } = Astro.props;
+const user = Astro.locals.user;
+const isSuperadmin = user?.role === "SUPERADMIN";
+const publishState = await getSitePublishState();
+const remoteTurso = isUsingRemoteTurso();
+const cloudinaryReady = isCloudinaryConfigured();
+
+const editorLinks = [
+  { id: "resumen", label: "Resumen", href: "/admin" },
+  { id: "inicio", label: "Portada de Inicio", href: "/admin/inicio" },
+  { id: "destinos", label: "Destinos", href: "/admin/destinos" },
+  { id: "servicios", label: "Servicios Turísticos", href: "/admin/servicios" },
+  { id: "sobre-nosotros", label: "Sobre Nosotros", href: "/admin/sobre-nosotros" },
+  { id: "medios", label: "Biblioteca de Imágenes", href: "/admin/medios" },
+];
+
+const superadminLinks = [
+  { id: "etiquetas", label: "Etiquetas y Categorías", href: "/admin/etiquetas" },
+  { id: "usuarios", label: "Usuarios y Roles", href: "/admin/usuarios" },
+  { id: "sistema", label: "Sistema y Respaldos", href: "/admin/sistema" },
+];
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} — Panel Sulpayki</title>
+  </head>
+  <body class="bg-[#F7F6F2] text-[#1F2421] min-h-screen font-['Montserrat_Variable',sans-serif]">
+    <div class="min-h-screen flex flex-col lg:flex-row">
+      <!-- Barra lateral -->
+      <aside class="w-full lg:w-68 bg-[#1D261F] text-[#F5F2EB] flex-shrink-0 flex flex-col justify-between">
+        <div>
+          <div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
+            <a href="/admin" class="flex items-center gap-3">
+              <img src="/sulpayki-logo-grande.webp" alt="Sulpayki" class="h-10 w-auto rounded bg-white/95 p-1" />
+              <div>
+                <span class="block font-bold text-base leading-tight text-white">Sulpayki</span>
+                <span class="block text-xs text-[#E5BA59] font-medium">
+                  {isSuperadmin ? "Superadministrador" : "Panel de Edición"}
+                </span>
+              </div>
+            </a>
+            <button
+              type="button"
+              id="admin-mobile-menu-btn"
+              aria-label="Mostrar menú del panel"
+              class="lg:hidden rounded-lg p-2 text-white hover:bg-white/10 min-w-[40px] min-h-[40px]"
+            >
+              ☰
+            </button>
+          </div>
+
+          <nav id="admin-sidebar-nav" aria-label="Navegación del panel" class="hidden lg:block px-3 py-4 space-y-6">
+            <div>
+              <p class="px-3 mb-2 text-xs font-semibold text-white/55">Contenido del sitio</p>
+              <ul class="space-y-1">
+                {editorLinks.map((item) => {
+                  const active = activeSection === item.id;
+                  return (
+                    <li>
+                      <a
+                        href={item.href}
+                        aria-current={active ? "page" : undefined}
+                        class={`block rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                          active
+                            ? "bg-[#3B8730] text-white font-semibold"
+                            : "text-[#F5F2EB]/85 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {isSuperadmin && (
+              <div>
+                <p class="px-3 mb-2 text-xs font-semibold text-white/55">Administración técnica</p>
+                <ul class="space-y-1">
+                  {superadminLinks.map((item) => {
+                    const active = activeSection === item.id;
+                    return (
+                      <li>
+                        <a
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          class={`block rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                            active
+                              ? "bg-[#3B8730] text-white font-semibold"
+                              : "text-[#F5F2EB]/85 hover:bg-white/10 hover:text-white"
+                          }`}
+                        >
+                          {item.label}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
+          </nav>
+        </div>
+
+        <div class="hidden lg:block p-4 border-t border-white/10 text-xs text-white/75 space-y-3">
+          {user && (
+            <div class="px-2">
+              <p class="font-semibold text-white truncate">{user.name}</p>
+              <p class="truncate text-white/60">{user.email}</p>
+            </div>
+          )}
+          <div class="flex items-center gap-2">
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex-1 text-center rounded-lg border border-white/20 px-3 py-2 font-medium text-white hover:bg-white/10 transition"
+            >
+              Ver web pública
+            </a>
+            <form method="POST" action="/api/admin/auth/logout">
+              <button
+                type="submit"
+                class="rounded-lg bg-white/10 px-3 py-2 font-medium text-white hover:bg-red-600/80 transition"
+              >
+                Salir
+              </button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Área principal -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <!-- Barra superior con acción de publicación estática -->
+        <header class="bg-white border-b border-[#E2E0D8] px-4 sm:px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-[#1F2421]">{title}</h1>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <span
+              id="pending-badge"
+              class={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                publishState.hasPendingChanges
+                  ? "bg-amber-100 text-amber-950"
+                  : "bg-neutral-100 text-neutral-600"
+              }`}
+            >
+              <span
+                id="pending-dot"
+                class={`h-2 w-2 rounded-full ${
+                  publishState.hasPendingChanges ? "bg-amber-600" : "bg-green-600"
+                }`}
+              ></span>
+              <span id="pending-text">
+                {publishState.hasPendingChanges
+                  ? "Hay cambios listos para publicar"
+                  : "Web sincronizada"}
+              </span>
+            </span>
+
+            <button
+              type="button"
+              id="trigger-deploy-btn"
+              class="rounded-xl bg-[#E5BA59] hover:bg-[#dba93d] text-[#1D261F] font-semibold text-sm px-4 py-2.5 transition min-h-[40px]"
+            >
+              Publicar cambios en la web
+            </button>
+          </div>
+        </header>
+
+        <!-- Aviso global de estado de publicación -->
+        <div
+          id="deploy-toast"
+          role="status"
+          aria-live="polite"
+          class="hidden mx-4 sm:mx-8 mt-4 rounded-xl border px-4 py-3 text-sm font-medium"
+        ></div>
+
+        {isSuperadmin && (!remoteTurso || !cloudinaryReady) && (
+          <div class="mx-4 sm:mx-8 mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs text-amber-950 flex flex-wrap items-center justify-between gap-2">
+            <span>
+              <strong>Modo desarrollo / configuración pendiente:</strong>
+              {!remoteTurso && " Base de datos usando SQLite local."}
+              {!cloudinaryReady && " Imágenes usando almacenamiento local (configurá Cloudinary para producción)."}
+            </span>
+            <a href="/admin/sistema" class="underline font-semibold">Ver estado del sistema</a>
+          </div>
+        )}
+
+        <main class="p-4 sm:p-8 flex-1 max-w-6xl w-full">
+          <slot />
+        </main>
+      </div>
+    </div>
+
+    <MediaPickerModal />
+
+    <script is:inline>
+      (function () {
+        function initAdminChrome() {
+          const menuBtn = document.getElementById("admin-mobile-menu-btn");
+          const nav = document.getElementById("admin-sidebar-nav");
+          if (menuBtn && nav) {
+            menuBtn.onclick = () => {
+              nav.classList.toggle("hidden");
+            };
+          }
+
+          const deployBtn = document.getElementById("trigger-deploy-btn");
+          const toast = document.getElementById("deploy-toast");
+          const badge = document.getElementById("pending-badge");
+          const dot = document.getElementById("pending-dot");
+          const text = document.getElementById("pending-text");
+
+          window.markSulpaykiPendingChanges = function () {
+            if (!badge || !dot || !text) return;
+            badge.className = "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-amber-100 text-amber-950";
+            dot.className = "h-2 w-2 rounded-full bg-amber-600";
+            text.textContent = "Hay cambios listos para publicar";
+          };
+
+          if (deployBtn && toast) {
+            deployBtn.onclick = async () => {
+              deployBtn.disabled = true;
+              const prevText = deployBtn.textContent;
+              deployBtn.textContent = "Iniciando publicación...";
+
+              try {
+                const res = await fetch("/api/admin/deploy", { method: "POST" });
+                const data = await res.json();
+                if (!res.ok) {
+                  throw new Error(data.error || "No se pudo iniciar la publicación.");
+                }
+
+                toast.textContent = data.message || "Publicación iniciada correctamente.";
+                toast.className =
+                  "mx-4 sm:mx-8 mt-4 rounded-xl border border-green-300 bg-green-50 text-green-950 px-4 py-3 text-sm font-medium";
+                toast.classList.remove("hidden");
+
+                if (badge && dot && text) {
+                  badge.className =
+                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-neutral-100 text-neutral-600";
+                  dot.className = "h-2 w-2 rounded-full bg-green-600";
+                  text.textContent = "Publicación en curso / sincronizada";
+                }
+              } catch (err) {
+                toast.textContent = err.message || "Error al publicar.";
+                toast.className =
+                  "mx-4 sm:mx-8 mt-4 rounded-xl border border-red-300 bg-red-50 text-red-900 px-4 py-3 text-sm font-medium";
+                toast.classList.remove("hidden");
+              } finally {
+                deployBtn.disabled = false;
+                deployBtn.textContent = prevText;
+              }
+            };
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", initAdminChrome);
+        document.addEventListener("astro:page-load", initAdminChrome);
+      })();
+    </script>
+  </body>
+</html>
+

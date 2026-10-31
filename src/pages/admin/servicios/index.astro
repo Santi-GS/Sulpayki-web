@@ -1,0 +1,102 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { getAllArticlesForAdmin } from "../../../lib/loaders";
+import { formatDate } from "../../../lib/index";
+
+export const prerender = false;
+
+const servicios = await getAllArticlesForAdmin("SERVICIO");
+---
+
+<AdminLayout title="Servicios Turísticos" activeSection="servicios">
+  <div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <p class="text-sm text-neutral-600">
+        Gestioná las excursiones, circuitos productivos, gastronomía y traslados ofrecidos por la agencia.
+      </p>
+      <a
+        href="/admin/servicios/nuevo"
+        class="inline-flex items-center justify-center rounded-xl bg-[#3B8730] hover:bg-[#317227] px-5 py-2.5 text-sm font-semibold text-white transition whitespace-nowrap"
+      >
+        + Nuevo servicio turístico
+      </a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-[#E2E0D8] overflow-hidden">
+      {servicios.length === 0 ? (
+        <div class="p-12 text-center space-y-3">
+          <h2 class="text-lg font-bold text-[#1F2421]">No hay servicios turísticos cargados</h2>
+          <p class="text-sm text-neutral-600">Creá el primer servicio y asignale su categoría del menú.</p>
+          <a
+            href="/admin/servicios/nuevo"
+            class="inline-block rounded-xl bg-[#3B8730] px-5 py-2.5 text-sm font-semibold text-white"
+          >
+            Crear servicio
+          </a>
+        </div>
+      ) : (
+        <ul class="divide-y divide-[#E2E0D8]">
+          {servicios.map((item) => (
+            <li class="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#FAF9F6]">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-16 h-16 rounded-xl bg-neutral-100 overflow-hidden flex-shrink-0 border border-neutral-200">
+                  {item.coverImagen?.url && (
+                    <img src={item.coverImagen.url} alt="" class="w-full h-full object-cover" />
+                  )}
+                </div>
+                <div class="min-w-0">
+                  <a
+                    href={`/admin/servicios/${item.id}`}
+                    class="text-base font-bold text-[#1F2421] hover:text-[#3B8730] truncate block"
+                  >
+                    {item.titulo}
+                  </a>
+                  <div class="flex flex-wrap items-center gap-2 mt-1">
+                    <span
+                      class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                        item.published ? "bg-green-100 text-emerald-950" : "bg-neutral-200 text-neutral-700"
+                      }`}
+                    >
+                      {item.published ? "Publicado" : "Borrador"}
+                    </span>
+                    {item.featured && (
+                      <span class="rounded-full bg-amber-100 text-amber-950 px-2.5 py-0.5 text-xs font-semibold">
+                        Destacado en Inicio
+                      </span>
+                    )}
+                    {item.tags.map((t) => (
+                      <span class="rounded-full bg-neutral-100 text-neutral-700 px-2.5 py-0.5 text-xs font-medium">
+                        {t.titulo}
+                      </span>
+                    ))}
+                  </div>
+                  <p class="text-xs text-neutral-500 mt-1">
+                    Actualizado el {formatDate(item.updatedAt)} · /servicios-turisticos/{item.slug}
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 self-end sm:self-center">
+                <a
+                  href={`/admin/preview/servicio/${item.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="rounded-xl border border-[#E2E0D8] bg-white px-3.5 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-100"
+                >
+                  Vista previa
+                </a>
+                <a
+                  href={`/admin/servicios/${item.id}`}
+                  class="rounded-xl bg-[#1D261F] hover:bg-neutral-800 px-4 py-2 text-xs font-semibold text-white"
+                >
+                  Editar
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</AdminLayout>
+

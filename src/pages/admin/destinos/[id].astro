@@ -1,0 +1,26 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import ArticleEditorForm from "../../../components/admin/ArticleEditorForm.astro";
+import { getAllTags, getArticleByIdForAdmin } from "../../../lib/loaders";
+
+export const prerender = false;
+
+const id = Number(Astro.params.id);
+if (!Number.isInteger(id) || id <= 0) {
+  return Astro.redirect("/admin/destinos");
+}
+
+const [article, tags] = await Promise.all([
+  getArticleByIdForAdmin(id),
+  getAllTags(),
+]);
+
+if (!article || article.type !== "DESTINO") {
+  return Astro.redirect("/admin/destinos");
+}
+---
+
+<AdminLayout title={`Editar: ${article.titulo}`} activeSection="destinos">
+  <ArticleEditorForm articleType="DESTINO" article={article} tags={tags} />
+</AdminLayout>
+

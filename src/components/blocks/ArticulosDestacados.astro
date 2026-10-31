@@ -1,6 +1,5 @@
 ---
-import type { DestinosDestacadosProps } from "../../lib/types";
-import type { ServiciosDestacadosProps } from "../../lib/types";
+import type { DestinosDestacadosProps, ServiciosDestacadosProps } from "../../lib/types";
 import { formatDate } from "../../lib/index";
 import StrapiImage from "../StrapiImage.astro";
 import Icon from "../ui/Icon.astro";
@@ -13,6 +12,7 @@ const { data } = Astro.props as Props;
 const isServicios = data.__component === "block.servicios-destacados";
 const items = data.items ?? data.articulo_destinos ?? data.servicio_de_turismos ?? [];
 const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
+const sectionLabel = isServicios ? "servicios turísticos" : "destinos destacados";
 ---
 
 <style>
@@ -48,11 +48,11 @@ const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
     -webkit-mask-image: linear-gradient(to right, black 0%, black 95%, transparent 100%);
   }
 
-  #scroll-container::-webkit-scrollbar {
+  .carousel-scroll-container::-webkit-scrollbar {
     display: none;
   }
 
-  #scroll-container {
+  .carousel-scroll-container {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
@@ -93,140 +93,155 @@ const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
   }
 </style>
 
-<section class=" relative">
+<section class="relative" data-destacados-carousel>
   <div class="container mx-auto px-4">
-    <div class="relative">
+    {items.length === 0 ? (
+      <div class="mx-auto max-w-xl rounded-2xl border border-neutral-200 bg-white/80 p-8 text-center text-neutral-600 shadow-sm">
+        <p class="text-base font-medium">Próximamente publicaremos nuevos {sectionLabel}.</p>
+      </div>
+    ) : (
+      <div class="relative">
+        <!-- Botón izquierdo -->
+        <button
+          type="button"
+          data-scroll-left
+          aria-label={`Desplazar ${sectionLabel} hacia la izquierda`}
+          class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-2.5 hover:bg-gray-100 scroll-btn min-w-[44px] min-h-[44px] items-center justify-center"
+          disabled
+        >
+          <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-      <!-- Botón izquierdo -->
-      <button
-        id="scroll-left-btn"
-        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 scroll-btn"
-        disabled
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      <!-- Contenedor con fade -->
-      <div id="scroll-wrapper" class="overflow-hidden fade-wrapper" data-fade="both">
-        <div id="scroll-container" class="flex gap-6 overflow-x-auto scroll-smooth px-4 md:px-12">
-          {
-            items.map((article) => (
-            <div class="relative w-[85%] sm:w-[340px] flex-shrink-0 group">
-              <a
-                href={`${baseHref}${article.slug}`}
-                class="block overflow-hidden bg-white shadow transition-transform duration-300 focus:outline-none rounded-t"
-                tabindex="0"
-              >
-                <!-- Imagen con overlay -->
-                <div class="relative h-[220px]">
-                  <StrapiImage
-                    src={article.coverImagen.url}
-                    alt={article.coverImagen.alternativeText}
-                    width={340}
-                    height={220}
-                    class="w-full h-full object-cover"
-                  />
-                  <!-- Título permanente en la imagen -->
-                  <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/70 to-transparent">
-                    <h3 class="text-xl font-bold text-white mb-1">{article.titulo}</h3>
-                  </div>
-                  <!-- Overlay de hover con información adicional -->
-                  <div class="absolute bottom-0 left-0 w-full h-full text-white p-4 card-hover-content flex flex-col justify-center overflow-hidden">
-                    <h3 class="text-xl font-bold mb-2 line-clamp-2 leading-tight">{article.titulo}</h3>
-                    <div class="text-sm mb-2 flex flex-wrap items-center gap-x-2">
-                      <span
-                        class="rounded-full bg-green-300 px-2.5 py-0.5 font-medium whitespace-nowrap text-emerald-900"
-                      >
-                        {article.tags[0].titulo}
-                      </span>
-                      <span class="text-white">•</span>
-                      <span class="text-white">{formatDate(article.publishedAt)}</span>
+        <!-- Contenedor con fade -->
+        <div data-scroll-wrapper class="overflow-hidden fade-wrapper" data-fade="both">
+          <div data-scroll-container class="carousel-scroll-container flex gap-6 overflow-x-auto scroll-smooth px-4 md:px-12">
+            {
+              items.map((article) => (
+                <div class="relative w-[85%] sm:w-[340px] flex-shrink-0 group">
+                  <a
+                    href={`${baseHref}${article.slug}`}
+                    class="block overflow-hidden bg-white shadow transition-transform duration-300 focus:outline-none rounded-t"
+                  >
+                    <!-- Imagen con overlay -->
+                    <div class="relative h-[220px]">
+                      {article.coverImagen?.url ? (
+                        <StrapiImage
+                          src={article.coverImagen.url}
+                          alt={article.coverImagen.alternativeText || article.titulo}
+                          width={340}
+                          height={220}
+                          class="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div class="w-full h-full bg-neutral-200 flex items-center justify-center text-neutral-500 text-sm">
+                          Sin imagen de portada
+                        </div>
+                      )}
+                      <!-- Título permanente en la imagen -->
+                      <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/75 to-transparent">
+                        <h3 class="text-xl font-bold text-white mb-1">{article.titulo}</h3>
+                      </div>
+                      <!-- Overlay de hover con información adicional -->
+                      <div class="absolute bottom-0 left-0 w-full h-full text-white p-4 card-hover-content flex flex-col justify-center overflow-hidden">
+                        <h3 class="text-xl font-bold mb-2 line-clamp-2 leading-tight">{article.titulo}</h3>
+                        <div class="text-sm mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                          {article.tags?.[0]?.titulo && (
+                            <>
+                              <span
+                                class="rounded-full bg-green-300 px-2.5 py-0.5 font-medium whitespace-nowrap text-emerald-900"
+                              >
+                                {article.tags[0].titulo}
+                              </span>
+                              <span class="text-white" aria-hidden="true">•</span>
+                            </>
+                          )}
+                          {article.publishedAt && (
+                            <span class="text-white">{formatDate(article.publishedAt)}</span>
+                          )}
+                        </div>
+                        <p class="text-gray-50 text-sm leading-relaxed line-clamp-3 flex-1">{article.descripcion}</p>
+                      </div>
                     </div>
-                    <p class="text-gray-50 text-sm leading-relaxed line-clamp-3 flex-1">{article.descripcion}</p>
-                  </div>
+                  </a>
+
+                  <!-- Botón Ver Más -->
+                  <a href={`${baseHref}${article.slug}`} class="ver-mas-btn" aria-label={`Ver más sobre ${article.titulo}`}>
+                    Ver más
+                  </a>
                 </div>
-              </a>
-
-              <!-- Botón Ver Más -->
-              <a href={`${baseHref}${article.slug}`} class="ver-mas-btn">Ver más</a>
-            </div>
-            ))
-          }
+              ))
+            }
+          </div>
         </div>
+
+        <div class="flex justify-start md:pl-8">
+          <a href={baseHref} class="flex items-center px-5 pt-5 text-green-700 font-semibold hover:text-green-800 hover:underline hover:underline-offset-[3px] transition-colors duration-200 group">
+            <span>Explorar todos los {sectionLabel}</span>
+            <Icon name="Flechita" />
+          </a>
+        </div>
+
+        <!-- Botón derecho -->
+        <button
+          type="button"
+          data-scroll-right
+          aria-label={`Desplazar ${sectionLabel} hacia la derecha`}
+          class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-2.5 hover:bg-gray-100 scroll-btn min-w-[44px] min-h-[44px] items-center justify-center"
+        >
+          <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
-
-      <div class="flex justify-start md:pl-8">
-        <a href={`${baseHref}`} class="flex items-center px-5 pt-5 text-green-600 font-semibold hover:text-green-700 hover:underline hover:underline-offset-[3px] hover:stroke-3 transition-colors duration-200 group">
-          <span>Explorar Más</span>
-          <Icon name="Flechita" />
-        </a>
-      </div>
-
-      
-
-      <!-- Botón derecho -->
-      <button
-        id="scroll-right-btn"
-        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-2 hover:bg-gray-100 scroll-btn"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-    </div>
+    )}
   </div>
 </section>
 
 <script type="module">
   const scrollByAmount = 360;
-  const $ = (id) => document.getElementById(id);
 
-  function scrollContent(dir) {
-    const container = $("scroll-container");
-    container?.scrollBy({ left: dir * scrollByAmount, behavior: "smooth" });
-    setTimeout(updateUI, 350);
+  function initializeCarousels() {
+    document.querySelectorAll("[data-destacados-carousel]").forEach((root) => {
+      const container = root.querySelector("[data-scroll-container]");
+      const leftBtn = root.querySelector("[data-scroll-left]");
+      const rightBtn = root.querySelector("[data-scroll-right]");
+      const wrapper = root.querySelector("[data-scroll-wrapper]");
+
+      if (!container || !leftBtn || !rightBtn || !wrapper) return;
+
+      const updateUI = () => {
+        const scrollLeft = container.scrollLeft;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+
+        leftBtn.disabled = scrollLeft <= 0;
+        rightBtn.disabled = maxScroll <= 0 || scrollLeft >= maxScroll - 1;
+
+        if (maxScroll <= 0) {
+          wrapper.dataset.fade = "none";
+        } else if (scrollLeft <= 0) {
+          wrapper.dataset.fade = "right";
+        } else if (scrollLeft >= maxScroll - 1) {
+          wrapper.dataset.fade = "left";
+        } else {
+          wrapper.dataset.fade = "both";
+        }
+      };
+
+      const scrollContent = (dir) => {
+        container.scrollBy({ left: dir * scrollByAmount, behavior: "smooth" });
+        setTimeout(updateUI, 350);
+      };
+
+      leftBtn.onclick = () => scrollContent(-1);
+      rightBtn.onclick = () => scrollContent(1);
+      container.onscroll = updateUI;
+      window.addEventListener("resize", updateUI, { passive: true });
+      updateUI();
+    });
   }
 
-  function updateUI() {
-    const container = $("scroll-container");
-    const leftBtn = $("scroll-left-btn");
-    const rightBtn = $("scroll-right-btn");
-    const wrapper = $("scroll-wrapper");
-
-    if (!container || !leftBtn || !rightBtn || !wrapper) return;
-
-    const scrollLeft = container.scrollLeft;
-    const maxScroll = container.scrollWidth - container.clientWidth;
-
-    leftBtn.disabled = scrollLeft <= 0;
-    rightBtn.disabled = scrollLeft >= maxScroll - 1;
-
-    if (scrollLeft <= 0) {
-      wrapper.dataset.fade = "right";
-    } else if (scrollLeft >= maxScroll - 1) {
-      wrapper.dataset.fade = "left";
-    } else {
-      wrapper.dataset.fade = "both";
-    }
-  }
-
-  function initializeScroll() {
-    const container = $("scroll-container");
-    const leftBtn = $("scroll-left-btn");
-    const rightBtn = $("scroll-right-btn");
-
-    if (!container || !leftBtn || !rightBtn) return;
-
-    leftBtn.onclick = () => scrollContent(-1);
-    rightBtn.onclick = () => scrollContent(1);
-    container.addEventListener("scroll", updateUI);
-    window.addEventListener("resize", updateUI);
-    updateUI();
-  }
-
-  document.addEventListener("DOMContentLoaded", initializeScroll);
-  document.addEventListener("astro:page-load", initializeScroll);
+  document.addEventListener("DOMContentLoaded", initializeCarousels);
+  document.addEventListener("astro:page-load", initializeCarousels);
 </script>
-

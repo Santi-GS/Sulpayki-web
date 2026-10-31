@@ -5,69 +5,74 @@ import Layout from "../../layouts/Layout.astro";
 import Pagination from "../../components/Pagination.astro";
 import FiltroServicios from "../../components/FiltroServicios.astro";
 import Icon from "../../components/ui/Icon.astro";
+import { getPublishedArticles, type FullArticle } from "../../lib/loaders";
 
 export const prerender = true;
 
-const PAGE_SIZE = 8;
-
-const pageParam = Astro.params.page as string | string[] | undefined;
-let currentPage = 1;
-if (typeof pageParam === "string") currentPage = parseInt(pageParam);
-else if (Array.isArray(pageParam) && pageParam.length > 0) currentPage = parseInt(pageParam[0]);
-
-// Fetch paginado desde Strapi para servicios turísticos
-const res = await fetch(
-  `${import.meta.env.VITE_STRAPI_HOST}/api/servicio-de-turismos?populate=*&pagination[page]=${currentPage}&pagination[pageSize]=${PAGE_SIZE}`,
-  {
-    headers: { Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}` },
-    cache: "no-store",
-  }
-);
-const data = await res.json();
-const servicios = data.data ?? [];
-const pagination = data.meta?.pagination ?? { page: 1, pageSize: PAGE_SIZE, pageCount: 1, total: 0 };
-
-const totalPages = pagination.pageCount;
-const prevPage = currentPage > 1 ? `/servicios-turisticos/${currentPage - 1 === 1 ? "" : currentPage - 1}` : null;
-const nextPage = currentPage < totalPages ? `/servicios-turisticos/${currentPage + 1}` : null;
-
 export async function getStaticPaths() {
   const PAGE_SIZE = 8;
-  const res1 = await fetch(
-    `${import.meta.env.VITE_STRAPI_HOST}/api/servicio-de-turismos?pagination[page]=1&pagination[pageSize]=1`,
-    { headers: { Authorization: `Bearer ${import.meta.env.VITE_STRAPI_TOKEN}` } }
-  );
-  const { meta } = await res1.json();
-  const total = meta?.pagination?.total || 0;
-  const pageCount = Math.ceil(total / PAGE_SIZE);
+  const allServicios = await getPublishedArticles("SERVICIO");
+  const total = allServicios.length;
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const paths = [];
-  // El primer path debe ser sin page (para /servicios-turisticos)
-  paths.push({ params: { page: undefined } });
-  for (let i = 2; i <= pageCount; i++) {
-    paths.push({ params: { page: String(i) } });
+  for (let i = 1; i <= pageCount; i++) {
+    const start = (i - 1) * PAGE_SIZE;
+    const pageServicios = allServicios.slice(start, start + PAGE_SIZE);
+    paths.push({
+      params: { page: i === 1 ? undefined : String(i) },
+      props: {
+        servicios: pageServicios,
+        currentPage: i,
+        totalPages: pageCount,
+      },
+    });
   }
 
   return paths;
 }
+
+interface Props {
+  servicios: FullArticle[];
+  currentPage: number;
+  totalPages: number;
+}
+
+const { servicios, currentPage, totalPages } = Astro.props;
+const prevPage =
+  currentPage > 1
+    ? `/servicios-turisticos/${currentPage - 1 === 1 ? "" : currentPage - 1}`
+    : null;
+const nextPage = currentPage < totalPages ? `/servicios-turisticos/${currentPage + 1}` : null;
 ---
 
-<Layout title="Sulpayki Viajes y Turismo">
+<Layout
+  title="Servicios Turísticos | Sulpayki Viajes y Turismo"
+  description="Servicios especializados de turismo industrial, naturaleza, cultural, gastronomía y transporte en La Rioja."
+>
   <section class="py-8">
     <FiltroServicios servicios={servicios} />
     <div class="container mx-auto px-4">
       <div class="flex flex-wrap justify-center">
-        <div id="servicios-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-8 w-full">
+        <div
+          id="servicios-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-8 w-full"
+        >
           {servicios.length > 0 &&
-            servicios.map((servicio: any) =>
+            servicios.map((servicio) =>
               servicio?.slug ? (
-                <a href={`/servicios-turisticos/${servicio.slug}`} class="group servicio-card" data-tags={servicio.tags?.map((t: any) => t.titulo).join(',') || ''} data-title={servicio.titulo?.toLowerCase() || ''}>
+                <a
+                  href={`/servicios-turisticos/${servicio.slug}`}
+                  class="group servicio-card"
+                  data-tags={servicio.tags?.map((t) => t.titulo).join(",") || ""}
+                  data-title={servicio.titulo?.toLowerCase() || ""}
+                >
                   <div class="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div class="relative">
                       <StrapiImage
                         class="w-full h-48 object-cover transition-transform duration-300"
                         src={servicio.coverImagen?.url}
-                        alt={servicio.coverImagen?.alternativeText || ""}
+                        alt={servicio.coverImagen?.alternativeText || servicio.titulo}
                         height={400}
                         width={400}
                       />
@@ -75,11 +80,13 @@ export async function getStaticPaths() {
                     </div>
                     <div class="p-6 flex flex-col h-full">
                       <div class="mb-3">
-                        {servicio.tags && servicio.tags.length > 0 && servicio.tags.map((tag: any) => (
-                          <span class="inline-block rounded-full bg-green-300 px-2.5 py-0.5 text-xs whitespace-nowrap text-emerald-900 mr-1 mb-1 font-medium">
-                            {tag.titulo}
-                          </span>
-                        ))}
+                        {servicio.tags &&
+                          servicio.tags.length > 0 &&
+                          servicio.tags.map((tag) => (
+                            <span class="inline-block rounded-full bg-green-300 px-2.5 py-0.5 text-xs whitespace-nowrap text-emerald-900 mr-1 mb-1 font-medium">
+                              {tag.titulo}
+                            </span>
+                          ))}
                       </div>
                       <h2 class="mb-3 text-lg font-bold line-clamp-2 text-gray-900 leading-tight group-hover:text-green-600 transition-colors duration-200">
                         {servicio.titulo}
@@ -88,7 +95,7 @@ export async function getStaticPaths() {
                         • Publicado: {formatDate(servicio.publishedAt)}
                       </span>
                       <p class="text-gray-600 leading-relaxed line-clamp-2 text-sm mb-4 min-h-[2.5rem]">
-                        {servicio.descripcion}
+                        {servicio.resumen || servicio.descripcion}
                       </p>
                       <div class="flex items-center pt-2 text-left text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
                         <span>Ver más</span>
@@ -104,11 +111,24 @@ export async function getStaticPaths() {
         {servicios.length === 0 && (
           <div class="text-center py-16">
             <div class="max-w-md mx-auto">
-              <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
+              <svg
+                aria-hidden="true"
+                class="w-16 h-16 text-gray-300 mx-auto mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"
+                ></path>
               </svg>
-              <p class="text-gray-500 text-lg font-medium">No hay servicios turísticos disponibles en esta página</p>
-              <p class="text-gray-400 text-sm mt-2">Intenta con otra página o vuelve más tarde</p>
+              <p class="text-gray-500 text-lg font-medium">
+                No hay servicios turísticos disponibles en esta página
+              </p>
+              <p class="text-gray-400 text-sm mt-2">Volvé más tarde para conocer nuevas propuestas</p>
             </div>
           </div>
         )}

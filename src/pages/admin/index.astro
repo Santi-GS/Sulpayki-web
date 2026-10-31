@@ -1,0 +1,162 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { getAllArticlesForAdmin, getAllMedia, getHomeHeroRaw } from "../../lib/loaders";
+import { formatDate } from "../../lib/index";
+
+export const prerender = false;
+
+const [allArticles, allMedia, hero] = await Promise.all([
+  getAllArticlesForAdmin(),
+  getAllMedia(),
+  getHomeHeroRaw(),
+]);
+
+const destinos = allArticles.filter((a) => a.type === "DESTINO");
+const servicios = allArticles.filter((a) => a.type === "SERVICIO");
+const recentItems = allArticles.slice(0, 6);
+const user = Astro.locals.user;
+---
+
+<AdminLayout title={`Hola, ${user?.name?.split(" ")[0] || "Equipo"}`} activeSection="resumen">
+  <div class="space-y-8">
+    <!-- Tarjetas de estado claras -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <a
+        href="/admin/inicio"
+        class="bg-white rounded-2xl border border-[#E2E0D8] p-5 hover:border-[#3B8730] transition block"
+      >
+        <span class="text-xs font-semibold text-neutral-500">Portada de Inicio</span>
+        <p class="text-2xl font-bold text-[#1F2421] mt-1">{hero.slides.length} diapositivas</p>
+        <span class="text-xs font-semibold text-[#3B8730] mt-2 inline-block">Editar novedades del Hero</span>
+      </a>
+
+      <a
+        href="/admin/destinos"
+        class="bg-white rounded-2xl border border-[#E2E0D8] p-5 hover:border-[#3B8730] transition block"
+      >
+        <span class="text-xs font-semibold text-neutral-500">Destinos Turísticos</span>
+        <p class="text-2xl font-bold text-[#1F2421] mt-1">
+          {destinos.filter((d) => d.published).length} publicados
+        </p>
+        <span class="text-xs text-neutral-500 mt-2 inline-block">
+          {destinos.filter((d) => !d.published).length} en borrador
+        </span>
+      </a>
+
+      <a
+        href="/admin/servicios"
+        class="bg-white rounded-2xl border border-[#E2E0D8] p-5 hover:border-[#3B8730] transition block"
+      >
+        <span class="text-xs font-semibold text-neutral-500">Servicios Turísticos</span>
+        <p class="text-2xl font-bold text-[#1F2421] mt-1">
+          {servicios.filter((s) => s.published).length} publicados
+        </p>
+        <span class="text-xs text-neutral-500 mt-2 inline-block">
+          {servicios.filter((s) => !s.published).length} en borrador
+        </span>
+      </a>
+
+      <a
+        href="/admin/medios"
+        class="bg-white rounded-2xl border border-[#E2E0D8] p-5 hover:border-[#3B8730] transition block"
+      >
+        <span class="text-xs font-semibold text-neutral-500">Biblioteca Multimedia</span>
+        <p class="text-2xl font-bold text-[#1F2421] mt-1">{allMedia.length} imágenes</p>
+        <span class="text-xs font-semibold text-[#3B8730] mt-2 inline-block">Gestionar fotos</span>
+      </a>
+    </section>
+
+    <!-- Acciones frecuentes -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6">
+      <h2 class="text-base font-bold text-[#1F2421] mb-4">Acciones rápidas</h2>
+      <div class="flex flex-wrap gap-3">
+        <a
+          href="/admin/destinos/nuevo"
+          class="rounded-xl bg-[#3B8730] hover:bg-[#317227] px-5 py-2.5 text-sm font-semibold text-white transition"
+        >
+          + Crear nuevo destino
+        </a>
+        <a
+          href="/admin/servicios/nuevo"
+          class="rounded-xl bg-[#1D261F] hover:bg-neutral-800 px-5 py-2.5 text-sm font-semibold text-white transition"
+        >
+          + Crear nuevo servicio turístico
+        </a>
+        <a
+          href="/admin/inicio"
+          class="rounded-xl border border-[#E2E0D8] bg-[#F7F6F2] hover:bg-neutral-200/70 px-5 py-2.5 text-sm font-semibold text-[#1F2421] transition"
+        >
+          Actualizar carrusel de portada
+        </a>
+        <a
+          href="/admin/sobre-nosotros"
+          class="rounded-xl border border-[#E2E0D8] bg-[#F7F6F2] hover:bg-neutral-200/70 px-5 py-2.5 text-sm font-semibold text-[#1F2421] transition"
+        >
+          Editar Sobre Nosotros
+        </a>
+      </div>
+    </section>
+
+    <!-- Últimas modificaciones -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#E2E0D8] flex items-center justify-between">
+        <h2 class="text-base font-bold text-[#1F2421]">Últimos artículos actualizados</h2>
+      </div>
+      {recentItems.length === 0 ? (
+        <div class="p-8 text-center text-sm text-neutral-600">
+          Todavía no hay destinos ni servicios cargados.
+        </div>
+      ) : (
+        <ul class="divide-y divide-[#E2E0D8]">
+          {recentItems.map((item) => {
+            const editUrl =
+              item.type === "SERVICIO"
+                ? `/admin/servicios/${item.id}`
+                : `/admin/destinos/${item.id}`;
+            return (
+              <li class="px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 hover:bg-[#FAF9F6]">
+                <div class="flex items-center gap-3 min-w-0">
+                  {item.coverImagen?.url && (
+                    <img
+                      src={item.coverImagen.url}
+                      alt=""
+                      class="w-12 h-12 rounded-lg object-cover bg-neutral-100 flex-shrink-0"
+                    />
+                  )}
+                  <div class="min-w-0">
+                    <a href={editUrl} class="font-semibold text-sm text-[#1F2421] hover:text-[#3B8730] truncate block">
+                      {item.titulo}
+                    </a>
+                    <div class="flex flex-wrap items-center gap-2 text-xs text-neutral-500 mt-0.5">
+                      <span>{item.type === "SERVICIO" ? "Servicio Turístico" : "Destino"}</span>
+                      <span>•</span>
+                      <span>{formatDate(item.updatedAt)}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span
+                    class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      item.published
+                        ? "bg-green-100 text-emerald-900"
+                        : "bg-neutral-200 text-neutral-700"
+                    }`}
+                  >
+                    {item.published ? "Publicado" : "Borrador"}
+                  </span>
+                  <a
+                    href={editUrl}
+                    class="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 hover:bg-neutral-100"
+                  >
+                    Editar
+                  </a>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  </div>
+</AdminLayout>
+

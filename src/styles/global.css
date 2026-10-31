@@ -11,9 +11,7 @@
   --color-text: #3A3A3A;      /* Gris oscuro para textos */
   --color-neutral:	#3A3A3A;
   --color-neutral-light: #F5F5F5;
-  
 }
-
 
 .hover-verde:hover {
   color: white;
@@ -30,4 +28,20 @@
   background: linear-gradient(to bottom, #63B451, #6EE650);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
-  
+
+/* Accesibilidad WCAG 2.2: foco visible por teclado y respeto a movimiento reducido */
+:focus-visible {
+  outline: 2px solid #599F30;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
