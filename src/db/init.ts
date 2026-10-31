@@ -109,8 +109,10 @@ async function runSchemaAndSeed(): Promise<void> {
   if (userCount === 0) {
     const superEmail = getEnv("INITIAL_SUPERADMIN_EMAIL", "admin@sulpayki.com").toLowerCase();
     const superPass = getEnv("INITIAL_SUPERADMIN_PASSWORD", "SulpaykiAdmin2026!");
+    const superName = getEnv("INITIAL_SUPERADMIN_NAME", "Administrador General");
     const editorEmail = getEnv("INITIAL_EDITOR_EMAIL", "cliente@sulpayki.com").toLowerCase();
     const editorPass = getEnv("INITIAL_EDITOR_PASSWORD", "SulpaykiEditor2026!");
+    const editorName = getEnv("INITIAL_EDITOR_NAME", "Equipo Sulpayki");
 
     const superHash = await bcrypt.hash(superPass, 10);
     const editorHash = await bcrypt.hash(editorPass, 10);
@@ -118,14 +120,14 @@ async function runSchemaAndSeed(): Promise<void> {
     await db.insert(users).values([
       {
         email: superEmail,
-        name: "Administrador General",
+        name: superName,
         passwordHash: superHash,
         role: "SUPERADMIN",
         createdAt: now,
       },
       {
         email: editorEmail,
-        name: "Equipo Sulpayki",
+        name: editorName,
         passwordHash: editorHash,
         role: "EDITOR",
         createdAt: now,
