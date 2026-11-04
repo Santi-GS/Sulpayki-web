@@ -226,7 +226,7 @@ async function runSchemaAndSeed(): Promise<void> {
         imagen: {
           id: 1,
           documentId: "seed-logo",
-          url: "/sulpayki-logo-grande.webp",
+          url: "/logo-sulpayki-2.svg",
           alternativeText: "Logo oficial de Sulpayki Viajes y Turismo",
         },
         link: {

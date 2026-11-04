@@ -1,7 +1,6 @@
 ---
-import SectionContainer from "../SectionContainer.astro"
+import SectionContainer from "../SectionContainer.astro";
 import type { BentoInfoProps } from "../../lib/types";
-
 
 interface Props {
   data: BentoInfoProps;
@@ -12,38 +11,46 @@ const {
 } = Astro.props;
 
 // Definir el tipo para BentoElement
-const BentoElement: Record<string, { image: { src: string; alt: string; width: number; height: number } }> = {
-  "bento1": {
-    "image": {"src": "/bus-turistico-gente.webp",
-      "alt": "Servicios Turisticos, Sulpayki Viajes y Turismo",
-      "width": 800,
-      "height": 800,
+const BentoElement: Record<
+  string,
+  { image: { src: string; alt: string; width: number; height: number } }
+> = {
+  bento1: {
+    image: {
+      src: "/bus-turistico-gente.webp",
+      alt: "Servicios Turisticos, Sulpayki Viajes y Turismo",
+      width: 800,
+      height: 800,
     },
   },
-  "bento2": {
-    "image": {"src": "/estatua-facundo-quiroga.webp",
-      "alt": "Destinos, Sulpayki Viajes y Turismo",
-      "width": 800,
-      "height": 800,
+  bento2: {
+    image: {
+      src: "/estatua-facundo-quiroga.webp",
+      alt: "Destinos, Sulpayki Viajes y Turismo",
+      width: 800,
+      height: 800,
     },
   },
-  "bento3": {
-    "image": {"src": "/sulpayki-logo-grande.webp",
-      "alt": "Conoce más sobre Sulpayki Viajes y Turismo",
-      "width": 400,
-      "height": 400,
+  bento3: {
+    image: {
+      src: "/logo-sulpayki-2.svg",
+      alt: "Conoce más sobre Sulpayki Viajes y Turismo",
+      width: 400,
+      height: 400,
     },
   },
-}
+};
 
 // Validar que bentoComponent existe y es un array
-const validBentoComponents = Array.isArray(bentoComponent) ? bentoComponent.filter(component => {
-  if (!component || !component.titulo || !component.link) {
-    console.warn('Componente Bento inválido encontrado:', component);
-    return false;
-  }
-  return true;
-}) : [];
+const validBentoComponents = Array.isArray(bentoComponent)
+  ? bentoComponent.filter((component) => {
+      if (!component || !component.titulo || !component.link) {
+        console.warn("Componente Bento inválido encontrado:", component);
+        return false;
+      }
+      return true;
+    })
+  : [];
 
 // Definir las clases CSS para cada posición del bento grid
 const BENTO_CLASSES = [
@@ -75,7 +82,10 @@ const BENTO_IMAGE_CLASSES = [
             ]}
           >
             {/* Círculo decorativo en la esquina superior izquierda */}
-            <div class="absolute top-0 left-0 z-5 w-110 h-36 md:w-90 md:h-45 rounded-full bg-verde shadow-lg" style="transform: translate(-25%,-25%);"></div>
+            <div
+              class="absolute top-0 left-0 z-5 w-110 h-36 md:w-90 md:h-45 rounded-full bg-verde shadow-lg"
+              style="transform: translate(-25%,-25%);"
+            />
             <div class="absolute inset-0 flex w-full h-full overflow-hidden p-0 items-end justify-end">
               <img
                 src={bentoImage?.src}
