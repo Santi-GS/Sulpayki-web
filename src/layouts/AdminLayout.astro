@@ -55,23 +55,21 @@ const superadminLinks = [
   <body class="bg-[#F7F6F2] text-[#1F2421] min-h-screen font-['Montserrat_Variable',sans-serif]">
     <div class="min-h-screen flex flex-col lg:flex-row">
       <!-- Barra lateral -->
-      <aside class="w-full lg:w-68 bg-[#1D261F] text-[#F5F2EB] flex-shrink-0 flex flex-col justify-between">
+      <aside class="w-full lg:w-72 bg-[#1D261F] text-[#F5F2EB] flex-shrink-0 flex flex-col justify-between">
         <div>
-          <div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
-            <a href="/admin" class="flex items-center gap-3">
-              <img src="/logo-sulpayki-2.svg" alt="Sulpayki" class="h-10 w-auto rounded bg-white/95 p-1" />
-              <div>
-                <span class="block font-bold text-base leading-tight text-white">Sulpayki</span>
-                <span class="block text-xs text-[#E5BA59] font-medium">
-                  {isSuperadmin ? "Superadministrador" : "Panel de Edición"}
-                </span>
-              </div>
+          <div class="px-4 lg:px-6 py-5 border-b border-white/10 flex items-center justify-between gap-2">
+            <a href="/admin" class="flex items-center gap-3 lg:flex-col lg:items-center lg:gap-2 lg:w-full min-w-0">
+              <img src="/logo-sulpayki-2.svg" alt="Sulpayki" class="h-10 lg:h-14 w-auto shrink-0 rounded-lg bg-white/95 px-2.5 py-1.5" />
+              <span class="block text-xs lg:text-sm text-[#E5BA59] font-semibold tracking-wide">
+                {isSuperadmin ? "Superadministrador" : "Panel de Edición"}
+              </span>
             </a>
             <button
               type="button"
               id="admin-mobile-menu-btn"
               aria-label="Mostrar menú del panel"
-              class="lg:hidden rounded-lg p-2 text-white hover:bg-white/10 min-w-[40px] min-h-[40px]"
+              aria-expanded="false"
+              class="lg:hidden rounded-lg p-2 text-white hover:bg-white/10 min-w-[40px] min-h-[40px] shrink-0"
             >
               ☰
             </button>
@@ -130,7 +128,7 @@ const superadminLinks = [
           </nav>
         </div>
 
-        <div class="hidden lg:block p-4 border-t border-white/10 text-xs text-white/75 space-y-3">
+        <div id="admin-sidebar-footer" class="hidden lg:block p-4 border-t border-white/10 text-xs text-white/75 space-y-3">
           {user && (
             <div class="px-2">
               <p class="font-semibold text-white truncate">{user.name}</p>
@@ -230,9 +228,12 @@ const superadminLinks = [
         function initAdminChrome() {
           const menuBtn = document.getElementById("admin-mobile-menu-btn");
           const nav = document.getElementById("admin-sidebar-nav");
+          const footer = document.getElementById("admin-sidebar-footer");
           if (menuBtn && nav) {
             menuBtn.onclick = () => {
-              nav.classList.toggle("hidden");
+              const isHidden = nav.classList.toggle("hidden");
+              footer?.classList.toggle("hidden", isHidden);
+              menuBtn.setAttribute("aria-expanded", String(!isHidden));
             };
           }
 

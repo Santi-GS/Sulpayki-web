@@ -26,104 +26,186 @@ const currentUserId = Astro.locals.user?.id;
   <div class="space-y-6">
     <!-- Crear usuario -->
     <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6">
-      <h2 class="text-base font-bold text-[#1F2421] mb-1">Crear nueva cuenta de acceso</h2>
+      <h2 class="text-base font-bold text-[#1F2421] mb-1">
+        Crear nueva cuenta de acceso
+      </h2>
       <p class="text-sm text-neutral-600 mb-4">
-        El rol <strong>Editor</strong> está pensado para tu cliente (ve una interfaz limpia enfocada solo en el contenido). El rol <strong>Superadmin</strong> incluye opciones técnicas y administración de usuarios.
+        El rol <strong>Editor</strong> está pensado para tu cliente (ve una interfaz
+        limpia enfocada solo en el contenido). El rol <strong>Superadmin</strong
+        > incluye opciones técnicas y administración de usuarios.
       </p>
 
-      <form id="create-user-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+      <form
+        id="create-user-form"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-end"
+      >
         <div>
-          <label for="u-name" class="block text-xs font-semibold text-neutral-700 mb-1">Nombre</label>
-          <input id="u-name" type="text" required placeholder="Ej. Laura Gómez" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm" />
+          <label
+            for="u-name"
+            class="block text-xs font-semibold text-neutral-700 mb-1"
+            >Nombre</label
+          >
+          <input
+            id="u-name"
+            type="text"
+            required
+            placeholder="Ej. Santiago Gomez"
+            class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
+          />
         </div>
         <div>
-          <label for="u-email" class="block text-xs font-semibold text-neutral-700 mb-1">Correo electrónico</label>
-          <input id="u-email" type="email" required placeholder="cliente@sulpayki.com" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm" />
+          <label
+            for="u-email"
+            class="block text-xs font-semibold text-neutral-700 mb-1"
+            >Correo electrónico</label
+          >
+          <input
+            id="u-email"
+            type="email"
+            required
+            placeholder="cliente@sulpayki.com"
+            class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
+          />
         </div>
         <div>
-          <label for="u-pass" class="block text-xs font-semibold text-neutral-700 mb-1">Contraseña (mín. 8 caract.)</label>
-          <input id="u-pass" type="password" required minlength="8" placeholder="••••••••" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label for="u-role" class="block text-xs font-semibold text-neutral-700 mb-1">Rol</label>
-          <select id="u-role" class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm">
+          <label
+            for="u-role"
+            class="block text-xs font-semibold text-neutral-700 mb-1">Rol</label
+          >
+          <select
+            id="u-role"
+            class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm"
+          >
             <option value="EDITOR">Editor (Cliente)</option>
             <option value="SUPERADMIN">Superadmin</option>
           </select>
         </div>
-        <button type="submit" class="rounded-xl bg-[#3B8730] hover:bg-[#317227] px-4 py-2.5 text-sm font-semibold text-white transition">
+        <div>
+          <label
+            for="u-pass"
+            class="block text-xs font-semibold text-neutral-700 mb-1"
+            >Contraseña (mín. 8 caract.)</label
+          >
+          <input
+            id="u-pass"
+            type="password"
+            required
+            minlength="8"
+            placeholder="••••••••"
+            class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
+          />
+        </div>
+        <div>
+          <label
+            for="u-pass-confirm"
+            class="block text-xs font-semibold text-neutral-700 mb-1"
+            >Confirmar contraseña</label
+          >
+          <input
+            id="u-pass-confirm"
+            type="password"
+            required
+            minlength="8"
+            placeholder="••••••••"
+            class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
+          />
+        </div>
+        <button
+          type="submit"
+          class="rounded-xl bg-[#3B8730] hover:bg-[#317227] px-4 py-2 text-sm font-semibold text-white transition min-h-[38px]"
+        >
           Crear usuario
         </button>
       </form>
-      <p id="user-feedback" role="alert" class="hidden mt-3 text-sm font-medium"></p>
+      <p
+        id="user-feedback"
+        role="alert"
+        class="hidden mt-3 text-sm font-medium"
+      >
+      </p>
     </section>
 
     <!-- Listado de cuentas -->
-    <section class="bg-white rounded-2xl border border-[#E2E0D8] overflow-hidden">
+    <section
+      class="bg-white rounded-2xl border border-[#E2E0D8] overflow-hidden"
+    >
       <ul class="divide-y divide-[#E2E0D8]">
-        {allUsers.map((u) => (
-          <li class="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-base text-[#1F2421]">{u.name}</span>
-                <span
-                  class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    u.role === "SUPERADMIN"
-                      ? "bg-[#1D261F] text-[#E5BA59]"
-                      : "bg-green-100 text-emerald-950"
-                  }`}
+        {
+          allUsers.map((u) => (
+            <li class="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-base text-[#1F2421]">
+                    {u.name}
+                  </span>
+                  <span
+                    class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      u.role === "SUPERADMIN"
+                        ? "bg-[#1D261F] text-[#E5BA59]"
+                        : "bg-green-100 text-emerald-950"
+                    }`}
+                  >
+                    {u.role === "SUPERADMIN"
+                      ? "Superadmin"
+                      : "Editor (Cliente)"}
+                  </span>
+                  {u.id === currentUserId && (
+                    <span class="text-xs text-neutral-500 font-medium">
+                      (Tu sesión actual)
+                    </span>
+                  )}
+                </div>
+                <p class="text-sm text-neutral-600">{u.email}</p>
+                <p class="text-xs text-neutral-400 mt-0.5">
+                  Creado el {formatDate(u.createdAt)}
+                </p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  data-edit-name={u.id}
+                  data-current-name={u.name}
+                  class="rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 px-3.5 py-2 text-xs font-semibold text-neutral-800"
                 >
-                  {u.role === "SUPERADMIN" ? "Superadmin" : "Editor (Cliente)"}
-                </span>
-                {u.id === currentUserId && (
-                  <span class="text-xs text-neutral-500 font-medium">(Tu sesión actual)</span>
+                  Cambiar nombre
+                </button>
+
+                <button
+                  type="button"
+                  data-reset-pass={u.id}
+                  data-user-name={u.name}
+                  class="rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 px-3.5 py-2 text-xs font-semibold text-neutral-800"
+                >
+                  Cambiar contraseña
+                </button>
+
+                {u.id !== currentUserId && (
+                  <>
+                    <button
+                      type="button"
+                      data-toggle-role={u.id}
+                      data-next-role={
+                        u.role === "SUPERADMIN" ? "EDITOR" : "SUPERADMIN"
+                      }
+                      class="rounded-xl border border-neutral-300 bg-[#F7F6F2] hover:bg-neutral-200 px-3.5 py-2 text-xs font-semibold text-neutral-800"
+                    >
+                      Pasar a{" "}
+                      {u.role === "SUPERADMIN" ? "Editor" : "Superadmin"}
+                    </button>
+                    <button
+                      type="button"
+                      data-delete-user={u.id}
+                      class="rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 px-3.5 py-2 text-xs font-semibold text-red-800"
+                    >
+                      Eliminar
+                    </button>
+                  </>
                 )}
               </div>
-              <p class="text-sm text-neutral-600">{u.email}</p>
-              <p class="text-xs text-neutral-400 mt-0.5">Creado el {formatDate(u.createdAt)}</p>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                data-edit-name={u.id}
-                data-current-name={u.name}
-                class="rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 px-3.5 py-2 text-xs font-semibold text-neutral-800"
-              >
-                Cambiar nombre
-              </button>
-
-              <button
-                type="button"
-                data-reset-pass={u.id}
-                data-user-name={u.name}
-                class="rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 px-3.5 py-2 text-xs font-semibold text-neutral-800"
-              >
-                Cambiar contraseña
-              </button>
-
-              {u.id !== currentUserId && (
-                <>
-                  <button
-                    type="button"
-                    data-toggle-role={u.id}
-                    data-next-role={u.role === "SUPERADMIN" ? "EDITOR" : "SUPERADMIN"}
-                    class="rounded-xl border border-neutral-300 bg-[#F7F6F2] hover:bg-neutral-200 px-3.5 py-2 text-xs font-semibold text-neutral-800"
-                  >
-                    Pasar a {u.role === "SUPERADMIN" ? "Editor" : "Superadmin"}
-                  </button>
-                  <button
-                    type="button"
-                    data-delete-user={u.id}
-                    class="rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 px-3.5 py-2 text-xs font-semibold text-red-800"
-                  >
-                    Eliminar
-                  </button>
-                </>
-              )}
-            </div>
-          </li>
-        ))}
+            </li>
+          ))
+        }
       </ul>
     </section>
   </div>
@@ -140,10 +222,21 @@ const currentUserId = Astro.locals.user?.id;
 
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const password = document.getElementById("u-pass").value;
+      const confirmPassword = document.getElementById("u-pass-confirm").value;
+
+      if (password !== confirmPassword) {
+        showNotice(
+          "Las contraseñas no coinciden. Verificá e intentá nuevamente.",
+          true,
+        );
+        return;
+      }
+
       const payload = {
         name: document.getElementById("u-name").value.trim(),
         email: document.getElementById("u-email").value.trim(),
-        password: document.getElementById("u-pass").value,
+        password,
         role: document.getElementById("u-role").value,
       };
 
@@ -164,8 +257,16 @@ const currentUserId = Astro.locals.user?.id;
       btn.onclick = async () => {
         const id = btn.getAttribute("data-edit-name");
         const currentName = btn.getAttribute("data-current-name");
-        const newName = window.prompt("Ingresá el nuevo nombre visible:", currentName);
-        if (!newName || newName.trim().length === 0 || newName.trim() === currentName) return;
+        const newName = window.prompt(
+          "Ingresá el nuevo nombre visible:",
+          currentName,
+        );
+        if (
+          !newName ||
+          newName.trim().length === 0 ||
+          newName.trim() === currentName
+        )
+          return;
 
         const res = await fetch(`/api/admin/users/${id}`, {
           method: "PATCH",
@@ -186,7 +287,7 @@ const currentUserId = Astro.locals.user?.id;
         const id = btn.getAttribute("data-reset-pass");
         const name = btn.getAttribute("data-user-name");
         const newPassword = window.prompt(
-          `Ingresá la nueva contraseña para ${name} (mínimo 8 caracteres):`
+          `Ingresá la nueva contraseña para ${name} (mínimo 8 caracteres):`,
         );
         if (!newPassword) return;
         if (newPassword.length < 8) {
@@ -223,11 +324,13 @@ const currentUserId = Astro.locals.user?.id;
     document.querySelectorAll("[data-delete-user]").forEach((btn) => {
       btn.onclick = async () => {
         const id = btn.getAttribute("data-delete-user");
-        if (!window.confirm("¿Seguro que querés eliminar esta cuenta de usuario?")) return;
+        if (
+          !window.confirm("¿Seguro que querés eliminar esta cuenta de usuario?")
+        )
+          return;
         const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
         if (res.ok) window.location.reload();
       };
     });
   </script>
 </AdminLayout>
-
