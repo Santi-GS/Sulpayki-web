@@ -2,45 +2,28 @@
 import { formatDate } from "../../lib/index";
 import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
-import Pagination from "../../components/Pagination.astro";
 import Icon from "../../components/ui/Icon.astro";
 import { getPublishedArticles, type FullArticle } from "../../lib/loaders";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const PAGE_SIZE = 5;
   const allDestinos = await getPublishedArticles("DESTINO");
-  const total = allDestinos.length;
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  const paths = [];
-  for (let i = 1; i <= pageCount; i++) {
-    const start = (i - 1) * PAGE_SIZE;
-    const pageArticles = allDestinos.slice(start, start + PAGE_SIZE);
-    paths.push({
-      params: { page: i === 1 ? undefined : String(i) },
+  return [
+    {
+      params: { page: undefined },
       props: {
-        articles: pageArticles,
-        currentPage: i,
-        totalPages: pageCount,
+        articles: allDestinos,
       },
-    });
-  }
-
-  return paths;
+    },
+  ];
 }
 
 interface Props {
   articles: FullArticle[];
-  currentPage: number;
-  totalPages: number;
 }
 
-const { articles, currentPage, totalPages } = Astro.props;
-const prevPage =
-  currentPage > 1 ? `/destinos/${currentPage - 1 === 1 ? "" : currentPage - 1}` : null;
-const nextPage = currentPage < totalPages ? `/destinos/${currentPage + 1}` : null;
+const { articles } = Astro.props;
 ---
 
 <Layout
@@ -55,7 +38,7 @@ const nextPage = currentPage < totalPages ? `/destinos/${currentPage + 1}` : nul
       <div class="border-t-2 border-green-700 w-40 mx-auto mb-6"></div>
     </div>
     <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+      <div class:list={["grid grid-cols-1 gap-8 mb-16", articles.length > 1 ? "lg:grid-cols-2" : "max-w-5xl mx-auto"]}>
         {articles.length > 0 && articles[0]?.slug && (
           <a href={`/destinos/${articles[0].slug}`} class="group">
             <div class="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
@@ -90,9 +73,9 @@ const nextPage = currentPage < totalPages ? `/destinos/${currentPage + 1}` : nul
           </a>
         )}
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {articles.length > 1 &&
-            articles.slice(1).map((article) =>
+        {articles.length > 1 && (
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {articles.slice(1).map((article) =>
               article?.slug ? (
                 <a href={`/destinos/${article.slug}`} class="group">
                   <div class="h-full max-h-85 bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
@@ -124,7 +107,8 @@ const nextPage = currentPage < totalPages ? `/destinos/${currentPage + 1}` : nul
                 </a>
               ) : null
             )}
-        </div>
+          </div>
+        )}
       </div>
 
       {articles.length === 0 && (
@@ -149,15 +133,6 @@ const nextPage = currentPage < totalPages ? `/destinos/${currentPage + 1}` : nul
           </div>
         </div>
       )}
-
-      <div class="flex justify-center">
-        <Pagination
-          previousPage={prevPage}
-          nextPage={nextPage}
-          currentPage={currentPage}
-          totalPages={totalPages}
-        />
-      </div>
     </div>
   </section>
 </Layout>

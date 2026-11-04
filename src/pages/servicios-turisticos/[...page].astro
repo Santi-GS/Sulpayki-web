@@ -2,7 +2,6 @@
 import { formatDate } from "../../lib/index";
 import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
-import Pagination from "../../components/Pagination.astro";
 import FiltroServicios from "../../components/FiltroServicios.astro";
 import Icon from "../../components/ui/Icon.astro";
 import { getPublishedArticles, type FullArticle } from "../../lib/loaders";
@@ -10,40 +9,22 @@ import { getPublishedArticles, type FullArticle } from "../../lib/loaders";
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const PAGE_SIZE = 8;
   const allServicios = await getPublishedArticles("SERVICIO");
-  const total = allServicios.length;
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  const paths = [];
-  for (let i = 1; i <= pageCount; i++) {
-    const start = (i - 1) * PAGE_SIZE;
-    const pageServicios = allServicios.slice(start, start + PAGE_SIZE);
-    paths.push({
-      params: { page: i === 1 ? undefined : String(i) },
+  return [
+    {
+      params: { page: undefined },
       props: {
-        servicios: pageServicios,
-        currentPage: i,
-        totalPages: pageCount,
+        servicios: allServicios,
       },
-    });
-  }
-
-  return paths;
+    },
+  ];
 }
 
 interface Props {
   servicios: FullArticle[];
-  currentPage: number;
-  totalPages: number;
 }
 
-const { servicios, currentPage, totalPages } = Astro.props;
-const prevPage =
-  currentPage > 1
-    ? `/servicios-turisticos/${currentPage - 1 === 1 ? "" : currentPage - 1}`
-    : null;
-const nextPage = currentPage < totalPages ? `/servicios-turisticos/${currentPage + 1}` : null;
+const { servicios } = Astro.props;
 ---
 
 <Layout
@@ -132,15 +113,6 @@ const nextPage = currentPage < totalPages ? `/servicios-turisticos/${currentPage
             </div>
           </div>
         )}
-
-        <div class="flex justify-center w-full">
-          <Pagination
-            previousPage={prevPage}
-            nextPage={nextPage}
-            currentPage={currentPage}
-            totalPages={totalPages}
-          />
-        </div>
       </div>
     </div>
   </section>
