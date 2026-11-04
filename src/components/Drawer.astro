@@ -9,9 +9,18 @@ const NavItems = [
     link: "/servicios-turisticos",
     icon: "Bus",
     subItems: [
-      { title: "Turismo de Naturaleza", link: "/servicios-turisticos?tag=Turismo de Naturaleza" },
-      { title: "Turismo Industrial", link: "/servicios-turisticos?tag=Turismo Industrial" },
-      { title: "Turismo Cultural", link: "/servicios-turisticos?tag=Turismo Cultural" },
+      {
+        title: "Turismo de Naturaleza",
+        link: "/servicios-turisticos?tag=Turismo de Naturaleza",
+      },
+      {
+        title: "Turismo Industrial",
+        link: "/servicios-turisticos?tag=Turismo Industrial",
+      },
+      {
+        title: "Turismo Cultural",
+        link: "/servicios-turisticos?tag=Turismo Cultural",
+      },
       { title: "Gastronomía", link: "/servicios-turisticos?tag=Gastronomía" },
       { title: "Transporte", link: "/servicios-turisticos?tag=Transporte" },
     ],
@@ -28,19 +37,44 @@ const NavItems = [
     aria-label="Abrir menú de navegación"
     class="p-2 text-neutral-900 hover-verde rounded transition min-w-[44px] min-h-[44px] flex items-center justify-center"
   >
-    <svg aria-hidden="true" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    <svg
+      aria-hidden="true"
+      class="h-8 w-8"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M4 6h16M4 12h16M4 18h16"></path>
     </svg>
   </button>
 </div>
 
 <!-- Backdrop -->
-<div id="drawer-backdrop" class="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+<div
+  id="drawer-backdrop"
+  class="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 opacity-0 pointer-events-none"
+>
+</div>
 
 <!-- Drawer -->
-<div id="drawer" class="fixed top-0 right-0 z-50 w-80 bg-[#e5ba59]/95 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm" tabindex="-1" role="dialog" aria-modal="true" aria-label="Menú de navegación">
+<div
+  id="drawer"
+  class="fixed top-0 right-0 z-50 w-80 bg-[#F4F1E0]/95 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm"
+  tabindex="-1"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menú de navegación"
+>
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-xl font-bold text-neutral-900 underline underline-offset-[3px]">Menú de Navegación</h2>
+    <h2
+      class="text-xl font-bold text-neutral-900 underline underline-offset-[3px]"
+    >
+      Menú de Navegación
+    </h2>
     <button
       id="drawer-close"
       type="button"
@@ -52,42 +86,69 @@ const NavItems = [
   </div>
 
   <ul class="space-y-3 font-semibold">
-    {NavItems.map((item) => (
-      <li>
-        {item.subItems ? (
-          <div class="flex flex-col">
-            <div class="flex items-center">
-              <a href={item.link} class="flex items-center text-neutral-900 px-4 py-3 gap-3 rounded-md hover-verde">
-                <Icon name={item.icon} class="w-5 h-5" />
-                {item.title}
-              </a>
-              <button
-                type="button"
-                class="px-4 py-3 text-neutral-900 rounded transition hover-verde min-w-[44px] min-h-[44px]"
-                aria-label={`Desplegar categorías de ${item.title}`}
-                data-toggle="drawer-submenu"
+    {
+      NavItems.map((item) => (
+        <li>
+          {item.subItems ? (
+            <div class="flex flex-col">
+              <div class="flex items-center">
+                <a
+                  href={item.link}
+                  class="flex items-center text-neutral-900 px-4 py-3 gap-3 rounded-md hover-verde"
+                >
+                  <Icon name={item.icon} class="w-5 h-5" />
+                  {item.title}
+                </a>
+                <button
+                  type="button"
+                  class="px-4 py-3 text-neutral-900 rounded transition hover-verde min-w-[44px] min-h-[44px]"
+                  aria-label={`Desplegar categorías de ${item.title}`}
+                  data-toggle="drawer-submenu"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="w-4 h-4 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <ul
+                class="ml-7 mt-1 space-y-2 border-l-2 border-neutral-700 overflow-hidden transition-all duration-300 ease-in-out max-h-0"
+                data-submenu
               >
-                <svg aria-hidden="true" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+                {item.subItems.map((sub) => (
+                  <li>
+                    <a
+                      href={sub.link}
+                      class="block px-2 py-2 text-neutral-900 hover-verde rounded"
+                    >
+                      {sub.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul class="ml-7 mt-1 space-y-2 border-l-2 border-neutral-700 overflow-hidden transition-all duration-300 ease-in-out max-h-0" data-submenu>
-              {item.subItems.map((sub) => (
-                <li>
-                  <a href={sub.link} class="block px-2 py-2 text-neutral-900 hover-verde rounded">{sub.title}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <a href={item.link} class="w-full text-neutral-900 rounded-md px-4 py-3 hover-verde flex items-center gap-3">
-            <Icon name={item.icon} class="w-5 h-5" />
-            {item.title}
-          </a>
-        )}
-      </li>
-    ))}
+          ) : (
+            <a
+              href={item.link}
+              class="w-full text-neutral-900 rounded-md px-4 py-3 hover-verde flex items-center gap-3"
+            >
+              <Icon name={item.icon} class="w-5 h-5" />
+              {item.title}
+            </a>
+          )}
+        </li>
+      ))
+    }
   </ul>
 </div>
 
@@ -126,31 +187,33 @@ const NavItems = [
 
     toggleDrawer(false);
 
-    document.querySelectorAll('[data-toggle="drawer-submenu"]').forEach((btn) => {
-      const parentDiv = btn.closest(".flex.items-center");
-      const submenu = parentDiv?.nextElementSibling;
-      const icon = btn.querySelector("svg");
+    document
+      .querySelectorAll('[data-toggle="drawer-submenu"]')
+      .forEach((btn) => {
+        const parentDiv = btn.closest(".flex.items-center");
+        const submenu = parentDiv?.nextElementSibling;
+        const icon = btn.querySelector("svg");
 
-      if (!submenu) return;
+        if (!submenu) return;
 
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const isOpen = submenu.classList.contains("open");
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const isOpen = submenu.classList.contains("open");
 
-        if (isOpen) {
-          submenu.style.maxHeight = submenu.scrollHeight + "px";
-          requestAnimationFrame(() => {
-            submenu.style.maxHeight = "0px";
-            submenu.classList.remove("open");
-            icon?.classList.remove("rotate");
-          });
-        } else {
-          submenu.classList.add("open");
-          submenu.style.maxHeight = submenu.scrollHeight + "px";
-          icon?.classList.add("rotate");
-        }
-      };
-    });
+          if (isOpen) {
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            requestAnimationFrame(() => {
+              submenu.style.maxHeight = "0px";
+              submenu.classList.remove("open");
+              icon?.classList.remove("rotate");
+            });
+          } else {
+            submenu.classList.add("open");
+            submenu.style.maxHeight = submenu.scrollHeight + "px";
+            icon?.classList.add("rotate");
+          }
+        };
+      });
   }
 
   document.addEventListener("DOMContentLoaded", initializeDrawer);
