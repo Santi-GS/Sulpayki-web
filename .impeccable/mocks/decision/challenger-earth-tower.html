@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8" />
+  <title>Estratos de Tierra y Vasija Riojana — Sulpayki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1440px; height: 900px; overflow: hidden;
+      background: #F4EBE1; color: #2D3A26; font-family: 'Montserrat', sans-serif;
+      display: grid; grid-template-rows: 76px 430px 214px 180px;
+    }
+    .seam { border-bottom: 3px solid #FAF6F0; }
+    .course-nav {
+      background: #2D3A26; color: #FAF6F0; padding: 0 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { font-family: 'Bitter', serif; font-size: 28px; font-weight: 700; color: #FAF6F0; }
+    .nav-links { display: flex; gap: 32px; font-size: 14px; font-weight: 600; color: #F4EBE1; }
+    .course-hero {
+      background: linear-gradient(95deg, #9E5B3D 0%, #86492E 52%, #596441 100%);
+      color: #FAF6F0; padding: 44px 56px;
+      display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: end;
+    }
+    .course-hero h1 {
+      font-family: 'Bitter', serif; font-size: 52px; line-height: 1.05; font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .hero-ctas { display: flex; gap: 16px; }
+    .cta-light { background: #FAF6F0; color: #2D3A26; padding: 15px 28px; font-weight: 700; font-size: 16px; }
+    .cta-ring { border: 2px solid #FAF6F0; color: #FAF6F0; padding: 13px 26px; font-weight: 600; font-size: 16px; }
+    .slide-card {
+      background: rgba(45, 58, 38, 0.88); padding: 28px; border-top: 4px solid #C29B47;
+    }
+    .slide-card h2 { font-family: 'Bitter', serif; font-size: 28px; margin-bottom: 8px; }
+    .course-pillars {
+      background: #596441; color: #FAF6F0; padding: 0 56px;
+      display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 48px;
+    }
+    .pillar { padding: 24px 0; }
+    .pillar h3 { font-family: 'Bitter', serif; font-size: 28px; margin-bottom: 8px; color: #FAF6F0; }
+    .pillar p { font-size: 15px; color: #F4EBE1; line-height: 1.5; }
+    .course-base {
+      background: #F4EBE1; padding: 28px 56px;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; align-items: center;
+    }
+    .stratum-chip {
+      background: #FAF6F0; border-top: 4px solid #9E5B3D; padding: 20px 18px;
+    }
+    .stratum-chip strong { font-family: 'Bitter', serif; font-size: 22px; display: block; color: #2D3A26; }
+    .stratum-chip span { font-size: 13px; color: #596441; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header class="course-nav seam">
+    <div class="brand">SULPAYKI · LA RIOJA</div>
+    <div class="nav-links">
+      <span>Inicio</span><span>Destinos</span><span>Servicios Turísticos</span><span>Sobre Nosotros</span>
+    </div>
+  </header>
+
+  <section class="course-hero seam">
+    <div>
+      <h1>Diseñamos junto a vos tu viaje inolvidable por La Rioja</h1>
+      <div class="hero-ctas">
+        <span class="cta-light">Explorar Servicios</span>
+        <span class="cta-ring">Conocer Destinos</span>
+      </div>
+    </div>
+    <div class="slide-card">
+      <div style="color:#C29B47; font-size:13px; font-weight:700; margin-bottom:6px;">Estrato 01 · Carrusel de Portada</div>
+      <h2>Descubrí los paisajes de La Rioja</h2>
+      <p style="font-size:14px; color:#F4EBE1;">Excursiones personalizadas, paredones triásicos de Talampaya y valles riojanos.</p>
+    </div>
+  </section>
+
+  <section class="course-pillars seam">
+    <div class="pillar" style="border-right: 1px solid rgba(250,246,240,0.25); padding-right: 32px;">
+      <h3>Viajeros, parejas y familias</h3>
+      <p>Rutas escénicas, patrimonio histórico, peñas culturales y gastronomía regional con acompañamiento local.</p>
+    </div>
+    <div class="pillar">
+      <h3>Turismo industrial e instituciones</h3>
+      <p>Circuitos guiados por bodegas, olivícolas, polos productivos y logística integral para contingentes.</p>
+    </div>
+  </section>
+
+  <section class="course-base">
+    <div class="stratum-chip"><strong>Naturaleza</strong><span>Parques y quebradas</span></div>
+    <div class="stratum-chip"><strong>Industrial</strong><span>Bodegas y olivos</span></div>
+    <div class="stratum-chip"><strong>Cultural</strong><span>Historia riojana</span></div>
+    <div class="stratum-chip"><strong>Gastronomía</strong><span>Sabores y Torrontés</span></div>
+    <div class="stratum-chip"><strong>Transporte</strong><span>Traslados a medida</span></div>
+  </section>
+</body>
+</html>
+

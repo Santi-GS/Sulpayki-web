@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+.codex/
+.agents/
+local.db
+*.log
+pnpm-lock.yaml

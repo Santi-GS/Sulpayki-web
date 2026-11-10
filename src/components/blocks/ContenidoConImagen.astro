@@ -1,7 +1,7 @@
 ---
-import SectionContainer from "../SectionContainer.astro";
 import type { ContenidoConImagenProps } from "../../lib/types";
 import StrapiImage from "../StrapiImage.astro";
+import Icon from "../ui/Icon.astro";
 import { renderMarkdown } from "../../lib/markdown";
 
 interface Props {
@@ -14,40 +14,96 @@ const {
 
 const hasValidData = Boolean(titulo && texto && imagen && imagen.url);
 const htmlText = hasValidData ? renderMarkdown(texto) : "";
+const isSvgImage = Boolean(
+  imagen?.url && imagen.url.toLowerCase().trim().endsWith(".svg")
+);
+const isWhatsappLink = Boolean(
+  link?.href && link.href.toLowerCase().includes("wa.me")
+);
+
+const whatsappConsultaHref = `https://wa.me/5493804679492?text=${encodeURIComponent(
+  `Hola, quiero consultar por paquetes y viajes con Sulpayki en La Rioja.`
+)}`;
 ---
 
-{hasValidData && (
-  <SectionContainer class="flex justify-center">
-    <div class="py-4 bg-gray-100 border border-neutral-200 rounded-xl shadow-xl h-auto lg:h-[550px]">
-      <div class="container mx-auto px-4 h-full">
-        <div class={`flex flex-col lg:flex-row gap-4 h-full ${invertido ? "lg:flex-row-reverse" : ""}`}>
-          <div class="lg:h-full">
-            <StrapiImage
-              src={imagen.url}
-              alt={imagen.alternativeText || titulo}
-              height={600}
-              width={800}
-              class="object-contain rounded-lg w-full h-full max-h-[500px]"
+{
+  hasValidData && (
+    <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <div
+        data-reveal
+        class="card-interactive rounded-2xl overflow-hidden bg-salvia-soft border border-salvia/45 grid grid-cols-1 lg:grid-cols-12 items-stretch"
+      >
+        <div
+          class:list={[
+            "lg:col-span-5 relative overflow-hidden flex items-center justify-center",
+            isSvgImage
+              ? "bg-arena-calida/55 min-h-[240px] sm:min-h-[300px] p-8 sm:p-12"
+              : "bg-arena-calida min-h-[260px] sm:min-h-[340px] lg:min-h-[380px]",
+            invertido && "lg:order-2",
+          ]}
+        >
+          <StrapiImage
+            src={imagen.url}
+            alt={imagen.alternativeText || titulo}
+            height={600}
+            width={800}
+            class:list={[
+              isSvgImage
+                ? "w-full max-w-[320px] h-auto object-contain"
+                : "card-media-zoom w-full h-full object-cover",
+            ]}
+          />
+        </div>
+
+        <div
+          class:list={[
+            "lg:col-span-7 p-6 sm:p-9 lg:p-11 flex flex-col justify-between",
+            invertido && "lg:order-1",
+          ]}
+        >
+          <div>
+            <h2 class="font-display text-2xl sm:text-3xl font-bold text-carbon leading-tight tracking-[-0.02em] text-balance">
+              {titulo}
+            </h2>
+            <div
+              class="mt-4 sulpayki-prose prose max-w-none text-carbon-muted leading-relaxed"
+              set:html={htmlText}
             />
           </div>
-          <div class="flex flex-col w-full lg:w-100 py-6 px-6 rounded-lg bg-gray-50 shadow-l overflow-y-auto">
-            <h2 class="my-4 text-2xl font-bold pb-2 border-b-2 border-gray-400">{titulo}</h2>
-            <div class="mb-4 text-neutral-900 leading-loose prose" set:html={htmlText}></div>
+
+          <div class="mt-7 pt-5 border-t border-salvia/40 flex flex-wrap items-center gap-3">
             {link && link.href && link.label && (
-              <div class="flex justify-center mt-auto">
-                <a
-                  class="py-2 px-4 leading-loose bg-tertiary hover:saturate-90 hover:scale-101 text-accent font-semibold rounded-full mb-3 lg:mb-2 lg:mr-3 w-auto transition duration-200"
-                  href={link.href}
-                  target={link.isExternal ? "_blank" : "_self"}
-                  rel={link.isExternal ? "noopener noreferrer" : undefined}
-                >
-                  {link.label}
-                </a>
-              </div>
+              <a
+                class:list={[
+                  "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 min-h-[46px] text-sm font-semibold group",
+                  isWhatsappLink
+                    ? "btn-terracota bg-terracota hover:bg-rojo-tierra text-cta-ink"
+                    : "bg-marfil hover:bg-arena-calida/70 border border-salvia/45 text-carbon transition-all duration-200 hover:-translate-y-0.5",
+                ]}
+                href={link.href}
+                target={link.isExternal ? "_blank" : "_self"}
+                rel={link.isExternal ? "noopener noreferrer" : undefined}
+              >
+                {isWhatsappLink && <Icon name="whatsapp" class="w-4 h-4" />}
+                <span>{link.label}</span>
+                {!isWhatsappLink && <Icon name="Flechita" />}
+              </a>
+            )}
+
+            {!isWhatsappLink && (
+              <a
+                href={whatsappConsultaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-terracota inline-flex items-center justify-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-5 py-3 min-h-[46px] text-sm font-semibold text-cta-ink"
+              >
+                <Icon name="whatsapp" class="w-4 h-4" />
+                <span>Consultar paquete</span>
+              </a>
             )}
           </div>
         </div>
       </div>
-    </div>
-  </SectionContainer>
-)}
+    </section>
+  )
+}

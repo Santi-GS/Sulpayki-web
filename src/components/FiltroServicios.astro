@@ -1,180 +1,397 @@
 ---
+import Icon from "./ui/Icon.astro";
+import type { FullArticle } from "../lib/loaders";
+
+interface Props {
+  servicios?: FullArticle[];
+}
+
 const { servicios = [] } = Astro.props;
+
+const ejesOficiales = [
+  "Turismo de Naturaleza",
+  "Turismo Industrial",
+  "Turismo Cultural",
+  "Gastronomía",
+  "Transporte",
+];
+
+const tagsDeServicios = servicios.flatMap((s) =>
+  (s.tags || []).map((t) => t.titulo).filter(Boolean)
+);
+
+const tagsUnicos = Array.from(
+  new Set(["Todas", ...ejesOficiales, ...tagsDeServicios])
+);
+
+const whatsappMedidaHref =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20paquetes%20y%20servicios%20tur%C3%ADsticos%20en%20La%20Rioja%20con%20Sulpayki.";
 ---
 
-<div class="container mx-auto px-4">
-    <h1 class="text-center text-2xl sm:text-3xl font-extrabold text-neutral-700 mb-4">ELEGÍ TU PRÓXIMO VIAJE</h1>
-  <div class="border-t-2 border-green-700 w-40 mx-auto mb-6"></div>
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-8">
+  <div class="relative rounded-2xl overflow-hidden bg-carbon text-marfil min-h-[280px] sm:min-h-[320px] flex items-end">
+    <img
+      src="/uploads/1794080328267-ccfc0b57.webp"
+      alt="Experiencias, bodegas y excursiones guiadas en La Rioja con Sulpayki"
+      width="1600"
+      height="720"
+      loading="eager"
+      class="absolute inset-0 w-full h-full object-cover object-[50%_42%]"
+    />
+    <div class="absolute inset-0 bg-gradient-to-r from-carbon/94 via-carbon/80 to-carbon/42" />
+    <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-carbon/90 to-transparent" />
 
-  <!-- TAGS -->
-  <div id="filtro-tags" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+    <div class="relative z-10 w-full p-6 sm:p-10 lg:p-12 pb-12 sm:pb-16 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+      <div class="max-w-2xl">
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-marfil leading-[1.08] tracking-[-0.028em] text-balance">
+          Paquetes y servicios turísticos en La Rioja
+        </h1>
+        <p class="mt-3 text-[15px] sm:text-base leading-relaxed text-[#EBE3D2] max-w-[58ch]">
+          Elegí tu próxima salida guiada de naturaleza, cultura, gastronomía, circuitos productivos o traslados privados y consultá disponibilidad directo por WhatsApp.
+        </p>
+      </div>
 
-  <!-- SEARCH -->
-  <div class="flex justify-center mb-6">
-    <div class="relative w-full max-w-xs">
-      <input
-        id="filtro-busqueda"
-        type="text"
-        placeholder="Buscar"
-        class="w-full border-b-2 border-green-300 focus:outline-none focus:border-green-600 py-1 px-2 text-gray-700"
-        
-      />
-      <svg class="absolute text-green-700 right-2 top-0" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25" viewBox="0 0 24 24"><path d="M14.916 11.707A3 3 0 1 0 12 14"/><path d="M11.991 21.485a1.994 1.994 0 0 1-1.404-.585l-4.244-4.243a8 8 0 1 1 13.651-5.351"/><path d="M15 18a3 3 0 1 0 6 0 3 3 0 1 0-6 0M20.2 20.2 22 22"/></svg>
+      <div class="shrink-0">
+        <a
+          href={whatsappMedidaHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-terracota inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-5.5 py-3.5 min-h-[48px] text-[15px] font-semibold text-cta-ink focus-visible:outline-arena-calida"
+        >
+          <Icon name="whatsapp" class="w-5 h-5" />
+          <span>Consultar paquete a medida</span>
+        </a>
+      </div>
     </div>
-    
+  </div>
+
+  <!-- Barra flotante de búsqueda y filtrado por categoría -->
+  <div class="relative z-20 -mt-7 sm:-mt-9 mx-auto max-w-6xl px-2 sm:px-4">
+    <div
+      class="rounded-2xl bg-arena-calida p-4 sm:p-5 shadow-[0_20px_44px_-16px_rgba(41,42,36,0.28)] space-y-4"
+      role="search"
+      aria-label="Filtrar paquetes y servicios turísticos"
+    >
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="relative flex-1 max-w-md">
+          <label for="filtro-busqueda" class="sr-only">
+            Buscar paquete o servicio por nombre
+          </label>
+          <svg
+            aria-hidden="true"
+            class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-oliva"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path stroke-linecap="round" d="m20 20-3.5-3.5" />
+          </svg>
+          <input
+            id="filtro-busqueda"
+            type="search"
+            placeholder="Buscar paquete, circuito o experiencia..."
+            autocomplete="off"
+            class="w-full rounded-xl bg-marfil text-carbon placeholder:text-carbon-muted pl-10 pr-9 py-2.5 min-h-[44px] text-sm font-medium border border-salvia/45 focus-visible:outline-rojo-tierra"
+          />
+          <button
+            id="filtro-limpiar-texto"
+            type="button"
+            aria-label="Limpiar búsqueda"
+            class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg text-carbon-muted hover:text-carbon hover:bg-salvia-soft items-center justify-center cursor-pointer"
+          >
+            <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between sm:justify-end gap-3">
+          <p
+            id="filtro-contador"
+            aria-live="polite"
+            class="text-xs sm:text-sm font-semibold text-carbon tabular-nums"
+          >
+            {servicios.length === 1
+              ? "1 propuesta disponible"
+              : `${servicios.length} propuestas disponibles`}
+          </p>
+          <button
+            id="filtro-reset"
+            type="button"
+            class="hidden text-xs font-semibold text-rojo-tierra hover:text-oliva underline cursor-pointer"
+          >
+            Ver todas
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="filtro-tags"
+        role="group"
+        aria-label="Categorías de servicios turísticos"
+        class="flex flex-wrap items-center gap-2 pt-1"
+      >
+        {tagsUnicos.map((tag, index) => {
+          const isDefaultActive = index === 0;
+          return (
+            <button
+              type="button"
+              data-tag={tag}
+              aria-pressed={isDefaultActive ? "true" : "false"}
+              class:list={[
+                "tag-btn pill-interactive inline-flex items-center gap-2 rounded-full px-4 py-2 min-h-[40px] text-xs sm:text-sm font-semibold cursor-pointer focus-visible:outline-rojo-tierra",
+                isDefaultActive
+                  ? "bg-oliva text-marfil"
+                  : "bg-marfil/80 hover:bg-marfil text-carbon border border-salvia/40",
+              ]}
+            >
+              <span>{tag}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- MENSAJE DE NO RESULTADOS -->
-<div id="filtro-no-resultados" class="text-center text-gray-500 text-lg font-medium my-8" style="display:none"></div>
+<!-- Estado vacío dinámico cuando un filtro o búsqueda no tiene coincidencias publicadas -->
+<div id="filtro-no-resultados" class="hidden mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
+  <div class="rounded-2xl bg-salvia-soft border border-salvia/45 p-8 sm:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div class="max-w-xl">
+      <h2 id="filtro-no-resultados-titulo" class="font-display text-xl sm:text-2xl font-bold text-carbon">
+        Armamos esta experiencia a tu medida
+      </h2>
+      <p id="filtro-no-resultados-texto" class="mt-2 text-sm sm:text-[15.5px] leading-relaxed text-carbon-muted">
+        Escribinos directo por WhatsApp para cotizar salidas individuales, familiares o grupales en esta categoría por La Rioja.
+      </p>
+    </div>
 
-<script define:vars={{ servicios }}>
-  // Datos de servicios pasados desde el servidor
-  const serviciosData = servicios || [];
-  let tagActivo = 'Todas';
-  let textoBusqueda = '';
+    <div class="flex flex-wrap items-center gap-3 shrink-0">
+      <button
+        id="filtro-empty-reset"
+        type="button"
+        class="inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-arena-calida/60 border border-salvia/45 px-4.5 py-3 min-h-[46px] text-sm font-semibold text-carbon transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+      >
+        Ver todos los servicios
+      </button>
+      <a
+        id="filtro-empty-whatsapp"
+        href={whatsappMedidaHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-terracota inline-flex items-center justify-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-5 py-3 min-h-[46px] text-sm font-semibold text-cta-ink"
+      >
+        <Icon name="whatsapp" class="w-4 h-4" />
+        <span>Consultar paquete</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const normalizar = (str) =>
+    (str || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
 
   function iniciarFiltro() {
-    // Obtener elementos del DOM
-    const tagsContainer = document.getElementById('filtro-tags');
-    const searchInput = document.getElementById('filtro-busqueda');
-    const grid = document.querySelector('#servicios-grid');
+    const tagsContainer = document.getElementById("filtro-tags");
+    const searchInput = document.getElementById("filtro-busqueda");
+    const clearBtn = document.getElementById("filtro-limpiar-texto");
+    const resetBtn = document.getElementById("filtro-reset");
+    const emptyResetBtn = document.getElementById("filtro-empty-reset");
+    const emptyWhatsappLink = document.getElementById("filtro-empty-whatsapp");
+    const contadorEl = document.getElementById("filtro-contador");
+    const emptyBox = document.getElementById("filtro-no-resultados");
+    const emptyTitle = document.getElementById("filtro-no-resultados-titulo");
+    const emptyText = document.getElementById("filtro-no-resultados-texto");
+    const grid = document.getElementById("servicios-grid");
 
-    // Verificar que todos los elementos existan
-    if (!tagsContainer || !searchInput || !grid) {
-      return;
-    }
+    if (!tagsContainer || !searchInput || !grid) return;
 
-    // Obtener el tag de la URL si existe
+    const tagButtons = Array.from(tagsContainer.querySelectorAll(".tag-btn"));
+    const cards = Array.from(grid.querySelectorAll(".servicio-card"));
+
+    let tagActivo = "Todas";
+    let textoBusqueda = "";
+
     const urlParams = new URLSearchParams(window.location.search);
-    const tagFromUrl = urlParams.get('tag');
-    const tagFromUrlDecoded = tagFromUrl ? decodeURIComponent(tagFromUrl) : null;
-
-    // Extraer tags únicos de los servicios
-    const tagsUnicos = [...new Set(
-      serviciosData.flatMap(s => (s.tags || []).map(t => t.titulo))
-    )];
-
-    // Reiniciar estado del filtro
-    tagActivo = 'Todas';
-    textoBusqueda = '';
-    searchInput.value = '';
-
-    // Activar tag de la URL si existe en los tags disponibles
-    if (tagFromUrlDecoded && tagsUnicos.includes(tagFromUrlDecoded)) {
-      tagActivo = tagFromUrlDecoded;
-    }
-
-    // Función para normalizar texto (quitar acentos y convertir a minúsculas)
-    const normalizar = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
-    function crearBotonesTag() {
-      tagsContainer.innerHTML = '';
-      ['Todas', ...tagsUnicos].forEach(tag => {
-        const btn = document.createElement('button');
-        btn.textContent = tag;
-        btn.dataset.tag = tag;
-        btn.className = 'tag-btn px-4 py-1 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 flex items-center gap-2 border-2 focus:outline-none text-white';
-        btn.classList.add(tag === 'Todas' ? 'bg-green-600' : 'bg-green-300');
-        btn.classList.add(tag === 'Todas' ? 'border-green-600' : 'border-green-300');
-        btn.classList.add(tag === 'Todas' ? 'text-white' : 'text-emerald-900');
-
-        btn.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.05" viewBox="0 0 24 24">
-            <path d="M6 9v1a3 3 0 0 0 3 3h1M18 8v5a3 3 0 0 1-3 3h-1M10 21V5a2 2 0 1 1 4 0v16M7 21h10"/>
-          </svg>
-          ${tag}
-        `;
-
-        btn.addEventListener('click', () => {
-          tagActivo = tag;
-          actualizarEstilosBotones();
-          filtrarServicios();
-        });
-
-        tagsContainer.appendChild(btn);
-      });
+    const tagFromUrl = urlParams.get("tag");
+    if (tagFromUrl) {
+      const decoded = decodeURIComponent(tagFromUrl);
+      const matchedBtn = tagButtons.find(
+        (btn) => normalizar(btn.dataset.tag) === normalizar(decoded)
+      );
+      if (matchedBtn && matchedBtn.dataset.tag) {
+        tagActivo = matchedBtn.dataset.tag;
+      }
     }
 
     function actualizarEstilosBotones() {
-      tagsContainer.querySelectorAll('.tag-btn').forEach(btn => {
-        const esActivo = btn.dataset.tag === tagActivo;
-        btn.classList.toggle('bg-green-600', esActivo);
-        btn.classList.toggle('border-green-600', esActivo);
-        btn.classList.toggle('text-white', esActivo);
-        btn.classList.toggle('bg-green-300', !esActivo);
-        btn.classList.toggle('border-green-300', !esActivo);
-        btn.classList.toggle('text-emerald-900', !esActivo);
+      tagButtons.forEach((btn) => {
+        const esActivo = normalizar(btn.dataset.tag) === normalizar(tagActivo);
+        btn.setAttribute("aria-pressed", esActivo ? "true" : "false");
+        btn.classList.toggle("bg-oliva", esActivo);
+        btn.classList.toggle("text-marfil", esActivo);
+        btn.classList.toggle("bg-marfil/80", !esActivo);
+        btn.classList.toggle("hover:bg-marfil", !esActivo);
+        btn.classList.toggle("text-carbon", !esActivo);
+        btn.classList.toggle("border", !esActivo);
+        btn.classList.toggle("border-salvia/40", !esActivo);
       });
     }
 
-    function filtrarServicios() {
-      const cards = grid.querySelectorAll('.servicio-card');
-      const tagActivoNormalizado = normalizar(tagActivo);
+    function filtrarServicios(animarEntrada = false) {
+      const tagNorm = normalizar(tagActivo);
+      const queryNorm = normalizar(textoBusqueda);
       let encontrados = 0;
 
-      cards.forEach(card => {
-        const tags = card.dataset.tags?.split(',').map(t => normalizar(t.trim())) || [];
-        const titulo = card.dataset.title || '';
-        const coincideTag = tagActivo === 'Todas' || tags.includes(tagActivoNormalizado);
-        const coincideTexto = !textoBusqueda || normalizar(titulo).includes(normalizar(textoBusqueda));
+      cards.forEach((card) => {
+        const rawTags = card.dataset.tags || "";
+        const cardTags = rawTags
+          .split(",")
+          .map((t) => normalizar(t))
+          .filter(Boolean);
+        const cardTitle = normalizar(card.dataset.title || "");
+        const cardDesc = normalizar(card.dataset.summary || "");
+
+        const coincideTag =
+          tagActivo === "Todas" || cardTags.includes(tagNorm);
+        const coincideTexto =
+          !queryNorm ||
+          cardTitle.includes(queryNorm) ||
+          cardDesc.includes(queryNorm);
+
         const visible = coincideTag && coincideTexto;
-        card.style.display = visible ? 'block' : 'none';
-        if (visible) encontrados++;
+        card.classList.toggle("hidden", !visible);
+        if (visible) {
+          if (animarEntrada) {
+            card.classList.remove("is-filtering-in");
+            void card.offsetWidth;
+            card.style.setProperty("--filter-delay", `${Math.min(encontrados * 65, 325)}ms`);
+            card.classList.add("is-filtering-in");
+          }
+          encontrados++;
+        } else {
+          card.classList.remove("is-filtering-in");
+        }
       });
 
-      // Mostrar mensaje si no hay resultados y hay texto de búsqueda
-      const mensaje = document.getElementById('filtro-no-resultados');
-      if (mensaje) {
-        if (encontrados === 0 && textoBusqueda) {
-          mensaje.style.display = '';
-          mensaje.textContent = `No se encontró "${textoBusqueda}"`;
-        } else {
-          mensaje.style.display = 'none';
+      const hayFiltroActivo = tagActivo !== "Todas" || queryNorm.length > 0;
+      if (resetBtn) {
+        resetBtn.classList.toggle("hidden", !hayFiltroActivo);
+      }
+      if (clearBtn) {
+        clearBtn.classList.toggle("hidden", queryNorm.length === 0);
+        clearBtn.classList.toggle("flex", queryNorm.length > 0);
+      }
+
+      if (contadorEl) {
+        contadorEl.textContent =
+          encontrados === 1
+            ? "1 propuesta disponible"
+            : `${encontrados} propuestas disponibles`;
+      }
+
+      if (emptyBox) {
+        const mostrarVacio = encontrados === 0 && cards.length > 0;
+        emptyBox.classList.toggle("hidden", !mostrarVacio);
+        grid.classList.toggle("hidden", mostrarVacio);
+
+        if (mostrarVacio) {
+          if (textoBusqueda && tagActivo !== "Todas") {
+            if (emptyTitle) {
+              emptyTitle.textContent = `No encontramos "${textoBusqueda}" en ${tagActivo}`;
+            }
+            if (emptyText) {
+              emptyText.textContent =
+                "Probá con otra palabra clave o consultanos por WhatsApp para armar esta salida a medida.";
+            }
+          } else if (textoBusqueda) {
+            if (emptyTitle) {
+              emptyTitle.textContent = `No encontramos paquetes para "${textoBusqueda}"`;
+            }
+            if (emptyText) {
+              emptyText.textContent =
+                "Escribinos por WhatsApp y diseñamos el itinerario o traslado que estás buscando en La Rioja.";
+            }
+          } else {
+            if (emptyTitle) {
+              emptyTitle.textContent = `Salidas de ${tagActivo} a medida`;
+            }
+            if (emptyText) {
+              emptyText.textContent = `Coordinamos experiencias y circuitos de ${tagActivo} para viajeros particulares, familias y contingentes. Consultanos disponibilidad por WhatsApp.`;
+            }
+          }
+
+          if (emptyWhatsappLink) {
+            const motivo =
+              tagActivo !== "Todas"
+                ? `paquetes de ${tagActivo}`
+                : textoBusqueda
+                  ? `el recorrido "${textoBusqueda}"`
+                  : "paquetes turísticos en La Rioja";
+            emptyWhatsappLink.href = `https://wa.me/5493804679492?text=${encodeURIComponent(
+              `Hola, quiero consultar por ${motivo} con Sulpayki.`
+            )}`;
+          }
         }
       }
     }
 
-    // Crear botones de tags y configurar eventos
-    crearBotonesTag();
-    actualizarEstilosBotones();
-    
-    // Configurar evento de búsqueda
-    searchInput.addEventListener('input', () => {
-      textoBusqueda = searchInput.value.trim();
-      filtrarServicios();
-    });
-    
-    // Aplicar filtro inicial
-    filtrarServicios();
-  }
-
-  // Función para inicializar con delay para asegurar que todo esté listo
-  function inicializarConDelay() {
-    setTimeout(() => {
-      iniciarFiltro();
-    }, 100);
-  }
-
-  // Inicializar cuando el DOM esté listo
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarConDelay);
-  } else {
-    inicializarConDelay();
-  }
-
-  // Para navegación SPA de Astro
-  document.addEventListener('astro:page-load', inicializarConDelay);
-  
-  // Escuchar cambios en la URL para navegación SPA
-  let currentUrl = window.location.href;
-  setInterval(() => {
-    if (window.location.href !== currentUrl) {
-      currentUrl = window.location.href;
-      // Reinicializar con delay para asegurar que la URL esté completamente actualizada
-      setTimeout(() => {
-        inicializarConDelay();
-      }, 200);
+    function sincronizarUrl(tag) {
+      const url = new URL(window.location.href);
+      if (tag && tag !== "Todas") {
+        url.searchParams.set("tag", tag);
+      } else {
+        url.searchParams.delete("tag");
+      }
+      window.history.replaceState({}, "", url.toString());
     }
-  }, 100);
+
+    tagButtons.forEach((btn) => {
+      btn.onclick = () => {
+        tagActivo = btn.dataset.tag || "Todas";
+        sincronizarUrl(tagActivo);
+        actualizarEstilosBotones();
+        filtrarServicios(true);
+      };
+    });
+
+    searchInput.oninput = () => {
+      textoBusqueda = searchInput.value.trim();
+      filtrarServicios(true);
+    };
+
+    if (clearBtn) {
+      clearBtn.onclick = () => {
+        searchInput.value = "";
+        textoBusqueda = "";
+        filtrarServicios(true);
+        searchInput.focus();
+      };
+    }
+
+    const limpiarTodo = () => {
+      tagActivo = "Todas";
+      textoBusqueda = "";
+      searchInput.value = "";
+      sincronizarUrl("Todas");
+      actualizarEstilosBotones();
+      filtrarServicios(true);
+    };
+
+    if (resetBtn) resetBtn.onclick = limpiarTodo;
+    if (emptyResetBtn) emptyResetBtn.onclick = limpiarTodo;
+
+    actualizarEstilosBotones();
+    filtrarServicios(false);
+  }
+
+  document.addEventListener("DOMContentLoaded", iniciarFiltro);
+  document.addEventListener("astro:page-load", iniciarFiltro);
 </script>

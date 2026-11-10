@@ -1,5 +1,8 @@
 ---
+import BrandLogo from "./BrandLogo.astro";
 import Icon from "./ui/Icon.astro";
+
+const pathname = Astro.url.pathname;
 
 const NavItems = [
   { title: "Inicio", link: "/", icon: "Home" },
@@ -11,145 +14,176 @@ const NavItems = [
     subItems: [
       {
         title: "Turismo de Naturaleza",
-        link: "/servicios-turisticos?tag=Turismo de Naturaleza",
+        link: "/servicios-turisticos?tag=Turismo%20de%20Naturaleza",
       },
       {
         title: "Turismo Industrial",
-        link: "/servicios-turisticos?tag=Turismo Industrial",
+        link: "/servicios-turisticos?tag=Turismo%20Industrial",
       },
       {
         title: "Turismo Cultural",
-        link: "/servicios-turisticos?tag=Turismo Cultural",
+        link: "/servicios-turisticos?tag=Turismo%20Cultural",
       },
-      { title: "Gastronomía", link: "/servicios-turisticos?tag=Gastronomía" },
-      { title: "Transporte", link: "/servicios-turisticos?tag=Transporte" },
+      {
+        title: "Gastronomía",
+        link: "/servicios-turisticos?tag=Gastronom%C3%ADa",
+      },
+      {
+        title: "Transporte",
+        link: "/servicios-turisticos?tag=Transporte",
+      },
     ],
   },
   { title: "Sobre Nosotros", link: "/sobre-nosotros", icon: "Cactus" },
 ];
+
+function isActiveLink(href: string): boolean {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+const whatsappUrl =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20un%20paquete%20tur%C3%ADstico%20en%20La%20Rioja.%20Vengo%20de%20la%20p%C3%A1gina%20web.";
 ---
 
-<!-- Botón para abrir drawer -->
-<div class="block md:hidden">
-  <button
-    id="drawer-toggle"
-    type="button"
-    aria-label="Abrir menú de navegación"
-    class="p-2 text-neutral-900 hover-verde rounded transition min-w-[44px] min-h-[44px] flex items-center justify-center"
-  >
-    <svg
-      aria-hidden="true"
-      class="h-8 w-8"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M4 6h16M4 12h16M4 18h16"></path>
-    </svg>
-  </button>
-</div>
-
-<!-- Backdrop -->
 <div
   id="drawer-backdrop"
-  class="fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 opacity-0 pointer-events-none"
+  class="lg:hidden fixed inset-0 z-40 bg-carbon/60 backdrop-blur-sm transition-opacity duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 pointer-events-none"
+  aria-hidden="true"
 >
 </div>
 
-<!-- Drawer -->
 <div
   id="drawer"
-  class="fixed top-0 right-0 z-50 w-80 bg-[#F4F1E0]/95 max-w-full h-screen p-4 overflow-y-auto transition-transform translate-x-full backdrop-blur-sm"
+  data-open="false"
+  class="lg:hidden fixed top-0 right-0 z-50 flex h-screen w-80 max-w-[88vw] flex-col justify-between bg-marfil text-carbon p-6 overflow-y-auto transition-[transform,visibility] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] translate-x-full invisible pointer-events-none"
   tabindex="-1"
   role="dialog"
   aria-modal="true"
+  aria-hidden="true"
+  inert
   aria-label="Menú de navegación"
 >
-  <div class="flex justify-between items-center mb-6">
-    <h2
-      class="text-xl font-bold text-neutral-900 underline underline-offset-[3px]"
-    >
-      Menú de Navegación
-    </h2>
-    <button
-      id="drawer-close"
-      type="button"
-      aria-label="Cerrar menú de navegación"
-      class="w-10 h-10 text-neutral-900 font-bold rounded hover-verde flex items-center justify-center"
-    >
-      ✕
-    </button>
-  </div>
+  <div>
+    <div class="flex justify-between items-center pb-5 mb-5 border-b border-salvia/35">
+      <BrandLogo variant="on-light" class="h-9 w-auto" />
+      <button
+        id="drawer-close"
+        type="button"
+        aria-label="Cerrar menú de navegación"
+        class="min-w-[44px] min-h-[44px] text-carbon hover:bg-salvia-soft hover:text-oliva rounded-xl transition-colors flex items-center justify-center cursor-pointer"
+      >
+        <Icon name="CloseIcon" class="w-5 h-5" />
+      </button>
+    </div>
 
-  <ul class="space-y-3 font-semibold">
-    {
-      NavItems.map((item) => (
-        <li>
-          {item.subItems ? (
-            <div class="flex flex-col">
-              <div class="flex items-center">
+    <ul class="space-y-1.5 text-[15px] font-medium">
+      {
+        NavItems.map((item, idx) => {
+          const active = isActiveLink(item.link);
+          return (
+            <li
+              class="drawer-nav-item"
+              style={`--drawer-item-delay: ${40 + idx * 45}ms;`}
+            >
+              {item.subItems ? (
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-1">
+                    <a
+                      href={item.link}
+                      aria-current={active ? "page" : undefined}
+                      class:list={[
+                        "flex-1 flex items-center gap-3 rounded-xl px-3.5 py-3 min-h-[44px] transition-colors",
+                        active
+                          ? "bg-arena-calida text-carbon font-semibold"
+                          : "text-carbon hover:bg-salvia-soft hover:text-oliva",
+                      ]}
+                    >
+                      <Icon
+                        name={item.icon}
+                        class={`w-5 h-5 shrink-0 ${active ? "text-rojo-tierra" : "text-oliva"}`}
+                      />
+                      <span>{item.title}</span>
+                    </a>
+                    <button
+                      type="button"
+                      class="rounded-xl px-3 py-3 text-carbon hover:bg-salvia-soft hover:text-oliva transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
+                      aria-label={`Desplegar categorías de ${item.title}`}
+                      aria-expanded="false"
+                      data-toggle="drawer-submenu"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <div
+                    class="drawer-submenu-grid grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    data-submenu
+                    data-open="false"
+                    inert
+                  >
+                    <ul class="overflow-hidden ml-6 mt-1 space-y-1 border-l border-salvia/45 pl-3">
+                      {item.subItems.map((sub) => (
+                        <li>
+                          <a
+                            href={sub.link}
+                            class="block rounded-xl px-3 py-2.5 text-sm text-carbon-muted hover:bg-salvia-soft hover:text-carbon transition-colors"
+                          >
+                            {sub.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (
                 <a
                   href={item.link}
-                  class="flex items-center text-neutral-900 px-4 py-3 gap-3 rounded-md hover-verde"
+                  aria-current={active ? "page" : undefined}
+                  class:list={[
+                    "w-full rounded-xl px-3.5 py-3 min-h-[44px] flex items-center gap-3 transition-colors",
+                    active
+                      ? "bg-arena-calida text-carbon font-semibold"
+                      : "text-carbon hover:bg-salvia-soft hover:text-oliva",
+                  ]}
                 >
-                  <Icon name={item.icon} class="w-5 h-5" />
-                  {item.title}
+                  <Icon
+                    name={item.icon}
+                    class={`w-5 h-5 shrink-0 ${active ? "text-rojo-tierra" : "text-oliva"}`}
+                  />
+                  <span>{item.title}</span>
                 </a>
-                <button
-                  type="button"
-                  class="px-4 py-3 text-neutral-900 rounded transition hover-verde min-w-[44px] min-h-[44px]"
-                  aria-label={`Desplegar categorías de ${item.title}`}
-                  data-toggle="drawer-submenu"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="w-4 h-4 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="3"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <ul
-                class="ml-7 mt-1 space-y-2 border-l-2 border-neutral-700 overflow-hidden transition-all duration-300 ease-in-out max-h-0"
-                data-submenu
-              >
-                {item.subItems.map((sub) => (
-                  <li>
-                    <a
-                      href={sub.link}
-                      class="block px-2 py-2 text-neutral-900 hover-verde rounded"
-                    >
-                      {sub.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <a
-              href={item.link}
-              class="w-full text-neutral-900 rounded-md px-4 py-3 hover-verde flex items-center gap-3"
-            >
-              <Icon name={item.icon} class="w-5 h-5" />
-              {item.title}
-            </a>
-          )}
-        </li>
-      ))
-    }
-  </ul>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <div class="pt-6 mt-6 border-t border-salvia/35">
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn-terracota w-full inline-flex items-center justify-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-4 py-3.5 min-h-[48px] text-sm font-semibold text-cta-ink"
+    >
+      <Icon name="whatsapp" class="w-4 h-4" />
+      <span>Consultar paquete</span>
+    </a>
+  </div>
 </div>
 
 <style>
@@ -157,13 +191,32 @@ const NavItems = [
     transform: rotate(180deg);
   }
 
-  [data-submenu] {
-    will-change: max-height;
+  .drawer-submenu-grid[data-open="true"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    #drawer[data-open="false"] .drawer-nav-item {
+      opacity: 0;
+      transform: translateX(12px);
+    }
+
+    #drawer[data-open="true"] .drawer-nav-item {
+      opacity: 1;
+      transform: translateX(0);
+      transition:
+        opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--drawer-item-delay, 0ms);
+    }
   }
 </style>
 
 <script type="module">
   const $ = (id) => document.getElementById(id);
+  let drawerEscapeHandler;
+  let mediaQueryHandler;
 
   function initializeDrawer() {
     const drawer = $("drawer");
@@ -173,24 +226,67 @@ const NavItems = [
 
     if (!drawer || !backdrop || !openBtn || !closeBtn) return;
 
+    const shadowClass = "shadow-[-16px_0_40px_-12px_rgba(41,42,36,0.34)]";
+
     const toggleDrawer = (open) => {
+      drawer.setAttribute("data-open", open ? "true" : "false");
       drawer.classList.toggle("translate-x-full", !open);
       drawer.classList.toggle("translate-x-0", open);
+      drawer.classList.toggle("invisible", !open);
+      drawer.classList.toggle("pointer-events-none", !open);
+      drawer.classList.toggle(shadowClass, open);
+      drawer.setAttribute("aria-hidden", open ? "false" : "true");
+      if (open) {
+        drawer.removeAttribute("inert");
+        document.body.classList.add("overflow-hidden");
+      } else {
+        drawer.setAttribute("inert", "");
+        document.body.classList.remove("overflow-hidden");
+      }
       backdrop.classList.toggle("opacity-0", !open);
       backdrop.classList.toggle("opacity-100", open);
       backdrop.classList.toggle("pointer-events-none", !open);
+      openBtn.setAttribute("aria-expanded", open ? "true" : "false");
     };
 
     openBtn.onclick = () => toggleDrawer(true);
     closeBtn.onclick = () => toggleDrawer(false);
     backdrop.onclick = () => toggleDrawer(false);
 
+    // Close drawer when any internal navigation link is clicked
+    drawer.querySelectorAll("a[href]").forEach((link) => {
+      link.onclick = () => toggleDrawer(false);
+    });
+
+    if (drawerEscapeHandler) {
+      document.removeEventListener("keydown", drawerEscapeHandler);
+    }
+    drawerEscapeHandler = (e) => {
+      if (e.key === "Escape" && !drawer.classList.contains("translate-x-full")) {
+        toggleDrawer(false);
+        openBtn.focus();
+      }
+    };
+    document.addEventListener("keydown", drawerEscapeHandler);
+
+    // Automatically close when viewport expands to desktop
+    const lgQuery = window.matchMedia("(min-width: 1024px)");
+    if (mediaQueryHandler) {
+      lgQuery.removeEventListener("change", mediaQueryHandler);
+    }
+    mediaQueryHandler = (e) => {
+      if (e.matches) {
+        toggleDrawer(false);
+      }
+    };
+    lgQuery.addEventListener("change", mediaQueryHandler);
+
     toggleDrawer(false);
 
     document
       .querySelectorAll('[data-toggle="drawer-submenu"]')
       .forEach((btn) => {
-        const parentDiv = btn.closest(".flex.items-center");
+        const parentDiv = btn.parentElement;
         const submenu = parentDiv?.nextElementSibling;
         const icon = btn.querySelector("svg");
 
@@ -198,19 +294,17 @@ const NavItems = [
 
         btn.onclick = (e) => {
           e.stopPropagation();
-          const isOpen = submenu.classList.contains("open");
+          const isOpen = submenu.getAttribute("data-open") === "true";
+          const nextOpen = !isOpen;
 
-          if (isOpen) {
-            submenu.style.maxHeight = submenu.scrollHeight + "px";
-            requestAnimationFrame(() => {
-              submenu.style.maxHeight = "0px";
-              submenu.classList.remove("open");
-              icon?.classList.remove("rotate");
-            });
+          submenu.setAttribute("data-open", nextOpen ? "true" : "false");
+          btn.setAttribute("aria-expanded", nextOpen ? "true" : "false");
+          icon?.classList.toggle("rotate", nextOpen);
+
+          if (nextOpen) {
+            submenu.removeAttribute("inert");
           } else {
-            submenu.classList.add("open");
-            submenu.style.maxHeight = submenu.scrollHeight + "px";
-            icon?.classList.add("rotate");
+            submenu.setAttribute("inert", "");
           }
         };
       });
@@ -218,4 +312,7 @@ const NavItems = [
 
   document.addEventListener("DOMContentLoaded", initializeDrawer);
   document.addEventListener("astro:page-load", initializeDrawer);
+  document.addEventListener("astro:before-swap", () => {
+    document.body.classList.remove("overflow-hidden");
+  });
 </script>

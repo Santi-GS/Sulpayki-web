@@ -1,19 +1,30 @@
 ---
-import { formatDate } from "../../lib/index";
 import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
+import EncabezadoDeSeccion from "../../components/blocks/EncabezadoDeSeccion.astro";
+import ArticulosDestacados from "../../components/blocks/ArticulosDestacados.astro";
 import Icon from "../../components/ui/Icon.astro";
-import { getPublishedArticles, type FullArticle } from "../../lib/loaders";
+import type { ArticulosDestacadosItem, EncabezadoDeSeccionProps } from "../../lib/types";
+import {
+  getFeaturedArticleItems,
+  getPublishedArticles,
+  type FullArticle,
+} from "../../lib/loaders";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const allDestinos = await getPublishedArticles("DESTINO");
+  const [allDestinos, serviciosDestacados] = await Promise.all([
+    getPublishedArticles("DESTINO"),
+    getFeaturedArticleItems("SERVICIO"),
+  ]);
+
   return [
     {
       params: { page: undefined },
       props: {
         articles: allDestinos,
+        serviciosDestacados,
       },
     },
   ];
@@ -21,118 +32,313 @@ export async function getStaticPaths() {
 
 interface Props {
   articles: FullArticle[];
+  serviciosDestacados: ArticulosDestacadosItem[];
 }
 
-const { articles } = Astro.props;
+const { articles, serviciosDestacados = [] } = Astro.props;
+
+function buildDestinoWhatsappHref(title: string): string {
+  const msg = `Hola, quiero consultar por paquetes hacia "${title}" con Sulpayki.`;
+  return `https://wa.me/5493804679492?text=${encodeURIComponent(msg)}`;
+}
+
+const whatsappDestinosGeneral =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20destinos%20y%20paquetes%20en%20La%20Rioja%20con%20Sulpayki.";
+
+const encabezadoExperiencias: EncabezadoDeSeccionProps = {
+  __component: "block.encabezado-de-seccion",
+  encabezado: "Experiencias y paquetes para recorrer La Rioja",
+  subencabezado:
+    "Sumá excursiones guiadas, visitas productivas y traslados seguros a tu próximo destino riojano.",
+  anchorLink: "experiencias-en-destinos",
+};
 ---
 
 <Layout
-  title="Destinos Turísticos | Sulpayki Viajes y Turismo"
-  description="Elegí tu próximo destino en La Rioja junto a Sulpayki Viajes y Turismo."
+  title="Destinos Turísticos en La Rioja | Sulpayki Viajes y Turismo"
+  description="Descubrí la capital histórica, valles productivos, quebradas y destinos imperdibles de La Rioja junto a Sulpayki Viajes y Turismo."
 >
-  <section class="py-8">
-    <div class="container mx-auto px-4">
-      <h1 class="text-center text-2xl sm:text-3xl font-extrabold text-neutral-700 mb-4">
-        ELEGÍ TU PRÓXIMO DESTINO
-      </h1>
-      <div class="border-t-2 border-green-700 w-40 mx-auto mb-6"></div>
-    </div>
-    <div class="container mx-auto px-4">
-      <div class:list={["grid grid-cols-1 gap-8 mb-16", articles.length > 1 ? "lg:grid-cols-2" : "max-w-5xl mx-auto"]}>
-        {articles.length > 0 && articles[0]?.slug && (
-          <a href={`/destinos/${articles[0].slug}`} class="group">
-            <div class="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-              <div class="relative">
-                <StrapiImage
-                  class="w-full h-96 object-cover"
-                  src={articles[0].coverImagen?.url}
-                  alt={articles[0].coverImagen?.alternativeText || articles[0].titulo}
-                  height={800}
-                  width={800}
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-              </div>
-              <div class="p-8">
-                <div class="flex items-center justify-between mb-4">
-                  <span class="text-sm text-gray-500 font-medium">
-                    • Publicado: {formatDate(articles[0].publishedAt)}
-                  </span>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-colors duration-200">
-                  {articles[0].titulo}
-                </h2>
-                <p class="text-gray-600 leading-relaxed mb-6 line-clamp-3">
-                  {articles[0].resumen || articles[0].descripcion}
-                </p>
-                <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
-                  <span>Explorar destino</span>
-                  <Icon name="Flechita" />
-                </div>
-              </div>
-            </div>
-          </a>
-        )}
+  <section aria-label="Catálogo de destinos turísticos en La Rioja">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-10">
+      <div class="relative rounded-2xl overflow-hidden bg-carbon text-marfil min-h-[280px] sm:min-h-[330px] flex items-end">
+        <img
+          src="/uploads/1794080313010-0c56459d.jpeg"
+          alt="Paisajes vitivinícolas y destinos turísticos en La Rioja"
+          width="1600"
+          height="720"
+          loading="eager"
+          class="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-carbon/94 via-carbon/78 to-carbon/38" />
+        <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-carbon/88 to-transparent" />
 
-        {articles.length > 1 && (
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {articles.slice(1).map((article) =>
-              article?.slug ? (
-                <a href={`/destinos/${article.slug}`} class="group">
-                  <div class="h-full max-h-85 bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                    <div class="relative">
-                      <StrapiImage
-                        class="w-full h-48 object-cover"
-                        src={article.coverImagen?.url}
-                        alt={article.coverImagen?.alternativeText || article.titulo}
-                        height={400}
-                        width={400}
-                      />
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    </div>
-                    <div class="p-6">
-                      <div class="flex items-center justify-between mb-3">
-                        <span class="text-sm text-gray-500 font-medium">
-                          • Publicado: {formatDate(article.publishedAt)}
-                        </span>
-                      </div>
-                      <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors duration-200 line-clamp-2">
-                        {article.titulo}
-                      </h3>
-                      <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
-                        <span>Explorar destino</span>
-                        <Icon name="Flechita" />
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              ) : null
-            )}
+        <div class="relative z-10 w-full p-6 sm:p-10 lg:p-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div class="max-w-2xl">
+            <h1 class="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-marfil leading-[1.08] tracking-[-0.028em] text-balance">
+              Destinos y circuitos por La Rioja
+            </h1>
+            <p class="mt-3 text-[15px] sm:text-base leading-relaxed text-[#EBE3D2] max-w-[58ch]">
+              Recorré la capital histórica, los valles vitivinícolas, reservas naturales y polos productivos con itinerarios diseñados a medida por anfitriones locales.
+            </p>
           </div>
-        )}
-      </div>
 
-      {articles.length === 0 && (
-        <div class="text-center py-16">
-          <div class="max-w-md mx-auto">
-            <svg
-              aria-hidden="true"
-              class="w-16 h-16 text-gray-300 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div class="flex flex-wrap items-center gap-3 shrink-0">
+            <a
+              href={whatsappDestinosGeneral}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-terracota inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-5.5 py-3.5 min-h-[48px] text-[15px] font-semibold text-cta-ink focus-visible:outline-arena-calida"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"
-              ></path>
-            </svg>
-            <p class="text-gray-500 text-lg font-medium">No hay destinos disponibles en esta página</p>
-            <p class="text-gray-400 text-sm mt-2">Volvé más tarde para conocer nuevos circuitos</p>
+              <Icon name="whatsapp" class="w-5 h-5" />
+              <span>Consultar paquete</span>
+            </a>
+            <a
+              href="/servicios-turisticos"
+              class="inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-arena-calida px-5 py-3.5 min-h-[48px] text-[15px] font-semibold text-carbon transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-arena-calida"
+            >
+              Ver servicios turísticos
+            </a>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 lg:pb-20">
+      {
+        articles.length > 0 && articles[0]?.slug ? (
+          <div class="space-y-8">
+            <!-- Destino principal destacado -->
+            <article
+              data-reveal
+              class="card-interactive grid grid-cols-1 lg:grid-cols-12 rounded-2xl overflow-hidden bg-salvia-soft border border-salvia/45 hover:border-oliva"
+            >
+              <a
+                href={`/destinos/${articles[0].slug}`}
+                class="lg:col-span-7 relative h-[260px] sm:h-[340px] lg:h-[410px] overflow-hidden bg-arena-calida block group focus-visible:-outline-offset-4 focus-visible:outline-marfil"
+              >
+                {articles[0].coverImagen?.url ? (
+                  <StrapiImage
+                    transition:name={`img-destino-${articles[0].slug}`}
+                    class="card-media-zoom w-full h-full object-cover"
+                    src={articles[0].coverImagen.url}
+                    alt={
+                      articles[0].coverImagen.alternativeText ||
+                      articles[0].titulo
+                    }
+                    height={620}
+                    width={960}
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center text-carbon-muted text-sm font-medium">
+                    Fotografía próximamente
+                  </div>
+                )}
+
+                <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                  {articles[0].tags && articles[0].tags.length > 0 ? (
+                    articles[0].tags.map((tag) => (
+                      <span class="rounded-full bg-oliva px-3.5 py-1 text-xs font-semibold text-marfil">
+                        {tag.titulo}
+                      </span>
+                    ))
+                  ) : (
+                    <span class="rounded-full bg-oliva px-3.5 py-1 text-xs font-semibold text-marfil">
+                      Territorio riojano
+                    </span>
+                  )}
+                  <span class="rounded-full bg-rojo-tierra px-3.5 py-1 text-xs font-semibold text-marfil">
+                    Destino destacado
+                  </span>
+                </div>
+              </a>
+
+              <div class="lg:col-span-5 p-7 sm:p-9 lg:p-10 flex flex-col justify-between">
+                <div>
+                  <h2
+                    transition:name={`titulo-destino-${articles[0].slug}`}
+                    class="font-display text-2xl sm:text-3xl font-bold text-carbon leading-tight tracking-[-0.02em] text-balance"
+                  >
+                    <a
+                      href={`/destinos/${articles[0].slug}`}
+                      class="hover:text-oliva transition-colors"
+                    >
+                      {articles[0].titulo}
+                    </a>
+                  </h2>
+
+                  {(articles[0].resumen || articles[0].descripcion) && (
+                    <p class="mt-3.5 text-[15.5px] sm:text-base leading-relaxed text-carbon-muted line-clamp-4">
+                      {articles[0].resumen || articles[0].descripcion}
+                    </p>
+                  )}
+
+                  <ul class="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
+                    <li class="rounded-full bg-marfil px-3 py-1.5 text-oliva">
+                      Salidas guiadas todo el año
+                    </li>
+                    <li class="rounded-full bg-marfil px-3 py-1.5 text-oliva">
+                      Circuitos a medida
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="mt-8 pt-5 border-t border-salvia/40 flex flex-wrap items-center justify-between gap-3">
+                  <a
+                    href={`/destinos/${articles[0].slug}`}
+                    class="inline-flex items-center text-sm font-semibold text-rojo-tierra hover:text-oliva transition-colors group"
+                  >
+                    <span>Ver destino</span>
+                    <Icon name="Flechita" />
+                  </a>
+
+                  <a
+                    href={buildDestinoWhatsappHref(articles[0].titulo)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn-terracota inline-flex items-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-4.5 py-2.5 min-h-[44px] text-sm font-semibold text-cta-ink"
+                  >
+                    <Icon name="whatsapp" class="w-4 h-4" />
+                    <span>Consultar paquete</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Grilla de destinos adicionales -->
+            {articles.length > 1 && (
+              <div
+                data-reveal-stagger="70"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {articles.slice(1).map((article) =>
+                  article?.slug ? (
+                    <article
+                      data-reveal
+                      class="card-interactive flex flex-col rounded-2xl overflow-hidden bg-salvia-soft border border-salvia/45 hover:border-oliva"
+                    >
+                      <a
+                        href={`/destinos/${article.slug}`}
+                        class="relative aspect-[16/10] overflow-hidden bg-arena-calida block group focus-visible:-outline-offset-4 focus-visible:outline-marfil"
+                      >
+                        {article.coverImagen?.url ? (
+                          <StrapiImage
+                            transition:name={`img-destino-${article.slug}`}
+                            class="card-media-zoom w-full h-full object-cover"
+                            src={article.coverImagen.url}
+                            alt={
+                              article.coverImagen.alternativeText ||
+                              article.titulo
+                            }
+                            height={420}
+                            width={680}
+                          />
+                        ) : (
+                          <div class="w-full h-full flex items-center justify-center text-carbon-muted text-sm font-medium">
+                            Fotografía próximamente
+                          </div>
+                        )}
+
+                        <div class="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5">
+                          {article.tags && article.tags.length > 0 ? (
+                            article.tags.map((tag) => (
+                              <span class="rounded-full bg-oliva px-3 py-1 text-xs font-semibold text-marfil">
+                                {tag.titulo}
+                              </span>
+                            ))
+                          ) : (
+                            <span class="rounded-full bg-oliva px-3 py-1 text-xs font-semibold text-marfil">
+                              Destino riojano
+                            </span>
+                          )}
+                        </div>
+                      </a>
+
+                      <div class="p-6 sm:p-7 flex flex-1 flex-col justify-between">
+                        <div>
+                          <h3
+                            transition:name={`titulo-destino-${article.slug}`}
+                            class="font-display text-xl sm:text-2xl font-bold text-carbon leading-snug line-clamp-2"
+                          >
+                            <a
+                              href={`/destinos/${article.slug}`}
+                              class="hover:text-oliva transition-colors"
+                            >
+                              {article.titulo}
+                            </a>
+                          </h3>
+                          {(article.resumen || article.descripcion) && (
+                            <p class="mt-2.5 text-[15px] leading-relaxed text-carbon-muted line-clamp-3">
+                              {article.resumen || article.descripcion}
+                            </p>
+                          )}
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-salvia/40 flex flex-wrap items-center justify-between gap-3">
+                          <a
+                            href={`/destinos/${article.slug}`}
+                            class="inline-flex items-center text-sm font-semibold text-rojo-tierra hover:text-oliva transition-colors group"
+                          >
+                            <span>Ver destino</span>
+                            <Icon name="Flechita" />
+                          </a>
+
+                          <a
+                            href={buildDestinoWhatsappHref(article.titulo)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn-terracota inline-flex items-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-4 py-2.5 min-h-[44px] text-sm font-semibold text-cta-ink"
+                          >
+                            <Icon name="whatsapp" class="w-4 h-4" />
+                            <span>Consultar paquete</span>
+                          </a>
+                        </div>
+                      </div>
+                    </article>
+                  ) : null
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div
+            data-reveal
+            class="rounded-2xl bg-salvia-soft border border-salvia/45 p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
+          >
+            <div>
+              <h2 class="font-display text-xl sm:text-2xl font-bold text-carbon">
+                Planificá tu recorrido por los destinos de La Rioja
+              </h2>
+              <p class="mt-2 text-sm sm:text-[15.5px] leading-relaxed text-carbon-muted max-w-xl">
+                Consultanos por WhatsApp para conocer las salidas vigentes y armar tu itinerario a medida.
+              </p>
+            </div>
+            <a
+              href={whatsappDestinosGeneral}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-terracota inline-flex items-center justify-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-5 py-3 min-h-[46px] text-sm font-semibold text-cta-ink shrink-0"
+            >
+              <Icon name="whatsapp" class="w-4 h-4" />
+              <span>Consultar paquete</span>
+            </a>
+          </div>
+        )
+      }
     </div>
   </section>
+
+  {
+    serviciosDestacados.length > 0 && (
+      <div class="bg-arena-calida/45 pb-16 lg:pb-20">
+        <EncabezadoDeSeccion data={encabezadoExperiencias} />
+        <ArticulosDestacados
+          cardSurface="marfil"
+          data={{
+            __component: "block.servicios-destacados",
+            items: serviciosDestacados,
+          }}
+        />
+      </div>
+    )
+  }
 </Layout>

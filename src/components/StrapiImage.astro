@@ -6,9 +6,18 @@ interface Props {
   width: number;
   class?: string;
   loading?: "lazy" | "eager";
+  [key: string]: unknown;
 }
 
-const { src, alt, height, width, class: className, loading = "lazy" } = Astro.props;
+const {
+  src,
+  alt,
+  height,
+  width,
+  class: className,
+  loading = "lazy",
+  ...rest
+} = Astro.props;
 
 /**
  * Optimiza automáticamente URLs de Cloudinary insertando formato y calidad automáticos (f_auto,q_auto)
@@ -30,16 +39,19 @@ function resolveMediaUrl(url: string | null | undefined, targetWidth: number): s
 }
 
 const imageUrl = resolveMediaUrl(src, width);
+const isEager = loading === "eager";
 ---
 
 {imageUrl && (
   <img
+    {...rest}
     src={imageUrl}
     alt={alt || "Imagen ilustrativa de Sulpayki Viajes y Turismo"}
     height={height}
     width={width}
     loading={loading}
-    decoding="async"
+    decoding={isEager ? "sync" : "async"}
+    fetchpriority={isEager ? "high" : "auto"}
     class={className ?? undefined}
   />
 )}

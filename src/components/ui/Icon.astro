@@ -14,11 +14,15 @@ const iconMap: IconMap = Object.fromEntries(
 
 const iconName = Astro.props.name?.toLowerCase()
 const IconComponent = iconMap[iconName]
+const resolvedClass = [Astro.props.class, Astro.props["class:list"]]
+  .flat(Infinity)
+  .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+  .join(" ")
 ---
 
 {
   IconComponent ? (
-    <IconComponent {...Astro.props} class={Astro.props.class} />
+    <IconComponent {...Astro.props} class={resolvedClass || undefined} />
   ) : (
     <div class="text-sm">
       Icon not found:{" "}

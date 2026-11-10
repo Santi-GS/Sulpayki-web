@@ -1,6 +1,9 @@
 ---
+import BrandLogo from "./BrandLogo.astro";
 import Drawer from "./Drawer.astro";
 import Icon from "./ui/Icon.astro";
+
+const pathname = Astro.url.pathname;
 
 const NavItems = [
   { title: "Inicio", link: "/", icon: "Home" },
@@ -12,71 +15,99 @@ const NavItems = [
     subItems: [
       {
         title: "Turismo de Naturaleza",
-        link: "/servicios-turisticos?tag=Turismo de Naturaleza",
+        link: "/servicios-turisticos?tag=Turismo%20de%20Naturaleza",
       },
       {
         title: "Turismo Industrial",
-        link: "/servicios-turisticos?tag=Turismo Industrial",
+        link: "/servicios-turisticos?tag=Turismo%20Industrial",
       },
       {
         title: "Turismo Cultural",
-        link: "/servicios-turisticos?tag=Turismo Cultural",
+        link: "/servicios-turisticos?tag=Turismo%20Cultural",
       },
-      { title: "Gastronomía", link: "/servicios-turisticos?tag=Gastronomía" },
-      { title: "Transporte", link: "/servicios-turisticos?tag=Transporte" },
+      {
+        title: "Gastronomía",
+        link: "/servicios-turisticos?tag=Gastronom%C3%ADa",
+      },
+      {
+        title: "Transporte",
+        link: "/servicios-turisticos?tag=Transporte",
+      },
     ],
   },
   { title: "Sobre Nosotros", link: "/sobre-nosotros", icon: "Cactus" },
 ];
+
+function isActiveLink(href: string): boolean {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+const whatsappUrl =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20un%20paquete%20tur%C3%ADstico%20en%20La%20Rioja.%20Vengo%20de%20la%20p%C3%A1gina%20web.";
 ---
 
-<div class="h-[88px] md:h-[112px]">
+<div class="h-[74px] md:h-[84px]">
   <header
     id="main-header"
-    class="fixed top-0 z-30 w-full bg-[#F4F1E0] transition-transform duration-300 ease-in-out"
+    data-scrolled="false"
+    class="fixed top-0 z-30 w-full bg-marfil/90 backdrop-blur-md text-carbon border-b border-salvia/25 shadow-[0_6px_24px_-8px_rgba(41,42,36,0.10)] transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[scrolled=true]:bg-marfil/98 data-[scrolled=true]:border-salvia/45 data-[scrolled=true]:shadow-[0_10px_28px_-10px_rgba(41,42,36,0.18)]"
   >
-    <div class="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8">
-      <div class="flex h-18 md:h-24 items-center justify-between">
-        <!-- Logo -->
-        <div class="md:flex md:items-center">
-          <a href="/" class="block">
-            <span class="sr-only">Inicio</span>
-            <img
-              src="/logo-sulpayki-2.svg"
-              alt="Sulpayki Logo"
-              class="h-14 md:h-17 w-auto"
-            />
-          </a>
-        </div>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-[74px] md:h-[84px] items-center justify-between gap-4">
+        <a
+          href="/"
+          class="inline-flex items-center py-1 shrink-0 rounded-lg focus-visible:outline-rojo-tierra"
+        >
+          <span class="sr-only">Sulpayki Viajes y Turismo — Inicio</span>
+          <BrandLogo variant="on-light" class="h-10 md:h-12 w-auto" />
+        </a>
 
-        <!-- Navegación desktop -->
-        <div class="hidden md:flex md:items-center md:gap-6">
+        <div class="hidden lg:flex lg:items-center lg:gap-2">
           <nav aria-label="Navegación principal">
-            <ul class="flex items-center gap-4 font-semibold">
+            <ul class="flex items-center gap-1 text-[15px] font-medium text-carbon">
               {
-                NavItems.map((item) => (
-                  <li
-                    class="relative group"
-                    id={
-                      item.title === "Servicios Turísticos"
-                        ? "servicios-item"
-                        : undefined
-                    }
-                  >
-                    <a
-                      href={item.link}
-                      class="text-neutral-900 rounded-md px-2 py-2.5 hover-verde transition flex items-center gap-2"
+                NavItems.map((item) => {
+                  const active = isActiveLink(item.link);
+                  return (
+                    <li
+                      class="relative group"
+                      id={
+                        item.title === "Servicios Turísticos"
+                          ? "servicios-item"
+                          : undefined
+                      }
                     >
-                      <Icon name={item.icon} class="w-5 h-5" />
-                      {item.title}
-                      {item.subItems &&
-                        item.title === "Servicios Turísticos" && (
+                      <a
+                        href={item.link}
+                        aria-current={active ? "page" : undefined}
+                        class:list={[
+                          "relative inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 min-h-[44px] transition-colors duration-200 focus-visible:outline-rojo-tierra",
+                          active
+                            ? "bg-arena-calida/55 text-carbon font-semibold"
+                            : "text-carbon hover:bg-salvia-soft hover:text-oliva",
+                        ]}
+                      >
+                        <Icon
+                          name={item.icon}
+                          class:list={[
+                            "w-4 h-4 shrink-0 transition-colors",
+                            active ? "text-rojo-tierra" : "text-oliva",
+                          ]}
+                        />
+                        <span>{item.title}</span>
+                        {item.subItems && (
                           <svg
                             aria-hidden="true"
-                            class="w-4 h-4 transition-transform group-hover:rotate-180"
+                            class:list={[
+                              "w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180",
+                              active
+                                ? "text-rojo-tierra"
+                                : "text-oliva group-hover:text-oliva",
+                            ]}
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="3.5"
+                            stroke-width="2"
                             viewBox="0 0 24 24"
                           >
                             <path
@@ -86,54 +117,111 @@ const NavItems = [
                             />
                           </svg>
                         )}
-                    </a>
+                        {active && (
+                          <span
+                            aria-hidden="true"
+                            class="absolute bottom-1.5 left-3.5 right-3.5 h-[2px] rounded-full bg-rojo-tierra"
+                          />
+                        )}
+                      </a>
 
-                    {item.subItems && (
-                      <ul
-                        id={
-                          item.title === "Servicios Turísticos"
-                            ? "servicios-submenu"
-                            : undefined
-                        }
-                        class="absolute left-0 top-full w-60 bg-[#F4F1E0]/95 shadow-sm rounded-md opacity-0 translate-y-0 border border-[#edeadc] transition-all duration-300 ease-out delay-300 group-hover:opacity-100 group-hover:translate-y-0 group-hover:delay-0 group-focus-within:opacity-100 group-focus-within:pointer-events-auto pointer-events-none group-hover:pointer-events-auto z-35"
-                      >
-                        {item.subItems.map((sub) => (
-                          <li>
-                            <a
-                              href={sub.link}
-                              class="flex items-center px-4 py-2 text-neutral-900 hover-verde hover:rounded transition"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-3 h-3 mr-1.5 transition"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fill-rule="evenodd"
-                                  d="M6 4l6 6-6 6"
-                                  clip-rule="evenodd"
-                                />
-                              </svg>
-                              {sub.title}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))
+                      {item.subItems && (
+                        <div class="absolute left-0 top-full pt-2.5 opacity-0 pointer-events-none translate-y-1.5 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto z-40">
+                          <ul
+                            id={
+                              item.title === "Servicios Turísticos"
+                                ? "servicios-submenu"
+                                : undefined
+                            }
+                            class="w-64 rounded-2xl bg-marfil p-2 text-carbon shadow-[0_18px_40px_-12px_rgba(41,42,36,0.22)] border border-salvia/35"
+                          >
+                            {item.subItems.map((sub) => (
+                              <li>
+                                <a
+                                  href={sub.link}
+                                  class="group/sub flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium text-carbon hover:bg-salvia-soft hover:text-oliva transition-colors"
+                                >
+                                  <span>{sub.title}</span>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="w-3.5 h-3.5 text-rojo-tierra shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/sub:translate-x-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M9 6l6 6-6 6"
+                                    />
+                                  </svg>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })
               }
             </ul>
           </nav>
         </div>
 
-        <!-- Drawer mobile -->
-        <Drawer />
+        <div class="hidden lg:flex lg:items-center">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-terracota inline-flex items-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-4.5 py-2.5 min-h-[44px] text-sm font-semibold text-cta-ink focus-visible:outline-rojo-tierra"
+          >
+            <Icon name="whatsapp" class="w-4 h-4" />
+            <span>Consultar paquete</span>
+          </a>
+        </div>
+
+        <div class="flex items-center gap-2 lg:hidden">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Consultar paquete por WhatsApp"
+            class="btn-terracota inline-flex items-center justify-center rounded-xl bg-terracota hover:bg-rojo-tierra min-w-[44px] min-h-[44px] text-cta-ink focus-visible:outline-rojo-tierra"
+          >
+            <Icon name="whatsapp" class="w-4 h-4" />
+          </a>
+          <button
+            id="drawer-toggle"
+            type="button"
+            aria-label="Abrir menú de navegación"
+            aria-expanded="false"
+            aria-controls="drawer"
+            class="rounded-xl p-2.5 text-carbon hover:bg-salvia-soft hover:text-oliva transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-rojo-tierra"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.9"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 7h16M4 12h16M4 17h16"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </header>
 </div>
+
+<Drawer />
 
 <script type="module">
   let lastScroll = 0;
@@ -143,15 +231,17 @@ const NavItems = [
     const header = $("main-header");
     if (!header) return;
 
+    const y = window.scrollY;
+    header.setAttribute("data-scrolled", y > 18 ? "true" : "false");
+
     const drawer = document.getElementById("drawer");
     if (drawer && !drawer.classList.contains("translate-x-full")) {
       header.classList.remove("-translate-y-full");
-      lastScroll = window.scrollY;
+      lastScroll = y;
       return;
     }
 
-    const y = window.scrollY;
-    header.classList.toggle("-translate-y-full", y > lastScroll && y > 50);
+    header.classList.toggle("-translate-y-full", y > lastScroll && y > 64);
     lastScroll = y;
   }
 
@@ -160,6 +250,7 @@ const NavItems = [
     if (!header) return;
 
     lastScroll = window.scrollY;
+    header.setAttribute("data-scrolled", lastScroll > 18 ? "true" : "false");
     header.classList.remove("-translate-y-full");
     window.removeEventListener("scroll", handleScroll);
     window.addEventListener("scroll", handleScroll, { passive: true });

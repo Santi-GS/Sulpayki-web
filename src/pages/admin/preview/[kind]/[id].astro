@@ -5,7 +5,6 @@ import Markdown from "../../../../components/blocks/Markdown.astro";
 import BlockRenderer from "../../../../components/blocks/BlockRenderer.astro";
 import Icon from "../../../../components/ui/Icon.astro";
 import { getArticleByIdForAdmin } from "../../../../lib/loaders";
-import { formatDate } from "../../../../lib/index";
 
 export const prerender = false;
 
@@ -21,77 +20,104 @@ if (!item) {
 
 const isServicio = item.type === "SERVICIO";
 const editHref = isServicio ? `/admin/servicios/${item.id}` : `/admin/destinos/${item.id}`;
-const { coverImagen, blocks, titulo, descripcion, tags, publishedAt, published } = item;
+const { coverImagen, blocks, titulo, resumen, descripcion, tags, published } = item;
+
+const whatsappHref = `https://wa.me/5493804679492?text=${encodeURIComponent(
+  `Hola, quiero consultar por "${titulo}" que vi en la web de Sulpayki.`
+)}`;
 ---
 
 <Layout title={`Vista previa: ${titulo}`} noindex={true}>
   <!-- Barra informativa de vista previa -->
-  <div class="bg-[#1D261F] text-white px-4 py-3 text-sm">
-    <div class="container mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <span class="rounded-full bg-[#E5BA59] text-[#1D261F] px-2.5 py-0.5 text-xs font-bold">
+  <div class="bg-carbon text-marfil px-4 py-3 text-sm border-b border-salvia/35">
+    <div class="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <span class="rounded-full bg-arena-calida text-carbon px-3 py-0.5 text-xs font-bold">
           Vista Previa
         </span>
         <span>
-          Así se verá este {isServicio ? "servicio" : "destino"} ({published ? "Publicado" : "Borrador"}).
+          Así se verá este {isServicio ? "servicio turístico" : "destino"} ({published ? "Publicado" : "Borrador"}).
         </span>
       </div>
-      <a href={editHref} class="underline font-semibold text-[#E5BA59] hover:text-white">
+      <a href={editHref} class="underline font-semibold text-arena-calida hover:text-marfil">
         Volver al editor
       </a>
     </div>
   </div>
 
-  <section class="mb-5 pt-6">
-    <div class="container mx-auto px-4">
-      <div>
-        {coverImagen?.url && (
-          <StrapiImage
-            class="w-full h-80 sm:h-110 object-cover rounded-2xl p-2 bg-white shadow"
-            src={coverImagen.url}
-            alt={coverImagen.alternativeText || titulo}
-            height={600}
-            width={1200}
-            loading="eager"
-          />
-        )}
-      </div>
+  <article>
+    <header class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+        <div class="lg:col-span-7 relative rounded-2xl overflow-hidden bg-arena-calida border border-salvia/45 min-h-[280px] sm:min-h-[380px] lg:min-h-[440px]">
+          {
+            coverImagen?.url ? (
+              <StrapiImage
+                class="w-full h-full object-cover"
+                src={coverImagen.url}
+                alt={coverImagen.alternativeText || titulo}
+                height={680}
+                width={1080}
+                loading="eager"
+              />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-carbon-muted text-sm font-medium">
+                Fotografía del artículo
+              </div>
+            )
+          }
 
-      <div class="pt-10 pb-5 max-w-2xl mx-auto text-center">
-        {tags && tags.length > 0 && (
-          <div class="flex flex-wrap justify-center gap-2 mb-3">
-            {tags.map((tag) => (
-              <span class="rounded-full bg-green-300 px-3 py-1 text-base font-medium whitespace-nowrap text-emerald-950">
-                {tag.titulo}
-              </span>
-            ))}
+          <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+            {
+              tags && tags.length > 0 ? (
+                tags.map((tag) => (
+                  <span class="rounded-full bg-oliva px-3.5 py-1.5 text-xs font-semibold text-marfil">
+                    {tag.titulo}
+                  </span>
+                ))
+              ) : (
+                <span class="rounded-full bg-oliva px-3.5 py-1.5 text-xs font-semibold text-marfil">
+                  {isServicio ? "Experiencia en La Rioja" : "Destino en La Rioja"}
+                </span>
+              )
+            }
           </div>
-        )}
-        <div class="mt-2">
-          <h1 class="mb-4 text-4xl lg:text-5xl font-bold text-neutral-900">
-            {titulo}
-          </h1>
-          {publishedAt && (
-            <span class="block text-neutral-600 text-sm mb-6">
-              Publicado el {formatDate(publishedAt)}
-            </span>
-          )}
-          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        </div>
+
+        <div class="lg:col-span-5 rounded-2xl bg-salvia-soft border border-salvia/45 p-6 sm:p-8 lg:p-9 flex flex-col justify-between">
+          <div>
+            <h1 class="font-display text-2xl sm:text-3xl lg:text-[2.15rem] font-bold text-carbon leading-[1.12] tracking-[-0.025em] text-balance">
+              {titulo}
+            </h1>
+            {
+              resumen && (
+                <p class="mt-4 text-[15.5px] sm:text-base leading-relaxed text-carbon-muted">
+                  {resumen}
+                </p>
+              )
+            }
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-salvia/40">
             <a
-              class="inline-flex items-center gap-2 py-3 px-8 leading-loose bg-verde hover:saturate-90 hover:scale-103 text-neutral-900 font-semibold rounded-l-xl rounded-t-xl transition duration-200 text-lg"
-              href={`https://wa.me/5493804679492?text=${encodeURIComponent(`Hola, quiero más información sobre "${titulo}". Vengo de la página web.🌵`)}`}
+              href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
+              class="w-full inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-6 py-4 min-h-[50px] text-[15px] font-semibold text-cta-ink transition-colors duration-200"
             >
-              Contactanos <Icon name="Whatsapp" />
+              <Icon name="whatsapp" class="w-5 h-5" />
+              <span>Consultar paquete por WhatsApp</span>
             </a>
           </div>
         </div>
       </div>
+    </header>
 
-      {descripcion && <Markdown data={{ text: descripcion, __component: "block.markdown" }} />}
-    </div>
-  </section>
-  <BlockRenderer blocks={blocks} />
+    {
+      descripcion && (
+        <Markdown data={{ text: descripcion, __component: "block.markdown" }} />
+      )
+    }
+
+    <BlockRenderer blocks={blocks} />
+  </article>
 </Layout>
-

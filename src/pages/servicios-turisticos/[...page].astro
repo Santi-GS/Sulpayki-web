@@ -1,5 +1,4 @@
 ---
-import { formatDate } from "../../lib/index";
 import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
 import FiltroServicios from "../../components/FiltroServicios.astro";
@@ -25,104 +24,209 @@ interface Props {
 }
 
 const { servicios } = Astro.props;
+
+function buildServicioWhatsappHref(title: string): string {
+  const msg = `Hola, quiero consultar por el paquete "${title}" que vi en la web de Sulpayki.`;
+  return `https://wa.me/5493804679492?text=${encodeURIComponent(msg)}`;
+}
+
+const whatsappGruposHref =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20un%20paquete%20o%20viaje%20a%20medida%20por%20La%20Rioja%20con%20Sulpayki.";
 ---
 
 <Layout
-  title="Servicios Turísticos | Sulpayki Viajes y Turismo"
-  description="Servicios especializados de turismo industrial, naturaleza, cultural, gastronomía y transporte en La Rioja."
+  title="Servicios Turísticos y Paquetes | Sulpayki Viajes y Turismo"
+  description="Excursiones guiadas, paquetes a medida, turismo industrial, naturaleza, cultura, gastronomía y transporte en La Rioja, Argentina."
 >
-  <section class="py-8">
+  <section aria-label="Catálogo de paquetes y servicios turísticos">
     <FiltroServicios servicios={servicios} />
-    <div class="container mx-auto px-4">
-      <div class="flex flex-wrap justify-center">
-        <div
-          id="servicios-grid"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-8 w-full"
-        >
-          {servicios.length > 0 &&
-            servicios.map((servicio) =>
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 lg:pb-20">
+      {
+        servicios.length > 0 ? (
+          <div
+            id="servicios-grid"
+            data-reveal-stagger="70"
+            class:list={[
+              "grid grid-cols-1 gap-6",
+              servicios.length === 1
+                ? "max-w-4xl mx-auto"
+                : servicios.length === 2
+                  ? "md:grid-cols-2"
+                  : "md:grid-cols-2 lg:grid-cols-3",
+            ]}
+          >
+            {servicios.map((servicio) =>
               servicio?.slug ? (
-                <a
-                  href={`/servicios-turisticos/${servicio.slug}`}
-                  class="group servicio-card"
-                  data-tags={servicio.tags?.map((t) => t.titulo).join(",") || ""}
-                  data-title={servicio.titulo?.toLowerCase() || ""}
+                <article
+                  data-reveal
+                  class:list={[
+                    "servicio-card card-interactive flex flex-col rounded-2xl overflow-hidden bg-salvia-soft border border-salvia/45 hover:border-oliva",
+                    servicios.length === 1 && "lg:grid lg:grid-cols-12",
+                  ]}
+                  data-tags={
+                    servicio.tags?.map((t) => t.titulo).join(",") || ""
+                  }
+                  data-title={servicio.titulo || ""}
+                  data-summary={servicio.resumen || servicio.descripcion || ""}
                 >
-                  <div class="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                    <div class="relative">
+                  <a
+                    href={`/servicios-turisticos/${servicio.slug}`}
+                    class:list={[
+                      "relative overflow-hidden bg-arena-calida block group focus-visible:-outline-offset-4 focus-visible:outline-marfil",
+                      servicios.length === 1
+                        ? "lg:col-span-6 aspect-[16/10] lg:aspect-auto lg:min-h-[340px]"
+                        : "aspect-[16/10]",
+                    ]}
+                  >
+                    {servicio.coverImagen?.url ? (
                       <StrapiImage
-                        class="w-full h-48 object-cover transition-transform duration-300"
-                        src={servicio.coverImagen?.url}
-                        alt={servicio.coverImagen?.alternativeText || servicio.titulo}
-                        height={400}
-                        width={400}
+                        transition:name={`img-servicio-${servicio.slug}`}
+                        class="card-media-zoom w-full h-full object-cover"
+                        src={servicio.coverImagen.url}
+                        alt={
+                          servicio.coverImagen.alternativeText ||
+                          servicio.titulo
+                        }
+                        height={460}
+                        width={720}
                       />
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center text-carbon-muted text-sm font-medium">
+                        Fotografía próximamente
+                      </div>
+                    )}
+
+                    <div class="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5">
+                      {servicio.tags && servicio.tags.length > 0 ? (
+                        servicio.tags.map((tag) => (
+                          <span class="rounded-full bg-oliva px-3 py-1 text-xs font-semibold text-marfil">
+                            {tag.titulo}
+                          </span>
+                        ))
+                      ) : (
+                        <span class="rounded-full bg-oliva px-3 py-1 text-xs font-semibold text-marfil">
+                          Experiencia guiada
+                        </span>
+                      )}
+                      {servicio.featured && (
+                        <span class="rounded-full bg-rojo-tierra px-3 py-1 text-xs font-semibold text-marfil">
+                          Destacado
+                        </span>
+                      )}
                     </div>
-                    <div class="p-6 flex flex-col h-full">
-                      <div class="mb-3">
-                        {servicio.tags &&
-                          servicio.tags.length > 0 &&
-                          servicio.tags.map((tag) => (
-                            <span class="inline-block rounded-full bg-green-300 px-2.5 py-0.5 text-xs whitespace-nowrap text-emerald-900 mr-1 mb-1 font-medium">
-                              {tag.titulo}
-                            </span>
-                          ))}
-                      </div>
-                      <h2 class="mb-3 text-lg font-bold line-clamp-2 text-gray-900 leading-tight group-hover:text-green-600 transition-colors duration-200">
-                        {servicio.titulo}
+                  </a>
+
+                  <div
+                    class:list={[
+                      "p-6 sm:p-7 flex flex-1 flex-col justify-between",
+                      servicios.length === 1 && "lg:col-span-6 lg:p-9",
+                    ]}
+                  >
+                    <div>
+                      <h2
+                        transition:name={`titulo-servicio-${servicio.slug}`}
+                        class="font-display text-xl sm:text-2xl font-bold text-carbon leading-snug line-clamp-2"
+                      >
+                        <a
+                          href={`/servicios-turisticos/${servicio.slug}`}
+                          class="hover:text-oliva transition-colors"
+                        >
+                          {servicio.titulo}
+                        </a>
                       </h2>
-                      <span class="text-xs text-gray-500 mb-3 block font-medium">
-                        • Publicado: {formatDate(servicio.publishedAt)}
-                      </span>
-                      <p class="text-gray-600 leading-relaxed line-clamp-2 text-sm mb-4 min-h-[2.5rem]">
-                        {servicio.resumen || servicio.descripcion}
-                      </p>
-                      <div class="flex items-center pt-2 text-left text-green-600 font-semibold group-hover:text-green-700 transition-colors duration-200">
-                        <span>Ver más</span>
+
+                      {(servicio.resumen || servicio.descripcion) && (
+                        <p class="mt-2.5 text-[15px] leading-relaxed text-carbon-muted line-clamp-3">
+                          {servicio.resumen || servicio.descripcion}
+                        </p>
+                      )}
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-salvia/40 flex flex-wrap items-center justify-between gap-3">
+                      <a
+                        href={`/servicios-turisticos/${servicio.slug}`}
+                        class="inline-flex items-center text-sm font-semibold text-rojo-tierra hover:text-oliva transition-colors group"
+                      >
+                        <span>Ver itinerario</span>
                         <Icon name="Flechita" />
-                      </div>
+                      </a>
+
+                      <a
+                        href={buildServicioWhatsappHref(servicio.titulo)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn-terracota inline-flex items-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-4 py-2.5 min-h-[44px] text-sm font-semibold text-cta-ink"
+                      >
+                        <Icon name="whatsapp" class="w-4 h-4" />
+                        <span>Consultar paquete</span>
+                      </a>
                     </div>
                   </div>
-                </a>
+                </article>
               ) : null
             )}
-        </div>
-
-        {servicios.length === 0 && (
-          <div class="text-center py-16">
-            <div class="max-w-md mx-auto">
-              <svg
-                aria-hidden="true"
-                class="w-16 h-16 text-gray-300 mx-auto mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"
-                ></path>
-              </svg>
-              <p class="text-gray-500 text-lg font-medium">
-                No hay servicios turísticos disponibles en esta página
-              </p>
-              <p class="text-gray-400 text-sm mt-2">Volvé más tarde para conocer nuevas propuestas</p>
-            </div>
           </div>
-        )}
+        ) : (
+          <div
+            data-reveal
+            class="rounded-2xl bg-salvia-soft border border-salvia/45 p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
+          >
+            <div>
+              <h2 class="font-display text-xl sm:text-2xl font-bold text-carbon">
+                Armamos tu paquete turístico a medida en La Rioja
+              </h2>
+              <p class="mt-2 text-sm sm:text-[15.5px] leading-relaxed text-carbon-muted max-w-xl">
+                Escribinos por WhatsApp para recibir salidas vigentes, circuitos productivos, excursiones y traslados personalizados.
+              </p>
+            </div>
+            <a
+              href={whatsappGruposHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-terracota inline-flex items-center justify-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-5 py-3 min-h-[46px] text-sm font-semibold text-cta-ink shrink-0"
+            >
+              <Icon name="whatsapp" class="w-4 h-4" />
+              <span>Consultar paquete</span>
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Banner de viajes grupales, institucionales y a medida -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-4" aria-label="Consultas por viajes a medida y grupos">
+    <div
+      data-reveal
+      class="rounded-2xl overflow-hidden shadow-[0_20px_44px_-16px_rgba(41,42,36,0.24)] grid grid-cols-1 lg:grid-cols-12"
+    >
+      <div class="lg:col-span-7 bg-oliva text-marfil p-8 sm:p-10 lg:p-12 flex flex-col justify-center">
+        <h2 class="font-display text-2xl sm:text-3xl font-bold text-marfil leading-tight tracking-[-0.025em] text-balance">
+          ¿Necesitás coordinar un contingente educativo, visita técnica o viaje familiar?
+        </h2>
+        <p class="mt-3 text-[15.5px] leading-relaxed text-[#EBE3D2] max-w-[56ch]">
+          Organizamos el recorrido completo en La Rioja: ingreso a bodegas y olivícolas, guías locales habilitados, gastronomía regional y transporte exclusivo.
+        </p>
+      </div>
+
+      <div class="lg:col-span-5 bg-arena-calida p-8 sm:p-10 lg:p-12 flex flex-col justify-center gap-3.5">
+        <a
+          href={whatsappGruposHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-terracota inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-6 py-4 min-h-[50px] text-[15px] font-semibold text-cta-ink"
+        >
+          <Icon name="whatsapp" class="w-5 h-5" />
+          <span>Consultar paquete a medida</span>
+        </a>
+        <a
+          href="/destinos"
+          class="inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-salvia-soft px-6 py-3.5 min-h-[48px] text-[15px] font-semibold text-carbon transition-all duration-200 hover:-translate-y-0.5"
+        >
+          Explorar destinos en La Rioja
+        </a>
       </div>
     </div>
   </section>
 </Layout>
-
-<style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>

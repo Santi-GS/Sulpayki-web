@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8" />
+  <title>Galería de Tapia y Sombra Riojana — Sulpayki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Piazzolla:opsz,wght@8..30,500;8..30,600;8..30,700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1440px; height: 900px; overflow: hidden;
+      background: #F4EBE1; color: #2D3A26;
+      font-family: 'Montserrat', sans-serif;
+      display: grid; grid-template-rows: 80px 1fr 118px;
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 56px; background: #FAF6F0;
+      border-bottom: 1px solid rgba(45, 58, 38, 0.16);
+    }
+    .brand { display: flex; align-items: baseline; gap: 12px; }
+    .brand-mark { font-family: 'Piazzolla', serif; font-size: 30px; font-weight: 700; color: #596441; letter-spacing: 0.03em; }
+    .brand-sub { font-size: 12px; font-weight: 600; color: #2D3A26; opacity: 0.78; letter-spacing: 0.08em; }
+    nav { display: flex; align-items: center; gap: 34px; font-size: 15px; font-weight: 600; color: #2D3A26; }
+    nav span.active { color: #596441; border-bottom: 2px solid #C29B47; padding-bottom: 4px; }
+    .cta-top {
+      background: #9E5B3D; color: #FAF6F0; padding: 12px 24px;
+      font-size: 14px; font-weight: 600; border-radius: 4px;
+    }
+    .gallery {
+      display: grid; grid-template-columns: 560px 1fr;
+      padding: 36px 56px 28px; gap: 32px; align-items: stretch;
+    }
+    .shade-column {
+      background: #FAF6F0; border: 1px solid rgba(45, 58, 38, 0.15);
+      border-left: 6px solid #596441; padding: 44px 42px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .place-tag { font-size: 14px; font-weight: 600; color: #596441; margin-bottom: 16px; }
+    h1 {
+      font-family: 'Piazzolla', serif; font-size: 46px; line-height: 1.08;
+      font-weight: 600; color: #2D3A26; margin-bottom: 20px;
+    }
+    .lead { font-size: 16px; line-height: 1.6; color: #2D3A26; opacity: 0.86; margin-bottom: 28px; }
+    .actions { display: flex; gap: 14px; align-items: center; }
+    .btn-primary {
+      background: #9E5B3D; color: #FAF6F0; padding: 16px 28px;
+      font-size: 16px; font-weight: 600; border-radius: 4px;
+    }
+    .btn-secondary {
+      background: transparent; color: #2D3A26; padding: 15px 24px;
+      font-size: 16px; font-weight: 600; border: 1.5px solid #596441; border-radius: 4px;
+    }
+    .host-note {
+      padding-top: 22px; border-top: 1px solid rgba(45, 58, 38, 0.12);
+      display: flex; justify-content: space-between; font-size: 13px; color: #596441; font-weight: 600;
+    }
+    .window {
+      position: relative; overflow: hidden; border: 1px solid rgba(45, 58, 38, 0.18);
+      background: linear-gradient(160deg, #9E5B3D 0%, #7d452c 42%, #596441 78%, #2D3A26 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .landscape-sun {
+      position: absolute; top: 54px; right: 86px; width: 140px; height: 140px;
+      border-radius: 50%; background: radial-gradient(circle, #FAF6F0 0%, #C29B47 68%, transparent 72%); opacity: 0.85;
+    }
+    .cliff-layer-1 {
+      position: absolute; inset: 28% 0 0 0;
+      background: linear-gradient(180deg, rgba(158,91,61,0.92) 0%, #6d3b25 100%);
+      clip-path: polygon(0 38%, 22% 18%, 46% 30%, 74% 8%, 100% 22%, 100% 100%, 0 100%);
+    }
+    .cliff-layer-2 {
+      position: absolute; inset: 52% 0 0 0;
+      background: #2D3A26;
+      clip-path: polygon(0 28%, 32% 44%, 64% 16%, 100% 34%, 100% 100%, 0 100%);
+    }
+    .slide-plaque {
+      position: relative; z-index: 2; margin: 28px; padding: 26px 30px;
+      background: rgba(45, 58, 38, 0.92); color: #FAF6F0;
+      border-left: 4px solid #C29B47; max-width: 560px;
+    }
+    .slide-meta { font-size: 13px; color: #C29B47; font-weight: 600; margin-bottom: 6px; }
+    .slide-title { font-family: 'Piazzolla', serif; font-size: 28px; font-weight: 600; margin-bottom: 6px; }
+    .slide-text { font-size: 14px; color: #F4EBE1; opacity: 0.9; line-height: 1.45; }
+    .plinth {
+      background: #2D3A26; color: #FAF6F0; padding: 0 56px;
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      border-top: 3px solid #C29B47;
+    }
+    .plate {
+      padding: 22px 20px; border-right: 1px solid rgba(244, 235, 225, 0.14);
+      display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    }
+    .plate:last-child { border-right: none; }
+    .plate-kicker { font-size: 12px; color: #C29B47; font-weight: 600; }
+    .plate-name { font-family: 'Piazzolla', serif; font-size: 23px; font-weight: 600; color: #FAF6F0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="brand-mark">SULPAYKI</span>
+      <span class="brand-sub">Viajes y Turismo · La Rioja</span>
+    </div>
+    <nav>
+      <span class="active">Inicio</span>
+      <span>Destinos</span>
+      <span>Servicios Turísticos</span>
+      <span>Sobre Nosotros</span>
+    </nav>
+    <div class="cta-top">Consultar por WhatsApp</div>
+  </header>
+
+  <section class="gallery">
+    <div class="shade-column">
+      <div>
+        <div class="place-tag">Anfitriones locales en La Rioja, Argentina</div>
+        <h1>Diseñamos junto a vos tu viaje inolvidable por La Rioja</h1>
+        <p class="lead">Excursiones a medida para viajeros y familias, traslados seguros y circuitos de turismo industrial y productivo para instituciones.</p>
+        <div class="actions">
+          <span class="btn-primary">Explorar Servicios</span>
+          <span class="btn-secondary">Conocer Destinos</span>
+        </div>
+      </div>
+      <div class="host-note">
+        <span>Atención directa todo el año</span>
+        <span>Particulares · Contingentes · Empresas</span>
+      </div>
+    </div>
+
+    <div class="window">
+      <div class="landscape-sun"></div>
+      <div class="cliff-layer-1"></div>
+      <div class="cliff-layer-2"></div>
+      <div class="slide-plaque">
+        <div class="slide-meta">Diapositiva 01 / 02 · Naturaleza y Patrimonio</div>
+        <div class="slide-title">Descubrí los paisajes imponentes de La Rioja</div>
+        <div class="slide-text">Talampaya, Cuesta de Miranda, Chilecito y circuitos guiados con cercanía local.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="plinth">
+    <div class="plate"><span class="plate-kicker">Parques y Reservas</span><span class="plate-name">Naturaleza</span></div>
+    <div class="plate"><span class="plate-kicker">Bodegas y Olivícolas</span><span class="plate-name">Turismo Industrial</span></div>
+    <div class="plate"><span class="plate-kicker">Historia y Museos</span><span class="plate-name">Turismo Cultural</span></div>
+    <div class="plate"><span class="plate-kicker">Ruta del Torrontés</span><span class="plate-name">Gastronomía</span></div>
+    <div class="plate"><span class="plate-kicker">Delegaciones y Grupos</span><span class="plate-name">Transporte</span></div>
+  </footer>
+</body>
+</html>
+

@@ -1,29 +1,71 @@
 ---
 import Faq from "../CardPregunta.astro";
+import Icon from "../ui/Icon.astro";
 import type { PreguntasFrecuentesProps } from "../../lib/types";
 
 interface Props {
   data: PreguntasFrecuentesProps;
 }
 
-const { data: {pyr} } = Astro.props;
+const {
+  data: { pyr },
+} = Astro.props;
+
+const items = Array.isArray(pyr) ? pyr : [];
+const whatsappFaqHref =
+  "https://wa.me/5493804679492?text=Hola,%20tengo%20una%20consulta%20sobre%20los%20viajes%20y%20servicios%20de%20Sulpayki%20en%20La%20Rioja.";
 ---
 
+{
+  items.length > 0 && (
+    <section
+      class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14"
+      aria-label="Preguntas frecuentes sobre viajes y reservas"
+    >
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div
+          data-reveal
+          class="lg:col-span-4 rounded-2xl bg-arena-calida border border-carbon/12 p-6 sm:p-7"
+        >
+          <h2 class="font-display text-2xl sm:text-[1.75rem] font-bold text-carbon leading-tight tracking-[-0.02em]">
+            Preguntas frecuentes
+          </h2>
+          <p class="mt-2.5 text-sm sm:text-[15px] leading-relaxed text-carbon-muted">
+            Resolvé tus dudas sobre reservas, salidas grupales, excursiones y coordinación de viajes por La Rioja.
+          </p>
+          <div class="mt-6 pt-5 border-t border-carbon/14">
+            <a
+              href={whatsappFaqHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-terracota w-full inline-flex items-center justify-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-4.5 py-3 min-h-[46px] text-sm font-semibold text-cta-ink"
+            >
+              <Icon name="whatsapp" class="w-4 h-4" />
+              <span>Hacer una consulta</span>
+            </a>
+          </div>
+        </div>
 
-<section>
-  <div class="py-10">
-    <div class="container mx-auto px-4">
-      <div class="max-w-3xl mx-auto">
-        <ul class="space-y-4 lg:space-y-6">
-          {pyr.map(p => (
-            Array.isArray(p.respuesta)
-              ? p.respuesta.map(r => (
-                  <Faq pregunta={p.pregunta} respuesta={r.text} />
-                ))
-              : <Faq pregunta={p.pregunta} respuesta={p.respuesta.text} />
-          ))}
+        <ul class="lg:col-span-8 space-y-3.5" data-reveal-stagger="65">
+          {items.map((p, idx) =>
+            Array.isArray(p.respuesta) ? (
+              p.respuesta.map((r, subIdx) => (
+                <Faq
+                  pregunta={p.pregunta}
+                  respuesta={r.text}
+                  defaultOpen={idx === 0 && subIdx === 0}
+                />
+              ))
+            ) : (
+              <Faq
+                pregunta={p.pregunta}
+                respuesta={p.respuesta?.text || ""}
+                defaultOpen={idx === 0}
+              />
+            )
+          )}
         </ul>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
+  )
+}

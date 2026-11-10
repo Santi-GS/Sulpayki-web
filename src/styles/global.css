@@ -1,41 +1,322 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/typography';
 
-@theme{
-  --color-primary: #6BC340;   /* Verde cactus */
-  --color-primary-dark: #599F30;
-  --color-secondary: #3A3A3A;/* Naranja atardecer */
-  --color-secondary-dark:	#C46E0D; 
-  --color-tertiary: #FCD21D;  /* Amarillo sol */
-  --color-accent: #7A4A00;    /* Marrón texto sombra */
-  --color-text: #3A3A3A;      /* Gris oscuro para textos */
-  --color-neutral:	#3A3A3A;
-  --color-neutral-light: #F5F5F5;
+@theme {
+  --font-display: "Montserrat Variable", system-ui, -apple-system, sans-serif;
+  --font-sans: "Plus Jakarta Sans Variable", system-ui, -apple-system, sans-serif;
+
+  /* Paleta oficial de 7 colores — Sulpayki Viajes y Turismo */
+  --color-marfil: #F5F0E4;
+  --color-surface: #F5F0E4;
+  --color-canvas: #F5F0E4;
+
+  --color-carbon: #292A24;
+  --color-carbon-muted: #45473E;
+
+  --color-oliva: #59613A;
+  --color-oliva-deep: #464D2D;
+
+  --color-salvia: #89916A;
+  --color-salvia-soft: #E1E3D3;
+
+  --color-terracota: #A85C45;
+  --color-rojo-tierra: #783D32;
+  --color-arena-calida: #D8C49A;
+  --color-cta-ink: #FFFDF9;
+
+  /* Alias semánticos para páginas internas existentes */
+  --color-primary: #59613A;
+  --color-primary-dark: #464D2D;
+  --color-secondary: #A85C45;
+  --color-secondary-dark: #783D32;
+  --color-tertiary: #D8C49A;
+  --color-accent: #783D32;
+  --color-text: #292A24;
+  --color-neutral: #292A24;
+  --color-neutral-light: #F5F0E4;
+
+  /* Tokens de movimiento — Agencia Receptiva Panorámica */
+  --ease-panoramico: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 180ms;
+  --duration-base: 320ms;
+  --duration-reveal: 620ms;
+  --duration-hero-fade: 850ms;
+  --duration-ken-burns: 8000ms;
 }
 
+@layer base {
+  html {
+    background-color: #F5F0E4;
+    color: #292A24;
+    caret-color: #A85C45;
+    scroll-behavior: smooth;
+    scrollbar-color: #59613A #F5F0E4;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #F5F0E4;
+    color: #292A24;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  ::selection {
+    background-color: #783D32;
+    color: #F5F0E4;
+  }
+
+  a {
+    text-underline-offset: 0.22em;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F0E4;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #59613A;
+  border-radius: 9999px;
+  border: 2px solid #F5F0E4;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #292A24;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Compatibilidad con utilidades heredadas en rutas internas */
 .hover-verde:hover {
-  color: white;
-  background: linear-gradient(to bottom, #63B451, #6EE650);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  color: #F5F0E4;
+  background-color: #59613A;
 }
 
 .hover-verde:active {
-  background: linear-gradient(to bottom, #63B451, #6EE650);
+  background-color: #464D2D;
 }
 
 .bg-verde {
-  color: white;
-  background: linear-gradient(to bottom, #63B451, #6EE650);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  color: #F5F0E4;
+  background-color: #59613A;
 }
 
-/* Accesibilidad WCAG 2.2: foco visible por teclado y respeto a movimiento reducido */
 :focus-visible {
-  outline: 2px solid #599F30;
-  outline-offset: 2px;
+  outline: 2px solid #783D32;
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   Sistema de Movimiento Panorámico — Sulpayki Viajes y Turismo
+   - Sin dependencias externas.
+   - Solo anima transform y opacity (y grid-template-rows en acordeones).
+   - Visible por defecto si JS está deshabilitado o falla.
+   ========================================================================== */
+
+@keyframes sulpayki-dock-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+@keyframes sulpayki-dock-nudge {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  35% {
+    transform: translateY(-3px) scale(1.04);
+  }
+  65% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sulpayki-card-filter-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sulpayki-scroll-reveal {
+  from {
+    opacity: 0.01;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Aparición al hacer scroll controlada por IntersectionObserver */
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity var(--duration-reveal) var(--ease-panoramico),
+      transform var(--duration-reveal) var(--ease-panoramico);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html.js [data-reveal].is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Mejora progresiva CSS Scroll-Driven Animations para bloques con data-scroll-view */
+  @supports (animation-timeline: view()) {
+    [data-scroll-view] {
+      animation: sulpayki-scroll-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 6% cover 24%;
+    }
+  }
+
+  /* Microinteracción en tarjetas de paquetes, servicios y destinos */
+  .card-interactive {
+    transition:
+      transform var(--duration-base) var(--ease-panoramico),
+      border-color var(--duration-fast) var(--ease-panoramico),
+      background-color var(--duration-fast) var(--ease-panoramico);
+  }
+
+  .card-interactive:hover,
+  .card-interactive:focus-within {
+    transform: translateY(-4px);
+  }
+
+  .card-media-zoom {
+    transition: transform var(--duration-reveal) var(--ease-panoramico);
+  }
+
+  .group:hover .card-media-zoom,
+  .group:focus-visible .card-media-zoom,
+  .card-interactive:hover .card-media-zoom,
+  .card-interactive:focus-within .card-media-zoom {
+    transform: scale(1.03);
+  }
+
+  /* Microinteracción en botones de acción principales (Terracota -> Rojo Tierra) */
+  .btn-terracota {
+    transition:
+      background-color var(--duration-fast) var(--ease-panoramico),
+      color var(--duration-fast) var(--ease-panoramico),
+      transform var(--duration-fast) var(--ease-panoramico);
+  }
+
+  .btn-terracota:hover,
+  .btn-terracota:focus-visible {
+    transform: translateY(-1.5px);
+  }
+
+  .btn-terracota:active {
+    transform: translateY(0);
+  }
+
+  .btn-terracota .btn-icon-shift {
+    transition: transform var(--duration-fast) var(--ease-panoramico);
+  }
+
+  .btn-terracota:hover .btn-icon-shift,
+  .btn-terracota:focus-visible .btn-icon-shift {
+    transform: translateX(4px);
+  }
+
+  /* Píldoras interactivas del filtro de servicios */
+  .pill-interactive {
+    transition:
+      background-color var(--duration-fast) var(--ease-panoramico),
+      color var(--duration-fast) var(--ease-panoramico),
+      border-color var(--duration-fast) var(--ease-panoramico),
+      transform var(--duration-fast) var(--ease-panoramico);
+  }
+
+  .pill-interactive:hover {
+    transform: translateY(-1.5px);
+  }
+
+  .pill-interactive:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Re-entrada suave al filtrar tarjetas en el catálogo */
+  .servicio-card.is-filtering-in {
+    animation: sulpayki-card-filter-in 380ms var(--ease-panoramico) both;
+    animation-delay: var(--filter-delay, 0ms);
+  }
+
+  /* Pulso único de bienvenida en el botón flotante de contacto */
+  .dock-pulse-once {
+    animation: sulpayki-dock-nudge 900ms var(--ease-panoramico) 1;
+  }
+
+  .dock-pulse-once::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 2px solid var(--color-terracota);
+    pointer-events: none;
+    animation: sulpayki-dock-pulse 1150ms var(--ease-out-expo) 1 forwards;
+  }
+
+  /* Refinamiento de View Transitions nativas de Astro */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 320ms;
+    animation-timing-function: var(--ease-panoramico);
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 420ms;
+    animation-timing-function: var(--ease-panoramico);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  html.js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
   *,
   *::before,
   *::after {

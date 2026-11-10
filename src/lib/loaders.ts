@@ -191,12 +191,8 @@ export async function getPublishedArticles(type: ArticleType): Promise<FullArtic
   return hydrateArticles(publishedRows);
 }
 
-export async function getFeaturedArticleItems(type: ArticleType): Promise<ArticulosDestacadosItem[]> {
-  const published = await getPublishedArticles(type);
-  const featuredOnly = published.filter((item) => item.featured);
-  const selected = featuredOnly.length > 0 ? featuredOnly : published.slice(0, 8);
-
-  return selected.map((item) => ({
+export function mapArticleToDestacadoItem(item: FullArticle): ArticulosDestacadosItem {
+  return {
     id: item.id,
     documentId: `article-${item.id}`,
     titulo: item.titulo,
@@ -206,7 +202,45 @@ export async function getFeaturedArticleItems(type: ArticleType): Promise<Articu
     slug: item.slug,
     coverImagen: item.coverImagen,
     tags: item.tags,
-  }));
+  };
+}
+
+export async function getFeaturedArticleItems(type: ArticleType): Promise<ArticulosDestacadosItem[]> {
+  const published = await getPublishedArticles(type);
+  const featuredOnly = published.filter((item) => item.featured);
+  const selected = featuredOnly.length > 0 ? featuredOnly : published.slice(0, 8);
+
+  return selected.map(mapArticleToDestacadoItem);
+}
+
+export function getRelatedArticleItems(
+  current: FullArticle,
+  pool: FullArticle[],
+  limit = 6
+): ArticulosDestacadosItem[] {
+  const currentTagTitles = new Set(
+    (current.tags ?? []).map((t) => t.titulo.trim().toLowerCase())
+  );
+
+  const candidates = pool.filter(
+    (item) => item.id !== current.id && item.slug !== current.slug
+  );
+
+  const scored = candidates.map((item) => {
+    const sharedTags = (item.tags ?? []).reduce((acc, tag) => {
+      return acc + (currentTagTitles.has(tag.titulo.trim().toLowerCase()) ? 1 : 0);
+    }, 0);
+    const featuredBoost = item.featured ? 5 : 0;
+    const score = sharedTags * 10 + featuredBoost;
+    return { item, score };
+  });
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return (b.item.publishedAt || "").localeCompare(a.item.publishedAt || "");
+  });
+
+  return scored.slice(0, limit).map(({ item }) => mapArticleToDestacadoItem(item));
 }
 
 export async function getAllArticlesForAdmin(type?: ArticleType): Promise<FullArticle[]> {

@@ -1,28 +1,44 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import SectionContainer from "../components/SectionContainer.astro";
+import Icon from "../components/ui/Icon.astro";
+
+const whatsappHref =
+  "https://wa.me/5493804679492?text=Hola,%20estaba%20navegando%20la%20web%20de%20Sulpayki%20y%20quiero%20consultar%20por%20un%20paquete%20tur%C3%ADstico%20en%20La%20Rioja.";
 ---
 
-<Layout title="Sulpayki Viajes y Turismo - Página 404">
-    <SectionContainer>
-        <div class="container mx-auto px-4 py-20 pt-30">
-            <div class="max-w-xl mx-auto">
-                <div class="py-12 px-6 bg-white rounded-xl shadow">
-                    <div class="text-center">
-                        <span class="mb-6 text-4xl text-green-600 font-bold">Whoops!</span>
-                        <h3 class="mb-2 text-4xl font-bold">Ha ocurrido un error!</h3>
-                        <p class="mb-8 text-gray-400">
-                        Lamentamos decir que no hemos encontrado la página.
-                        </p>
-                        <div>
-                            <a
-                                class="w-full lg:w-auto mb-2 lg:mb-0 lg:mr-4 inline-block py-2 px-6 rounded-l-xl rounded-t-xl font-bold leading-loose text-gray-50 bg-green-600 hover:bg-green-700"
-                                href="/">Volver al Inicio</a
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </SectionContainer>
+<Layout title="Página no encontrada | Sulpayki Viajes y Turismo" noindex={true}>
+  <section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+    <div class="rounded-2xl bg-salvia-soft border border-salvia/45 p-8 sm:p-12 text-center">
+      <h1 class="font-display text-3xl sm:text-4xl font-bold text-carbon tracking-[-0.025em] text-balance">
+        No encontramos el recorrido que estabas buscando
+      </h1>
+      <p class="mt-3.5 text-base sm:text-lg leading-relaxed text-carbon-muted max-w-xl mx-auto">
+        Puede que el enlace haya cambiado o que la experiencia se haya actualizado. Volvé al inicio o consultanos directo por WhatsApp para ayudarte.
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3.5">
+        <a
+          href="/"
+          class="inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-arena-calida border border-salvia/45 px-6 py-3.5 min-h-[48px] text-[15px] font-semibold text-carbon transition-colors duration-200"
+        >
+          Volver al inicio
+        </a>
+        <a
+          href="/servicios-turisticos"
+          class="inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-arena-calida border border-salvia/45 px-6 py-3.5 min-h-[48px] text-[15px] font-semibold text-carbon transition-colors duration-200"
+        >
+          Ver servicios turísticos
+        </a>
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-terracota hover:bg-rojo-tierra px-6 py-3.5 min-h-[48px] text-[15px] font-semibold text-cta-ink transition-colors duration-200"
+        >
+          <Icon name="whatsapp" class="w-5 h-5" />
+          <span>Consultar paquete</span>
+        </a>
+      </div>
+    </div>
+  </section>
 </Layout>

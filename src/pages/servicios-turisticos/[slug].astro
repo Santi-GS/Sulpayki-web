@@ -3,89 +3,258 @@ import StrapiImage from "../../components/StrapiImage.astro";
 import Layout from "../../layouts/Layout.astro";
 import Markdown from "../../components/blocks/Markdown.astro";
 import BlockRenderer from "../../components/blocks/BlockRenderer.astro";
+import EncabezadoDeSeccion from "../../components/blocks/EncabezadoDeSeccion.astro";
+import ArticulosDestacados from "../../components/blocks/ArticulosDestacados.astro";
 import Icon from "../../components/ui/Icon.astro";
-import { getPublishedArticles, type FullArticle } from "../../lib/loaders";
-import { formatDate } from "../../lib/index";
+import type { ArticulosDestacadosItem, EncabezadoDeSeccionProps } from "../../lib/types";
+import {
+  getFeaturedArticleItems,
+  getPublishedArticles,
+  getRelatedArticleItems,
+  type FullArticle,
+} from "../../lib/loaders";
 
 export async function getStaticPaths() {
-  const servicios = await getPublishedArticles("SERVICIO");
+  const [servicios, destinosDestacados] = await Promise.all([
+    getPublishedArticles("SERVICIO"),
+    getFeaturedArticleItems("DESTINO"),
+  ]);
+
   return servicios.map((servicio) => ({
     params: { slug: servicio.slug },
-    props: { servicio },
+    props: {
+      servicio,
+      serviciosRelacionados: getRelatedArticleItems(servicio, servicios, 6),
+      destinosDestacados,
+    },
   }));
 }
 
 interface Props {
   servicio: FullArticle;
+  serviciosRelacionados: ArticulosDestacadosItem[];
+  destinosDestacados: ArticulosDestacadosItem[];
 }
 
-const { servicio } = Astro.props;
-const { coverImagen, blocks, titulo, resumen, descripcion, tags, publishedAt } = servicio;
+const { servicio, serviciosRelacionados = [], destinosDestacados = [] } = Astro.props;
+const { coverImagen, blocks, titulo, resumen, descripcion, tags, slug } = servicio;
+
+const whatsappHref = `https://wa.me/5493804679492?text=${encodeURIComponent(
+  `Hola, quiero consultar por el paquete "${titulo}" que vi en la web de Sulpayki.`
+)}`;
+
+const primeraCategoria = tags?.[0]?.titulo;
+const encabezadoRelacionados: EncabezadoDeSeccionProps = {
+  __component: "block.encabezado-de-seccion",
+  encabezado: "Servicios y paquetes destacados para vos",
+  subencabezado: primeraCategoria
+    ? `Más propuestas de ${primeraCategoria.toLowerCase()} y circuitos recomendados por Sulpayki en La Rioja.`
+    : "Otras experiencias guiadas, circuitos productivos y salidas recomendadas en La Rioja.",
+  anchorLink: "servicios-recomendados",
+};
+
+const encabezadoDestinosComplementarios: EncabezadoDeSeccionProps = {
+  __component: "block.encabezado-de-seccion",
+  encabezado: "Destinos para combinar con tu viaje",
+  subencabezado: "Recorridos por la capital histórica, valles y paisajes riojanos que podés sumar a tu itinerario.",
+  anchorLink: "destinos-recomendados",
+};
 ---
 
 <Layout
   title={`${titulo} - Servicios Turísticos | Sulpayki Viajes y Turismo`}
-  description={resumen || `Conocé el servicio turístico ${titulo} ofrecido por Sulpayki Viajes y Turismo.`}
+  description={
+    resumen ||
+    `Conocé el paquete y servicio turístico ${titulo} ofrecido por Sulpayki Viajes y Turismo en La Rioja.`
+  }
 >
-  <section class="mb-5 pt-4">
-    <div class="container mx-auto px-4">
-      <nav aria-label="Ruta de navegación" class="mb-4 text-sm text-neutral-600">
-        <a href="/" class="hover:underline">Inicio</a>
-        <span class="mx-2" aria-hidden="true">/</span>
-        <a href="/servicios-turisticos" class="hover:underline">Servicios Turísticos</a>
-        <span class="mx-2" aria-hidden="true">/</span>
-        <span class="text-neutral-900 font-medium">{titulo}</span>
+  <article>
+    <header class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-10">
+      <nav aria-label="Ruta de navegación" class="mb-5">
+        <ol class="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-medium text-carbon-muted">
+          <li>
+            <a href="/" class="hover:text-oliva transition-colors">
+              Inicio
+            </a>
+          </li>
+          <li aria-hidden="true" class="text-salvia">/</li>
+          <li>
+            <a href="/servicios-turisticos" class="hover:text-oliva transition-colors">
+              Servicios Turísticos
+            </a>
+          </li>
+          <li aria-hidden="true" class="text-salvia">/</li>
+          <li class="text-carbon font-semibold truncate max-w-[260px] sm:max-w-md" aria-current="page">
+            {titulo}
+          </li>
+        </ol>
       </nav>
 
-      <div>
-        {coverImagen?.url && (
-          <StrapiImage
-            class="w-full h-80 sm:h-110 object-cover rounded-2xl p-2 bg-white shadow"
-            src={coverImagen.url}
-            alt={coverImagen.alternativeText || titulo}
-            height={600}
-            width={1200}
-            loading="eager"
-          />
-        )}
-      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+        <div class="lg:col-span-7 relative rounded-2xl overflow-hidden bg-arena-calida border border-salvia/45 min-h-[280px] sm:min-h-[380px] lg:min-h-[440px]">
+          {
+            coverImagen?.url ? (
+              <StrapiImage
+                transition:name={`img-servicio-${slug}`}
+                class="w-full h-full object-cover"
+                src={coverImagen.url}
+                alt={coverImagen.alternativeText || titulo}
+                height={680}
+                width={1080}
+                loading="eager"
+              />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-carbon-muted text-sm font-medium">
+                Fotografía del recorrido
+              </div>
+            )
+          }
 
-      <div class="pt-10 pb-5 max-w-2xl mx-auto text-center">
-        {tags && tags.length > 0 && (
-          <div class="flex flex-wrap justify-center gap-2 mb-3">
-            {tags.map((tag) => (
-              <a
-                href={`/servicios-turisticos?tag=${encodeURIComponent(tag.titulo)}`}
-                class="rounded-full bg-green-300 hover:bg-green-400 transition px-3 py-1 text-base font-medium whitespace-nowrap text-emerald-950"
-              >
-                {tag.titulo}
-              </a>
-            ))}
+          <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-carbon/50 to-transparent pointer-events-none" />
+
+          <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+            {
+              tags && tags.length > 0 ? (
+                tags.map((tag) => (
+                  <a
+                    href={`/servicios-turisticos?tag=${encodeURIComponent(tag.titulo)}`}
+                    class="pill-interactive rounded-full bg-oliva hover:bg-rojo-tierra px-3.5 py-1.5 text-xs font-semibold text-marfil focus-visible:outline-arena-calida"
+                  >
+                    {tag.titulo}
+                  </a>
+                ))
+              ) : (
+                <span class="rounded-full bg-oliva px-3.5 py-1.5 text-xs font-semibold text-marfil">
+                  Experiencia en La Rioja
+                </span>
+              )
+            }
           </div>
-        )}
-        <div class="mt-2">
-          <h1 class="mb-4 text-4xl lg:text-5xl font-bold text-neutral-900">
-            {titulo}
-          </h1>
-          {publishedAt && (
-            <span class="block text-neutral-600 text-sm mb-6">
-              Publicado el {formatDate(publishedAt)}
-            </span>
-          )}
-          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        </div>
+
+        <div class="lg:col-span-5 rounded-2xl bg-salvia-soft border border-salvia/45 p-6 sm:p-8 lg:p-9 flex flex-col justify-between">
+          <div>
+            <h1
+              transition:name={`titulo-servicio-${slug}`}
+              class="font-display text-2xl sm:text-3xl lg:text-[2.15rem] font-bold text-carbon leading-[1.12] tracking-[-0.025em] text-balance"
+            >
+              {titulo}
+            </h1>
+
+            {
+              resumen && (
+                <p class="mt-4 text-[15.5px] sm:text-base leading-relaxed text-carbon-muted">
+                  {resumen}
+                </p>
+              )
+            }
+
+            <ul class="mt-6 flex flex-wrap gap-2 text-xs font-semibold">
+              <li class="rounded-full bg-marfil px-3.5 py-1.5 text-oliva">
+                Atención personalizada en La Rioja
+              </li>
+              <li class="rounded-full bg-marfil px-3.5 py-1.5 text-oliva">
+                Salidas individuales, familiares y grupales
+              </li>
+              <li class="rounded-full bg-marfil px-3.5 py-1.5 text-oliva">
+                Guías y coordinación local
+              </li>
+            </ul>
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-salvia/40 space-y-3">
             <a
-              class="inline-flex items-center gap-2 py-3 px-8 leading-loose bg-verde hover:saturate-90 hover:scale-103 text-neutral-900 font-semibold rounded-l-xl rounded-t-xl transition duration-200 text-lg"
-              href={`https://wa.me/5493804679492?text=${encodeURIComponent(`Hola, quiero más información sobre el servicio "${titulo}". Vengo de la página web.🌵`)}`}
+              href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
+              class="btn-terracota w-full inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-6 py-4 min-h-[50px] text-[15px] font-semibold text-cta-ink"
             >
-              Contactanos <Icon name="Whatsapp" />
+              <Icon name="whatsapp" class="w-5 h-5" />
+              <span>Consultar paquete por WhatsApp</span>
+            </a>
+
+            <a
+              href="/servicios-turisticos"
+              class="w-full inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-arena-calida/65 border border-salvia/45 px-5 py-3 min-h-[46px] text-sm font-semibold text-carbon transition-all duration-200 hover:-translate-y-0.5"
+            >
+              Ver catálogo de servicios
             </a>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-  {descripcion && <Markdown data={{ text: descripcion, __component: "block.markdown" }} />}
-  <BlockRenderer blocks={blocks} />
+    </header>
+
+    {
+      descripcion && (
+        <Markdown data={{ text: descripcion, __component: "block.markdown" }} />
+      )
+    }
+
+    <BlockRenderer blocks={blocks} />
+
+    <!-- Franja de reserva directa al finalizar la lectura del itinerario -->
+    <section
+      class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-12"
+      aria-label="Reserva y consulta directa del servicio"
+    >
+      <div
+        data-reveal
+        class="rounded-2xl bg-arena-calida border border-carbon/12 p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <div class="max-w-2xl">
+          <h2 class="font-display text-xl sm:text-2xl font-bold text-carbon tracking-[-0.02em] text-balance">
+            ¿Querés reservar "{titulo}" o adaptarlo a las fechas de tu viaje?
+          </h2>
+          <p class="mt-2 text-sm sm:text-[15.5px] leading-relaxed text-carbon-muted">
+            Escribinos directo por WhatsApp con el nombre del servicio precargado para confirmar disponibilidad, salidas grupales o traslados desde tu alojamiento.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-terracota inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-6 py-3.5 min-h-[48px] text-[15px] font-semibold text-cta-ink"
+          >
+            <Icon name="whatsapp" class="w-5 h-5" />
+            <span>Consultar paquete</span>
+          </a>
+          <a
+            href="/servicios-turisticos"
+            class="inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-salvia-soft px-5 py-3.5 min-h-[48px] text-sm font-semibold text-carbon transition-all duration-200 hover:-translate-y-0.5"
+          >
+            Explorar más servicios
+          </a>
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <!-- Recomendaciones automáticas de servicios destacados / relacionados -->
+  <div class="bg-arena-calida/45 pb-16 lg:pb-20">
+    <EncabezadoDeSeccion data={encabezadoRelacionados} />
+    <ArticulosDestacados
+      cardSurface="marfil"
+      data={{
+        __component: "block.servicios-destacados",
+        items: serviciosRelacionados,
+      }}
+    />
+  </div>
+
+  {
+    serviciosRelacionados.length < 3 && destinosDestacados.length > 0 && (
+      <div class="bg-marfil pb-16 lg:pb-20">
+        <EncabezadoDeSeccion data={encabezadoDestinosComplementarios} />
+        <ArticulosDestacados
+          cardSurface="salvia"
+          data={{
+            __component: "block.destinos-destacados",
+            items: destinosDestacados,
+          }}
+        />
+      </div>
+    )
+  }
 </Layout>

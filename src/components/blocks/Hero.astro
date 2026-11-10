@@ -1,6 +1,7 @@
 ---
 import type { HeroProps } from "../../lib/types";
 import StrapiImage from "../StrapiImage.astro";
+import Icon from "../ui/Icon.astro";
 
 interface Props {
   data: HeroProps;
@@ -9,237 +10,598 @@ interface Props {
 const {
   data: { heading, carruselHero, links },
 } = Astro.props;
+
+const slides =
+  Array.isArray(carruselHero) && carruselHero.length > 0
+    ? carruselHero
+    : [
+        {
+          id: 1,
+          card: {
+            id: 1,
+            titulo: "Descubrí los paisajes de La Rioja",
+            text: "Excursiones personalizadas, naturaleza imponente y atención cercana en cada recorrido.",
+            imagen: {
+              id: 1,
+              documentId: "fallback-hero-1",
+              url: "/bus-turistico-gente.webp",
+              alternativeText: "Excursión turística en La Rioja con Sulpayki",
+            },
+          },
+          link: { href: "/destinos" },
+        },
+      ];
+
+const actionLinks =
+  Array.isArray(links) && links.length > 0
+    ? links
+    : [
+        {
+          label: "Explorar Servicios",
+          href: "/servicios-turisticos",
+          type: "PRIMARY" as const,
+          isExternal: false,
+        },
+        {
+          label: "Conocer Destinos",
+          href: "/destinos",
+          type: "SECONDARY" as const,
+          isExternal: false,
+        },
+      ];
+
+const hasWhatsappInLinks = actionLinks.some((l) =>
+  l.href?.toLowerCase().includes("wa.me")
+);
+
+const whatsappHeroUrl =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20paquetes%20y%20excursiones%20en%20La%20Rioja%20con%20Sulpayki.";
+
+const ejesTuristicos = [
+  {
+    titulo: "Naturaleza",
+    detalle: "Parques, quebradas y reservas",
+    href: "/servicios-turisticos?tag=Turismo%20de%20Naturaleza",
+    icon: "naturaleza",
+  },
+  {
+    titulo: "Ruta Productiva",
+    detalle: "Bodegas, olivícolas e industria",
+    href: "/servicios-turisticos?tag=Turismo%20Industrial",
+    icon: "industrial",
+  },
+  {
+    titulo: "Cultura Viva",
+    detalle: "Historia, museos y patrimonio",
+    href: "/servicios-turisticos?tag=Turismo%20Cultural",
+    icon: "cultural",
+  },
+  {
+    titulo: "Gastronomía",
+    detalle: "Torrontés y sabores regionales",
+    href: "/servicios-turisticos?tag=Gastronom%C3%ADa",
+    icon: "gastronomia",
+  },
+  {
+    titulo: "Traslados",
+    detalle: "Viajes grupales y privados",
+    href: "/servicios-turisticos?tag=Transporte",
+    icon: "transporte",
+  },
+];
 ---
 
-<section>
-  {/* Carrusel a ancho completo */}
-  {
-    Array.isArray(carruselHero) && carruselHero.length > 0 && (
-      <div class="relative w-full">
-        {/* Botón izquierdo */}
-        <button
-          id="prevBtn"
-          aria-label="Diapositiva anterior"
-          class="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/85 hover:bg-white text-neutral-900 p-2.5 rounded-full shadow-lg transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+<section aria-label="Portada de destinos y experiencias en La Rioja" class="pb-6">
+  <div class="relative overflow-hidden bg-carbon lg:min-h-[640px] flex flex-col lg:flex-row lg:items-end">
+    <div
+      class="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-auto lg:h-auto lg:absolute lg:inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      {
+        slides.map((item, index) => (
+          <div
+            class="hero-bg-slide absolute inset-0"
+            data-bg-slide={index}
+            data-active={index === 0 ? "true" : "false"}
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
+            <StrapiImage
+              src={item.card.imagen.url}
+              alt={item.card.imagen.alternativeText || item.card.titulo}
+              height={1080}
+              width={1800}
+              loading={index === 0 ? "eager" : "lazy"}
+              class="hero-bg-img w-full h-full object-cover object-[58%_52%] lg:object-center"
             />
-          </svg>
-        </button>
+          </div>
+        ))
+      }
+      <div class="lg:hidden pointer-events-none absolute inset-x-0 -bottom-1 h-24 bg-gradient-to-t from-carbon from-10% via-carbon/60 to-transparent z-10" />
+      <div class="hidden lg:block pointer-events-none absolute inset-0 bg-gradient-to-r from-carbon/90 via-carbon/60 via-54% to-transparent z-10" />
+      <div class="hidden lg:block pointer-events-none absolute inset-x-0 -bottom-1 h-40 bg-gradient-to-t from-carbon from-5% via-carbon/72 to-transparent z-10" />
+    </div>
 
-        {/* Botón derecho */}
-        <button
-          id="nextBtn"
-          aria-label="Siguiente diapositiva"
-          class="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/85 hover:bg-white text-neutral-900 p-2.5 rounded-full shadow-lg transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <div class="relative z-20 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 -mt-3 pt-2 lg:mt-0 lg:pt-20 pb-16 sm:pb-20 lg:pb-28">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+        <div class="lg:col-span-7">
+          <h1 class="font-display text-[2rem] sm:text-5xl lg:text-[3.3rem] font-bold leading-[1.07] tracking-[-0.028em] text-marfil text-balance drop-shadow-[0_2px_12px_rgba(20,21,17,0.45)]">
+            {heading || "Diseñamos junto a vos tu viaje inolvidable por La Rioja"}
+          </h1>
+
+          <p class="mt-3.5 text-[15px] sm:text-lg leading-relaxed text-marfil max-w-[52ch] drop-shadow-[0_1px_8px_rgba(20,21,17,0.55)]">
+            Descubrí paquetes a medida, ruta del vino Torrontés, parques naturales, visitas a polos productivos y traslados seguros para viajeros, familias y grupos.
+          </p>
+
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            {
+              !hasWhatsappInLinks && (
+                <a
+                  href={whatsappHeroUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn-terracota inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-5.5 py-3.5 min-h-[48px] text-[15px] font-semibold text-cta-ink focus-visible:outline-arena-calida"
+                >
+                  <Icon name="whatsapp" class="w-5 h-5" />
+                  <span>Consultar paquete</span>
+                </a>
+              )
+            }
+
+            {
+              actionLinks.map((link) => {
+                const isPrimary = link.type === "PRIMARY";
+                return (
+                  <a
+                    class:list={[
+                      "inline-flex items-center justify-center rounded-xl px-5 py-3.5 min-h-[48px] text-[15px] font-semibold transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 focus-visible:outline-arena-calida",
+                      isPrimary && hasWhatsappInLinks
+                        ? "btn-terracota bg-terracota hover:bg-rojo-tierra text-cta-ink"
+                        : isPrimary
+                          ? "bg-marfil hover:bg-arena-calida text-carbon"
+                          : "bg-carbon/62 hover:bg-carbon/84 text-marfil border border-marfil/40",
+                    ]}
+                    href={link.href}
+                    target={link.isExternal ? "_blank" : "_self"}
+                    rel={link.isExternal ? "noopener noreferrer" : undefined}
+                  >
+                    {link.label}
+                  </a>
+                );
+              })
+            }
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div
+            id="hero-card-container"
+            data-slide-links={JSON.stringify(
+              slides.map((s) => ({
+                href: s.link?.href || "/destinos",
+                titulo: s.card.titulo || "",
+              }))
+            )}
+            class="lg:max-w-[392px] lg:ml-auto rounded-2xl bg-carbon/76 backdrop-blur-md border border-marfil/20 p-4 sm:p-5 text-marfil"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
+            <!-- Contenedor de texto con altura fija para que diferencias de extensión no desplacen el botón -->
+            <div class="grid min-h-[92px] sm:min-h-[96px]">
+              {
+                slides.map((item, index) => (
+                  <div
+                    class="carousel-caption col-start-1 row-start-1 flex flex-col justify-start"
+                    data-caption={index}
+                    data-active={index === 0 ? "true" : "false"}
+                    aria-hidden={index === 0 ? "false" : "true"}
+                    inert={index !== 0 ? true : undefined}
+                  >
+                    <h2 class="caption-title font-display text-lg sm:text-xl font-bold text-marfil leading-snug line-clamp-2">
+                      {item.card.titulo}
+                    </h2>
+                    {item.card.text && (
+                      <p class="caption-desc mt-1 text-[13.5px] leading-relaxed text-[#E4DEC8] line-clamp-2">
+                        {item.card.text}
+                      </p>
+                    )}
+                  </div>
+                ))
+              }
+            </div>
 
-        {/* Carrusel */}
-        <div class="overflow-hidden relative h-96 sm:h-[500px] lg:h-[600px]">
-          {carruselHero.map((item, index) => (
-            <div
-              class={`carousel-slide absolute inset-0 transition-opacity duration-500 ease-in-out ${index === 0 ? "opacity-100" : "opacity-0"}`}
-              data-slide={index}
-            >
+            <!-- Botón Ver propuesta ubicado en posición fija e invariable -->
+            <div class="mt-3">
               <a
-                href={item.link?.href || "#"}
-                class="block relative group h-full"
+                id="hero-proposal-link"
+                href={slides[0]?.link?.href || "/destinos"}
+                aria-label={`Ver propuesta: ${slides[0]?.card.titulo || "experiencia en La Rioja"}`}
+                class="hero-proposal-cta inline-flex items-center text-sm font-semibold text-arena-calida hover:text-marfil transition-colors group focus-visible:outline-arena-calida"
               >
-                <StrapiImage
-                  src={item.card.imagen.url}
-                  alt={item.card.imagen.alternativeText || item.card.titulo}
-                  height={1080}
-                  width={1920}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  class="h-96 sm:h-[500px] lg:h-[600px] w-full object-cover transition-transform duration-300 group-hover:scale-102"
-                />
-
-                {/* Overlay con título y texto */}
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6 md:p-10">
-                  <h2 class="text-white text-2xl md:text-5xl font-bold mb-2">
-                    {item.card.titulo}
-                  </h2>
-                  <p class="text-white/90 text-sm md:text-xl max-w-3xl">
-                    {item.card.text}
-                  </p>
-                </div>
+                <span class="hero-proposal-label">Ver propuesta</span>
+                <Icon name="Flechita" />
               </a>
             </div>
-          ))}
-        </div>
-        <div
-          class="flex justify-center gap-2 mt-4"
-          role="tablist"
-          aria-label="Selector de diapositivas"
-        >
-          {carruselHero.map((item, idx) => (
-            <button
-              type="button"
-              aria-label={`Ir a diapositiva ${idx + 1}: ${item.card.titulo}`}
-              class="w-6 h-6 flex items-center justify-center focus:outline-none"
-              data-dot={idx}
-            >
-              <span class="dot-indicator block w-3 h-3 rounded-full bg-gray-400 opacity-60 hover:opacity-100 transition-all" />
-            </button>
-          ))}
+
+            {
+              slides.length > 1 && (
+                <div class="mt-3.5 pt-3 border-t border-marfil/15 flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2.5">
+                    <span
+                      id="hero-slide-counter"
+                      aria-live="polite"
+                      class="text-xs font-semibold text-arena-calida tabular-nums"
+                    >
+                      01 / {String(slides.length).padStart(2, "0")}
+                    </span>
+
+                    <div
+                      class="flex items-center gap-0.5"
+                      role="group"
+                      aria-label="Selector de recorridos"
+                    >
+                      {slides.map((s, idx) => (
+                        <button
+                          type="button"
+                          aria-current={idx === 0 ? "true" : "false"}
+                          aria-label={`Ver recorrido ${idx + 1}: ${s.card.titulo}`}
+                          class="min-w-[28px] min-h-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-arena-calida"
+                          data-dot={idx}
+                        >
+                          <span
+                            class:list={[
+                              "dot-indicator block h-1.5 rounded-full transition-all duration-300",
+                              idx === 0 ? "w-6 bg-arena-calida" : "w-2 bg-marfil/40",
+                            ]}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <button
+                      id="prevBtn"
+                      aria-label="Recorrido anterior"
+                      class="rounded-full bg-marfil/14 hover:bg-terracota text-marfil transition-colors duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-arena-calida"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      id="nextBtn"
+                      aria-label="Siguiente recorrido"
+                      class="rounded-full bg-marfil/14 hover:bg-terracota text-marfil transition-colors duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-arena-calida"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )
+            }
+          </div>
         </div>
       </div>
-    )
-  }
-
-  {/* Contenido centrado debajo del carrusel */}
-  <div class="mx-auto max-w-screen-2xl px-4 pt-10 pb-5 sm:px-6 lg:px-8">
-    <div class="text-center max-w-4xl mx-auto">
-      {
-        heading && (
-          <h1 class="text-3xl font-semibold text-gray-900 sm:text-4xl lg:text-5xl prose mb-8 mx-auto">
-            {heading}
-          </h1>
-        )
-      }
-
-      {/* Botones */}
-      {
-        links && links.length > 0 && (
-          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {links.map((link) => {
-              const isPrimary =
-                link.type === "PRIMARY"
-                  ? "bg-[#AF8E63] hover:saturate-90 hover:scale-103 text-neutral-900"
-                  : "bg-transparent border border-neutral hover:border-gray-500 hover:opacity-80 hover:scale-103 text-neutral-900";
-              return (
-                <a
-                  class={`inline-block py-3 px-8 leading-loose ${isPrimary} font-semibold rounded-l-xl rounded-t-xl transition duration-200 text-lg`}
-                  href={link.href}
-                  target={link.isExternal ? "_blank" : "_self"}
-                  rel={link.isExternal ? "noopener noreferrer" : undefined}
-                >
-                  {link.label}
-                </a>
-              );
-            })}
-          </div>
-        )
-      }
     </div>
+  </div>
+
+  <div class="relative z-20 -mt-10 sm:-mt-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <nav
+      aria-label="Categorías de experiencias turísticas"
+      class="rounded-2xl bg-arena-calida p-3 sm:p-4 shadow-[0_20px_44px_-16px_rgba(41,42,36,0.28)]"
+    >
+      <ul
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5"
+        data-reveal-stagger="65"
+      >
+        {
+          ejesTuristicos.map((eje) => (
+            <li data-reveal>
+              <a
+                href={eje.href}
+                class="card-interactive flex items-center gap-3.5 rounded-xl bg-marfil/68 hover:bg-marfil px-4 py-3.5 min-h-[68px] group h-full"
+              >
+                <span
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-oliva text-marfil group-hover:bg-rojo-tierra transition-colors duration-200"
+                  aria-hidden="true"
+                >
+                  {eje.icon === "naturaleza" && (
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.85" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m8 3 4 8 5-5 5 15H2L8 3z" />
+                    </svg>
+                  )}
+                  {eje.icon === "industrial" && (
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.85" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 22v-9m0 0c-3.5 0-6-2.5-6-6 3.5 0 6 2.5 6 6zm0 0c3.5 0 6-2.5 6-6-3.5 0-6 2.5-6 6z" />
+                    </svg>
+                  )}
+                  {eje.icon === "cultural" && (
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.85" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6" />
+                    </svg>
+                  )}
+                  {eje.icon === "gastronomia" && (
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.85" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 22h8M12 15v7M7 3h10l-1 7a4 4 0 0 1-8 0L7 3z" />
+                    </svg>
+                  )}
+                  {eje.icon === "transporte" && (
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.85" viewBox="0 0 24 24">
+                      <rect width="16" height="13" x="4" y="4" rx="2" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 11h16M8 17v3M16 17v3" />
+                    </svg>
+                  )}
+                </span>
+
+                <div class="min-w-0">
+                  <span class="block font-display text-[15px] font-bold text-carbon group-hover:text-oliva transition-colors">
+                    {eje.titulo}
+                  </span>
+                  <span class="mt-0.5 block text-xs leading-snug text-carbon-muted">
+                    {eje.detalle}
+                  </span>
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
   </div>
 </section>
 
+<style>
+  @keyframes hero-ken-burns {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.06);
+    }
+  }
+
+  @keyframes hero-proposal-step {
+    from {
+      opacity: 0.35;
+      transform: translateX(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .hero-bg-slide[data-active="true"] {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  .hero-bg-slide[data-active="false"] {
+    opacity: 0;
+    z-index: 1;
+  }
+
+  .carousel-caption[data-active="true"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .carousel-caption[data-active="false"] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-bg-slide {
+      transition: opacity var(--duration-hero-fade, 850ms) var(--ease-panoramico, cubic-bezier(0.22, 1, 0.36, 1));
+    }
+
+    .hero-bg-slide[data-active="true"] .hero-bg-img {
+      animation: hero-ken-burns var(--duration-ken-burns, 8000ms) var(--ease-panoramico, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+    }
+
+    .hero-bg-slide[data-active="false"] .hero-bg-img {
+      transform: scale(1);
+    }
+
+    .carousel-caption {
+      transition:
+        opacity 420ms var(--ease-panoramico, cubic-bezier(0.22, 1, 0.36, 1)),
+        visibility 420ms;
+    }
+
+    .carousel-caption .caption-title,
+    .carousel-caption .caption-desc {
+      transition:
+        opacity 480ms var(--ease-panoramico, cubic-bezier(0.22, 1, 0.36, 1)),
+        transform 480ms var(--ease-panoramico, cubic-bezier(0.22, 1, 0.36, 1));
+    }
+
+    .carousel-caption[data-active="true"] .caption-title {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 40ms;
+    }
+
+    .carousel-caption[data-active="true"] .caption-desc {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 110ms;
+    }
+
+    .carousel-caption[data-active="false"] .caption-title,
+    .carousel-caption[data-active="false"] .caption-desc {
+      opacity: 0;
+      transform: translateY(10px);
+      transition-delay: 0ms;
+    }
+
+    .hero-proposal-cta[data-step="true"] .hero-proposal-label {
+      animation: hero-proposal-step 420ms var(--ease-panoramico, cubic-bezier(0.22, 1, 0.36, 1)) 140ms both;
+    }
+  }
+</style>
+
 <script type="module">
   let current = 0;
-  let slides = [],
-    prevBtn,
-    nextBtn;
-  let autoplay,
-    paused = false;
-  let dots;
+  let bgSlides = [];
+  let captions = [];
+  let dots = [];
+  let prevBtn;
+  let nextBtn;
+  let counterEl;
+  let proposalLink;
+  let slideLinks = [];
+  let autoplay;
+  let paused = false;
 
-  const $ = (sel) => document.querySelector(sel);
-  const $all = (sel) => document.querySelectorAll(sel);
+  function padTwo(n) {
+    return String(n).padStart(2, "0");
+  }
 
-  function showSlide(index) {
-    slides.forEach((slide, i) => {
+  function showSlide(index, animateProposal = true) {
+    bgSlides.forEach((slide, i) => {
+      slide.setAttribute("data-active", i === index ? "true" : "false");
+    });
+
+    captions.forEach((cap, i) => {
       const isActive = i === index;
-      slide.classList.toggle("opacity-100", isActive);
-      slide.classList.toggle("opacity-0", !isActive);
-      slide.style.pointerEvents = isActive ? "auto" : "none";
-      slide.removeEventListener("mouseenter", pause);
-      slide.removeEventListener("mouseleave", resume);
+      cap.setAttribute("data-active", isActive ? "true" : "false");
+      cap.setAttribute("aria-hidden", isActive ? "false" : "true");
       if (isActive) {
-        slide.addEventListener("mouseenter", pause);
-        slide.addEventListener("mouseleave", resume);
+        cap.removeAttribute("inert");
+      } else {
+        cap.setAttribute("inert", "");
       }
     });
-    dots.forEach((dot, i) => {
-      const indicator = dot.querySelector(".dot-indicator") || dot;
-      indicator.classList.toggle("bg-green-600", i === index);
-      indicator.classList.toggle("opacity-100", i === index);
-      indicator.classList.toggle("opacity-60", i !== index);
-      dot.setAttribute("aria-selected", i === index ? "true" : "false");
+
+    if (proposalLink && slideLinks[index]) {
+      proposalLink.href = slideLinks[index].href;
+      proposalLink.setAttribute(
+        "aria-label",
+        `Ver propuesta: ${slideLinks[index].titulo}`
+      );
+      if (animateProposal) {
+        proposalLink.removeAttribute("data-step");
+        void proposalLink.offsetWidth;
+        proposalLink.setAttribute("data-step", "true");
+      }
+    }
+
+    dots.forEach((dot) => {
+      const dotIdx = Number(dot.getAttribute("data-dot"));
+      const isActive = dotIdx === index;
+      const indicator = dot.querySelector(".dot-indicator");
+      if (indicator) {
+        indicator.classList.toggle("w-6", isActive);
+        indicator.classList.toggle("bg-arena-calida", isActive);
+        indicator.classList.toggle("w-2", !isActive);
+        indicator.classList.toggle("bg-marfil/40", !isActive);
+      }
+      dot.setAttribute("aria-current", isActive ? "true" : "false");
     });
+
+    if (counterEl && bgSlides.length > 1) {
+      counterEl.textContent = `${padTwo(index + 1)} / ${padTwo(bgSlides.length)}`;
+    }
+
     current = index;
   }
 
   function nextSlide() {
-    if (!slides.length) return;
-    showSlide((current + 1) % slides.length);
+    if (bgSlides.length <= 1) return;
+    showSlide((current + 1) % bgSlides.length, true);
   }
 
   function prevSlide() {
-    if (!slides.length) return;
-    showSlide((current - 1 + slides.length) % slides.length);
-  }
-
-  function pause() {
-    paused = true;
-  }
-  function resume() {
-    paused = false;
+    if (bgSlides.length <= 1) return;
+    showSlide((current - 1 + bgSlides.length) % bgSlides.length, true);
   }
 
   function startAutoplay() {
     clearInterval(autoplay);
+    if (bgSlides.length <= 1) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     autoplay = setInterval(() => {
-      if (!paused) nextSlide();
-    }, 5000);
+      if (!paused && document.visibilityState !== "hidden") nextSlide();
+    }, 7500);
   }
 
   function initCarousel() {
-    slides = $all(".carousel-slide");
-    prevBtn = $("#prevBtn");
-    nextBtn = $("#nextBtn");
-    dots = document.querySelectorAll("[data-dot]");
+    bgSlides = Array.from(document.querySelectorAll("[data-bg-slide]"));
+    captions = Array.from(document.querySelectorAll("[data-caption]"));
+    dots = Array.from(document.querySelectorAll("[data-dot]"));
+    prevBtn = document.getElementById("prevBtn");
+    nextBtn = document.getElementById("nextBtn");
+    counterEl = document.getElementById("hero-slide-counter");
+    proposalLink = document.getElementById("hero-proposal-link");
 
-    if (!slides.length) return;
+    const cardContainer = document.getElementById("hero-card-container");
+    try {
+      slideLinks = JSON.parse(
+        cardContainer?.getAttribute("data-slide-links") || "[]"
+      );
+    } catch {
+      slideLinks = [];
+    }
+
+    if (!bgSlides.length) return;
+
+    const pause = () => {
+      paused = true;
+    };
+    const resume = () => {
+      paused = false;
+    };
+
+    if (cardContainer) {
+      cardContainer.addEventListener("mouseenter", pause);
+      cardContainer.addEventListener("mouseleave", resume);
+      cardContainer.addEventListener("focusin", pause);
+      cardContainer.addEventListener("focusout", resume);
+    }
 
     if (prevBtn) {
       prevBtn.onclick = prevSlide;
-      prevBtn.onmouseenter = pause;
-      prevBtn.onmouseleave = resume;
     }
     if (nextBtn) {
       nextBtn.onclick = nextSlide;
-      nextBtn.onmouseenter = pause;
-      nextBtn.onmouseleave = resume;
     }
+
+    dots.forEach((dot) => {
+      const idx = Number(dot.getAttribute("data-dot"));
+      dot.onclick = () => showSlide(idx, true);
+    });
 
     current = 0;
     paused = false;
-    showSlide(current);
+    showSlide(0, false);
     startAutoplay();
-
-    dots.forEach((dot, idx) => {
-      dot.onclick = () => showSlide(idx);
-    });
   }
 
   document.addEventListener("DOMContentLoaded", initCarousel);

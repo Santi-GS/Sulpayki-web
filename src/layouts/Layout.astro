@@ -1,6 +1,7 @@
 ---
 import "/src/styles/global.css";
 import "@fontsource-variable/montserrat";
+import "@fontsource-variable/plus-jakarta-sans";
 import { ClientRouter } from "astro:transitions";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -16,11 +17,13 @@ interface Props {
 
 const {
   title = fixedTitle,
-  description = "Sulpayki Viajes y Turismo ofrece servicios online especializados en turismo industrial, transporte, alojamiento y experiencias personalizadas en La Rioja.",
+  description = "Sulpayki Viajes y Turismo ofrece paquetes, excursiones guiadas, turismo industrial, transporte y experiencias personalizadas en La Rioja.",
   noindex = false,
 } = Astro.props;
 
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : undefined;
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : undefined;
 ---
 
 <!doctype html>
@@ -32,39 +35,73 @@ const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toStri
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#F5F0E4" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <script is:inline>
+      document.documentElement.classList.add("js");
+      document.addEventListener("astro:after-swap", () => {
+        document.documentElement.classList.add("js");
+      });
+    </script>
     <ClientRouter />
   </head>
-  <body>
+  <body class="bg-marfil text-carbon flex min-h-screen flex-col">
     <a
       href="#contenido-principal"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-semibold focus:text-neutral-900 focus:shadow-lg"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-marfil focus:px-4 focus:py-2.5 focus:font-semibold focus:text-carbon focus:shadow-[0_12px_28px_-6px_rgba(41,42,36,0.34)]"
     >
       Saltar al contenido principal
     </a>
     <Header />
-    <main id="contenido-principal">
+    <main id="contenido-principal" class="flex-1">
       <slot />
     </main>
     <Footer />
     <BtnFlotante />
     <SpeedInsights />
+    <script type="module">
+      let revealObserver;
+
+      function initScrollReveal() {
+        if (revealObserver) revealObserver.disconnect();
+
+        document.querySelectorAll("[data-reveal-stagger]").forEach((group) => {
+          const step = Number(group.getAttribute("data-reveal-stagger")) || 70;
+          const items = group.querySelectorAll(":scope > [data-reveal]");
+          items.forEach((el, idx) => {
+            if (!el.style.getPropertyValue("--reveal-delay")) {
+              el.style.setProperty("--reveal-delay", `${Math.min(idx * step, 350)}ms`);
+            }
+          });
+        });
+
+        const nodes = document.querySelectorAll("[data-reveal]:not(.is-revealed)");
+        if (!nodes.length) return;
+
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduceMotion || !("IntersectionObserver" in window)) {
+          nodes.forEach((n) => n.classList.add("is-revealed"));
+          return;
+        }
+
+        revealObserver = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-revealed");
+                obs.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+        );
+
+        nodes.forEach((node) => revealObserver.observe(node));
+      }
+
+      document.addEventListener("DOMContentLoaded", initScrollReveal);
+      document.addEventListener("astro:page-load", initScrollReveal);
+    </script>
   </body>
 </html>
-
-<style is:global>
-  body {
-    font-family: "Montserrat Variable", sans-serif;
-    background: radial-gradient(
-      circle at top right,
-      #faf8f1,
-      #f5f0e6,
-      #fdf6ee
-    );
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    min-height: 100vh;
-  }
-</style>

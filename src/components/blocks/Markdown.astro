@@ -1,7 +1,6 @@
 ---
 import type { MarkdownProps } from "../../lib/types";
 import { renderMarkdown } from "../../lib/markdown";
-import SectionContainer from "../SectionContainer.astro";
 
 interface Props {
   data: MarkdownProps;
@@ -14,48 +13,114 @@ const {
 const html = renderMarkdown(text);
 ---
 
-{html && (
-  <SectionContainer>
-    <article class="max-w-2xl mx-auto mb-6 leading-loose text-xl text-neutral-900 prose" set:html={html} />
-  </SectionContainer>
-)}
+{
+  html && (
+    <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
+      <div
+        data-reveal
+        class="rounded-2xl bg-salvia-soft/55 border border-salvia/40 p-6 sm:p-8 lg:p-10"
+      >
+        <div
+          class="sulpayki-prose prose max-w-3xl mx-auto text-carbon leading-relaxed"
+          set:html={html}
+        />
+      </div>
+    </section>
+  )
+}
 
 <style is:global>
-  article.prose a {
-    text-decoration: underline;
-    line-height: 1.625;
-    color: var(--color-accent);
-  }
-
-  article.prose a:hover {
-    filter: saturate(1.6);
-  }
-
-  article.prose {
+  .sulpayki-prose {
+    color: #292a24;
+    font-size: 1rem;
+    line-height: 1.72;
     word-break: break-word;
     overflow-wrap: break-word;
   }
 
-  article.prose img {
-    width: 50%;
-    object-fit: cover;
-    border-radius: 0.75rem;
-    margin: 1.5rem auto;
-    display: block;
+  .sulpayki-prose h1,
+  .sulpayki-prose h2,
+  .sulpayki-prose h3,
+  .sulpayki-prose h4 {
+    font-family: var(--font-display);
+    color: #59613a;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.22;
+    margin-top: 1.6em;
+    margin-bottom: 0.65em;
   }
 
-  article.prose .map-container {
+  .sulpayki-prose h1:first-child,
+  .sulpayki-prose h2:first-child,
+  .sulpayki-prose h3:first-child {
+    margin-top: 0;
+  }
+
+  .sulpayki-prose p {
+    color: #292a24;
+    margin-top: 0.85em;
+    margin-bottom: 0.85em;
+  }
+
+  .sulpayki-prose strong {
+    color: #292a24;
+    font-weight: 700;
+  }
+
+  .sulpayki-prose ul,
+  .sulpayki-prose ol {
+    margin-top: 0.9em;
+    margin-bottom: 1.1em;
+    padding-left: 1.35rem;
+  }
+
+  .sulpayki-prose li {
+    color: #292a24;
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+  }
+
+  .sulpayki-prose li::marker {
+    color: #59613a;
+    font-weight: 700;
+  }
+
+  .sulpayki-prose a {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    color: #783d32;
+    font-weight: 600;
+  }
+
+  .sulpayki-prose a:hover {
+    color: #59613a;
+  }
+
+  .sulpayki-prose img {
     width: 100%;
-    margin: 2rem 0;
+    max-width: 42rem;
+    object-fit: cover;
+    border-radius: 1rem;
+    margin: 1.75rem auto;
+    display: block;
+    border: 1px solid rgba(137, 145, 106, 0.45);
   }
 
-  article.prose .map-wrapper {
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  .sulpayki-prose .map-container {
+    width: 100%;
+    margin: 1.75rem 0;
   }
 
-  article.prose .map-container iframe {
-    border-radius: 0.75rem;
-    transition: transform 0.2s ease-in-out;
+  .sulpayki-prose .map-wrapper {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(137, 145, 106, 0.45);
+  }
+
+  .sulpayki-prose .map-container iframe {
+    border-radius: 1rem;
+    display: block;
+    width: 100%;
   }
 </style>

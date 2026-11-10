@@ -1,17 +1,16 @@
 ---
 const linksInfo = [
   {
-    title: "Sulpayki Viajes y Turismo",
+    title: "Explorar",
     links: [
-      {
-        label: "Sobre Nosotros",
-        href: "/sobre-nosotros",
-        showOnMobile: true,
-      },
+      { label: "Inicio", href: "/", showOnMobile: true },
+      { label: "Destinos", href: "/destinos", showOnMobile: true },
+      { label: "Servicios Turísticos", href: "/servicios-turisticos", showOnMobile: true },
+      { label: "Sobre Nosotros", href: "/sobre-nosotros", showOnMobile: true },
     ],
   },
   {
-    title: "Políticas",
+    title: "Información legal",
     links: [
       {
         label: "Defensa del Consumidor",
@@ -21,47 +20,39 @@ const linksInfo = [
       {
         label: "Denuncias contra una agencia de Turismo",
         href: "https://www.argentina.gob.ar/servicio/presentar-una-denuncia-contra-una-agencia-de-viajes",
+        showOnMobile: true,
       },
     ],
   },
 ];
 ---
 
-<div
-  class="px-[40px] gap-6 md:gap-26 items-center md:justify-center md:items-start flex flex-col md:flex-row"
->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12">
   {
-    linksInfo.map(({ title, links }) => {
-      return (
-        <div>
-          <h2 class="text-white font-semibold text-[20px] underline underline-offset-[3px] hidden md:block mb-2">
-            {title}
-          </h2>
-
-          <ul class="flex flex-row md:flex-col underline md:no-underline gap-4 md:gap-0">
-            {links.map(({ label, href, showOnMobile }) => {
-              const isExternal = href.startsWith("http://") || href.startsWith("https://");
-              return (
-                <li
-                  class:list={[
-                    `mb-2 hover:underline hover:underline-offset-[3px]`,
-                    showOnMobile ? "" : "hidden md:block",
-                  ]}
+    linksInfo.map(({ title, links }) => (
+      <div>
+        <h2 class="font-display text-base font-bold text-arena-calida mb-3.5">
+          {title}
+        </h2>
+        <ul class="space-y-2.5">
+          {links.map(({ label, href }) => {
+            const isExternal =
+              href.startsWith("http://") || href.startsWith("https://");
+            return (
+              <li>
+                <a
+                  href={href}
+                  class="text-sm leading-relaxed text-[#E4DEC8] hover:text-marfil hover:underline transition-colors focus-visible:outline-arena-calida"
+                  target={isExternal ? "_blank" : "_self"}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
                 >
-                  <a
-                    href={href}
-                    class="text-[15px] leading-6"
-                    target={isExternal ? "_blank" : "_self"}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                  >
-                    {label}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      );
-    })
+                  {label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    ))
   }
 </div>

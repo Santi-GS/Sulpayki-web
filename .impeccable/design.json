@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-07T22:08:00.000Z",
+  "title": "Design System: Sulpayki Viajes y Turismo",
+  "extensions": {
+    "colorMeta": {
+      "marfil": {
+        "role": "neutral",
+        "displayName": "Marfil",
+        "canonical": "#F5F0E4",
+        "tonalRamp": [
+          "#6E685B",
+          "#948D7D",
+          "#B8B09F",
+          "#D6CEBE",
+          "#E6DFD0",
+          "#ECE5D5",
+          "#F5F0E4",
+          "#FFFDF9"
+        ]
+      },
+      "carbon": {
+        "role": "neutral",
+        "displayName": "Carbón",
+        "canonical": "#292A24",
+        "tonalRamp": [
+          "#141511",
+          "#1E1F1A",
+          "#292A24",
+          "#45473E",
+          "#626559",
+          "#85887B",
+          "#B0B3A6",
+          "#DCDED4"
+        ]
+      },
+      "oliva": {
+        "role": "primary",
+        "displayName": "Oliva Profundo",
+        "canonical": "#59613A",
+        "tonalRamp": [
+          "#222615",
+          "#343A21",
+          "#464D2D",
+          "#59613A",
+          "#717A4D",
+          "#8E976B",
+          "#B5BD98",
+          "#DFE3CE"
+        ]
+      },
+      "salvia": {
+        "role": "tertiary",
+        "displayName": "Verde Salvia",
+        "canonical": "#89916A",
+        "tonalRamp": [
+          "#333726",
+          "#4B5139",
+          "#697050",
+          "#89916A",
+          "#A3AA87",
+          "#BFC5A8",
+          "#E1E3D3",
+          "#F1F2EA"
+        ]
+      },
+      "terracota": {
+        "role": "secondary",
+        "displayName": "Terracota",
+        "canonical": "#A85C45",
+        "tonalRamp": [
+          "#432117",
+          "#643324",
+          "#874734",
+          "#A85C45",
+          "#BF765F",
+          "#D49682",
+          "#E7BDB0",
+          "#F7E4DE"
+        ]
+      },
+      "rojo-tierra": {
+        "role": "secondary",
+        "displayName": "Rojo Tierra",
+        "canonical": "#783D32",
+        "tonalRamp": [
+          "#331813",
+          "#522820",
+          "#783D32",
+          "#965346",
+          "#B36F62",
+          "#CC9388",
+          "#E3BDBA",
+          "#F5E5E3"
+        ]
+      },
+      "arena-calida": {
+        "role": "tertiary",
+        "displayName": "Arena Cálida",
+        "canonical": "#D8C49A",
+        "tonalRamp": [
+          "#5B4F36",
+          "#7E6E4D",
+          "#A39069",
+          "#C0AC82",
+          "#D8C49A",
+          "#E4DEC8",
+          "#EBE3D2",
+          "#F7F2E6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titular panorámico principal de portada sobre imagen de destino."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Encabezados de secciones turísticas en Oliva Profundo y banners destacados."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nombres de paquetes turísticos, excursiones y destinos."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descripciones de itinerarios, propuestas de viaje y textos informativos."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Botones Consultar paquete, navegación y badges de categoría."
+      }
+    },
+    "shadows": [
+      {
+        "name": "header-elevation",
+        "value": "0 12px 30px -12px rgba(41, 42, 36, 0.34)",
+        "purpose": "Elevación cálida de la barra superior fija en Oliva Profundo."
+      },
+      {
+        "name": "floating-bar-elevation",
+        "value": "0 20px 44px -16px rgba(41, 42, 36, 0.28)",
+        "purpose": "Suspensión de la barra de categorías turísticas sobre el Hero y del banner de viajes a medida."
+      },
+      {
+        "name": "menu-elevation",
+        "value": "0 18px 40px -12px rgba(41, 42, 36, 0.32)",
+        "purpose": "Menús desplegables, controles de carrusel y accesos de contacto flotantes."
+      }
+    ],
+    "motion": [
+      {
+        "name": "expo-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Curva suave de desaceleración para revelación panorámica del Hero, zoom fotográfico y menús."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Boton Primario Consultar Paquete",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "CTA principal en Terracota con hover a Rojo Tierra para reservas y consultas por WhatsApp.",
+      "html": "<a href=\"https://wa.me/5493804679492\" class=\"ds-btn-primary\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21\"></path><path d=\"M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1\"></path></svg><span>Consultar paquete</span></a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background-color: #A85C45; color: #FFFDF9; padding: 12px 22px; min-height: 46px; border-radius: 12px; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background-color 0.2s ease; } .ds-btn-primary:hover { background-color: #783D32; } .ds-btn-primary:focus-visible { outline: 2px solid #783D32; outline-offset: 3px; }"
+    },
+    {
+      "name": "Boton Secundario Marfil",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Acción secundaria luminosa para explorar catálogos o itinerarios.",
+      "html": "<a href=\"/servicios-turisticos\" class=\"ds-btn-secondary\">Explorar Servicios</a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; background-color: #F5F0E4; color: #292A24; padding: 12px 22px; min-height: 46px; border-radius: 12px; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; border: 1px solid rgba(137, 145, 106, 0.45); cursor: pointer; transition: background-color 0.2s ease; } .ds-btn-secondary:hover { background-color: #E1E3D3; } .ds-btn-secondary:focus-visible { outline: 2px solid #783D32; outline-offset: 3px; }"
+    },
+    {
+      "name": "Badge Categoria Oliva",
+      "kind": "chip",
+      "refersTo": "badge-category",
+      "description": "Etiqueta de categoría turística en Oliva Profundo sobre fotografía de paquete.",
+      "html": "<span class=\"ds-badge-oliva\">Ruta Productiva</span>",
+      "css": ".ds-badge-oliva { display: inline-flex; align-items: center; background-color: #59613A; color: #F5F0E4; padding: 4px 12px; border-radius: 9999px; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-size: 12px; font-weight: 600; }"
+    },
+    {
+      "name": "Badge Destacado Rojo Tierra",
+      "kind": "chip",
+      "refersTo": "badge-featured",
+      "description": "Etiqueta destacada en Rojo Tierra para circuitos imperdibles.",
+      "html": "<span class=\"ds-badge-featured\">Experiencia guiada</span>",
+      "css": ".ds-badge-featured { display: inline-flex; align-items: center; background-color: #783D32; color: #F5F0E4; padding: 4px 12px; border-radius: 9999px; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-size: 12px; font-weight: 600; }"
+    },
+    {
+      "name": "Acceso Eje Turistico Arena",
+      "kind": "nav",
+      "refersTo": "category-tile",
+      "description": "Ficha interactiva de la barra flotante de especialidades turísticas.",
+      "html": "<a href=\"/servicios-turisticos?tag=Turismo%20de%20Naturaleza\" class=\"ds-cat-tile\"><span class=\"ds-cat-icon\"><svg width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.85\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m8 3 4 8 5-5 5 15H2L8 3z\"/></svg></span><span><strong class=\"ds-cat-title\">Naturaleza</strong><small class=\"ds-cat-desc\">Parques, quebradas y reservas</small></span></a>",
+      "css": ".ds-cat-tile { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; background-color: rgba(245, 240, 228, 0.72); color: #292A24; text-decoration: none; transition: background-color 0.2s ease; } .ds-cat-tile:hover { background-color: #F5F0E4; } .ds-cat-icon { display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 12px; background-color: #59613A; color: #F5F0E4; transition: background-color 0.2s ease; } .ds-cat-tile:hover .ds-cat-icon { background-color: #783D32; } .ds-cat-title { display: block; font-family: 'Montserrat Variable', system-ui, sans-serif; font-size: 15px; font-weight: 700; color: #292A24; } .ds-cat-desc { display: block; margin-top: 2px; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; font-size: 12px; color: #45473E; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Agencia Receptiva Panorámica Riojana",
+    "overview": "El sistema visual de Sulpayki presenta la agencia como anfitriona cercana de expediciones, circuitos vitivinícolas, naturaleza y logística grupal en La Rioja, Argentina. El diseño rechaza cualquier apariencia de diario, gaceta institucional o muro de texto sin imagen: cada pantalla abre ventanas fotográficas reales al paisaje riojano, organiza las experiencias por ejes claros y ofrece un camino inmediato hacia la reserva o consulta personalizada (Consultar paquete).",
+    "keyCharacteristics": [
+      "Protagonismo fotográfico de destino: Escenarios panorámicos y tarjetas de paquetes liderados por imágenes reales de viñedos, excursiones, patrimonio y traslados en La Rioja.",
+      "Identidad cromática de 7 tonos riojanos: Navegación y categorías en Oliva Profundo, lienzo descansado en Marfil, contenedores destacados en Arena Cálida, superficies secundarias en Verde Salvia y conversión cálida en Terracota y Rojo Tierra.",
+      "Tipografía sans moderna de agencia: Titulares geométricos y limpios en Montserrat combinados con Plus Jakarta Sans para itinerarios, etiquetas y llamadas a la acción."
+    ],
+    "rules": [
+      {
+        "name": "The Action Terracotta Rule",
+        "body": "El color Terracota (#A85C45) con hover a Rojo Tierra (#783D32) pertenece exclusivamente a las llamadas a la acción de consulta y reserva (Consultar paquete), permitiendo localizar la conversión de un vistazo en cualquier sección.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Kicker & No-Blog-Date Rule",
+        "body": "Ningún encabezado lleva ante-títulos ('eyebrows/kickers') encima, y las tarjetas de paquetes o destinos jamás muestran fechas de publicación estilo diario o blog.",
+        "section": "typography"
+      },
+      {
+        "name": "The Single Elevation Rule",
+        "body": "Cada contenedor declara su elevación una sola vez: o utiliza borde suave (1px solid en Verde Salvia/Carbón translúcido) o proyecta sombra con desplazamiento; nunca ambos a la vez.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do liderar cada sección y bloque de acceso con fotografías reales de destinos, viñedos, excursiones o viajeros en La Rioja.",
+      "Do respetar los roles exactos de la paleta de 7 colores: Marfil (#F5F0E4) de base, Oliva Profundo (#59613A) en navbar y categorías, Terracota (#A85C45) en CTAs Consultar paquete, Rojo Tierra (#783D32) en activos/hover, Verde Salvia (#89916A / #E1E3D3) en tarjetas secundarias/divisores y Arena Cálida (#D8C49A) en destacados.",
+      "Do utilizar focus-visible:outline-arena-calida sobre fondos oscuros (#59613A y #292A24) para preservar visibilidad nítida del foco por teclado.",
+      "Do conservar compatibilidad íntegra con los datos dinámicos de /admin/inicio y del catálogo de servicios y destinos."
+    ],
+    "donts": [
+      "Don't maquetar bloques solo de texto con listas de definiciones, líneas finas continuas o serifas que hagan parecer el sitio la página de un diario.",
+      "Don't mostrar fechas de publicación en las tarjetas de paquetes turísticos o destinos de portada.",
+      "Don't colocar ante-títulos ('kickers/eyebrows') por encima de h1, h2 o h3, ni bordes laterales coloreados mayores a 1px.",
+      "Don't anidar enlaces <a> dentro de otros <a> al combinar enlaces de itinerario con botones de WhatsApp en una misma tarjeta."
+    ]
+  }
+}

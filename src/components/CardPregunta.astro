@@ -1,63 +1,106 @@
 ---
 import { marked } from "marked";
+
 interface Props {
   pregunta: string;
   respuesta: string;
+  defaultOpen?: boolean;
 }
 
-const { pregunta, respuesta } = Astro.props;
+const { pregunta, respuesta, defaultOpen = false } = Astro.props;
 
 const htmlRespuesta = marked(respuesta);
 ---
 
-<li class="p-6 bg-gray-50 rounded-xl shadow faq-item">
+<li
+  data-reveal
+  class="rounded-2xl bg-marfil border border-salvia/45 hover:border-oliva transition-colors duration-200 faq-item"
+>
   <button
-    class="w-full flex justify-between items-center text-left font-bold font-heading hover:text-gray-600 faq-item-button"
+    type="button"
+    aria-expanded={defaultOpen ? "true" : "false"}
+    class="w-full flex justify-between items-center gap-4 p-5 sm:p-6 text-left cursor-pointer faq-item-button rounded-2xl focus-visible:outline-rojo-tierra"
   >
-    <span class="text-xl">{pregunta}</span>
-    <svg
-      class="w-5 h-5 text-green-600 transition-transform duration-300 faq-icon"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
+    <span class="font-display text-lg sm:text-xl font-bold text-carbon leading-snug">
+      {pregunta}
+    </span>
+    <span
+      aria-hidden="true"
+      class:list={[
+        "faq-icon-wrap flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors duration-200",
+        defaultOpen
+          ? "bg-rojo-tierra text-marfil"
+          : "bg-arena-calida/75 text-oliva",
+      ]}
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M19 14l-7 7m0 0l-7-7m7 7V3"
-      ></path>
-    </svg>
+      <svg
+        class:list={[
+          "w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] faq-icon",
+          defaultOpen && "rotate-180",
+        ]}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2.2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </span>
   </button>
-  <div class="hidden mt-4 text-neutral-800 font-normal leading-loose faq-item-answer prose" set:html={htmlRespuesta}></div>
+
+  <div
+    class="faq-grid-wrapper grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+    data-open={defaultOpen ? "true" : "false"}
+    inert={!defaultOpen ? true : undefined}
+  >
+    <div class="overflow-hidden">
+      <div
+        class="px-5 sm:px-6 pb-6 pt-0 text-[15.5px] text-carbon-muted leading-relaxed faq-item-answer sulpayki-prose prose max-w-none border-t border-salvia/30"
+        set:html={htmlRespuesta}
+      />
+    </div>
+  </div>
 </li>
 
 <style>
-  .faq-item-button {
-    cursor: pointer;
-  }
-
-
-  .faq-icon.rotate-90 {
-    transform: rotate(90deg);
+  .faq-grid-wrapper[data-open="true"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
   }
 </style>
 
 <script type="module">
-  const $all = (sel) => document.querySelectorAll(sel);
-
   function initializeFAQ() {
-    $all('.faq-item').forEach(faqItem => {
-      const button = faqItem.querySelector('.faq-item-button');
-      const answer = faqItem.querySelector('.faq-item-answer');
-      const icon = faqItem.querySelector('.faq-icon');
+    document.querySelectorAll(".faq-item").forEach((faqItem) => {
+      const button = faqItem.querySelector(".faq-item-button");
+      const wrapper = faqItem.querySelector(".faq-grid-wrapper");
+      const icon = faqItem.querySelector(".faq-icon");
+      const iconWrap = faqItem.querySelector(".faq-icon-wrap");
 
-      if (!button || !answer || !icon) return;
+      if (!button || !wrapper || !icon) return;
 
       button.onclick = () => {
-        answer.classList.toggle('hidden');
-        icon.classList.toggle('rotate-90');
+        const isOpen = button.getAttribute("aria-expanded") === "true";
+        const nextOpen = !isOpen;
+        button.setAttribute("aria-expanded", nextOpen ? "true" : "false");
+        wrapper.setAttribute("data-open", nextOpen ? "true" : "false");
+        if (nextOpen) {
+          wrapper.removeAttribute("inert");
+        } else {
+          wrapper.setAttribute("inert", "");
+        }
+        icon.classList.toggle("rotate-180", nextOpen);
+        if (iconWrap) {
+          iconWrap.classList.toggle("bg-rojo-tierra", nextOpen);
+          iconWrap.classList.toggle("text-marfil", nextOpen);
+          iconWrap.classList.toggle("bg-arena-calida/75", !nextOpen);
+          iconWrap.classList.toggle("text-oliva", !nextOpen);
+        }
       };
     });
   }
@@ -65,6 +108,3 @@ const htmlRespuesta = marked(respuesta);
   document.addEventListener("DOMContentLoaded", initializeFAQ);
   document.addEventListener("astro:page-load", initializeFAQ);
 </script>
-
-
-

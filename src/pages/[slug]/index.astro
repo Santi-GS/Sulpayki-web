@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import SectionContainer from "../../components/SectionContainer.astro";
 import BlockRenderer from "../../components/blocks/BlockRenderer.astro";
+import Icon from "../../components/ui/Icon.astro";
 import { getAllPages } from "../../lib/loaders";
 import type { BlockData } from "../../lib/types";
 
@@ -27,13 +27,119 @@ interface Props {
 }
 
 const { page } = Astro.props;
+const whatsappHref =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20un%20paquete%20o%20viaje%20a%20medida%20con%20Sulpayki%20en%20La%20Rioja.";
 ---
 
 <Layout
-  title={page.title ? `${page.title} - Sulpayki Viajes y Turismo` : "Sulpayki Viajes y Turismo"}
+  title={
+    page.title
+      ? `${page.title} | Sulpayki Viajes y Turismo`
+      : "Sulpayki Viajes y Turismo"
+  }
   description={page.description || undefined}
 >
-  <SectionContainer>
-    <BlockRenderer blocks={page.blocks || []} />
-  </SectionContainer>
+  <section
+    class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-4"
+    aria-label={page.title || "Sobre Nosotros"}
+  >
+    <div class="relative rounded-2xl overflow-hidden bg-carbon text-marfil min-h-[270px] sm:min-h-[320px] flex items-end">
+      <img
+        src="/uploads/1794080322408-48000385.jpeg"
+        alt="Equipo y viajeros de Sulpayki Viajes y Turismo en La Rioja"
+        width="1600"
+        height="720"
+        loading="eager"
+        class="absolute inset-0 w-full h-full object-cover object-[50%_54%]"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-carbon/94 via-carbon/78 to-carbon/40" />
+      <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-carbon/88 to-transparent" />
+
+      <div class="relative z-10 w-full p-6 sm:p-10 lg:p-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <div class="max-w-2xl">
+          <h1 class="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-marfil leading-[1.08] tracking-[-0.028em] text-balance">
+            {page.title || "Sobre Nosotros"}
+          </h1>
+          {
+            page.description && (
+              <p class="mt-3 text-[15px] sm:text-base leading-relaxed text-[#EBE3D2] max-w-[58ch]">
+                {page.description}
+              </p>
+            )
+          }
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-terracota inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-5.5 py-3.5 min-h-[48px] text-[15px] font-semibold text-cta-ink focus-visible:outline-arena-calida"
+          >
+            <Icon name="whatsapp" class="w-5 h-5" />
+            <span>Consultar paquete</span>
+          </a>
+          <a
+            href="/servicios-turisticos"
+            class="inline-flex items-center justify-center rounded-xl bg-marfil hover:bg-arena-calida px-5 py-3.5 min-h-[48px] text-[15px] font-semibold text-carbon transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-arena-calida"
+          >
+            Explorar servicios
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <BlockRenderer blocks={page.blocks || []} />
+
+  <!-- Bloque de contacto directo y canales de atención -->
+  <section
+    class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-8"
+    aria-label="Canales de atención y reservas"
+  >
+    <div
+      data-reveal
+      class="rounded-2xl overflow-hidden shadow-[0_20px_44px_-16px_rgba(41,42,36,0.24)] grid grid-cols-1 lg:grid-cols-12"
+    >
+      <div class="lg:col-span-7 bg-oliva text-marfil p-8 sm:p-10 lg:p-12 flex flex-col justify-center">
+        <h2 class="font-display text-2xl sm:text-3xl font-bold text-marfil leading-tight tracking-[-0.025em] text-balance">
+          Planificá tu viaje por La Rioja con atención directa
+        </h2>
+        <p class="mt-3 text-[15.5px] leading-relaxed text-[#EBE3D2] max-w-[56ch]">
+          Acompañamos a viajeros particulares, familias, contingentes educativos y empresas antes y durante cada recorrido en nuestra provincia.
+        </p>
+
+        <ul class="mt-6 flex flex-wrap gap-2.5 text-xs font-semibold">
+          <li class="rounded-full bg-carbon/28 px-3.5 py-1.5 text-arena-calida">
+            Turismo receptivo en La Rioja
+          </li>
+          <li class="rounded-full bg-carbon/28 px-3.5 py-1.5 text-arena-calida">
+            Circuitos productivos y culturales
+          </li>
+          <li class="rounded-full bg-carbon/28 px-3.5 py-1.5 text-arena-calida">
+            Traslados y logística grupal
+          </li>
+        </ul>
+      </div>
+
+      <div class="lg:col-span-5 bg-arena-calida p-8 sm:p-10 lg:p-12 flex flex-col justify-center gap-3.5">
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-terracota inline-flex items-center justify-center gap-2.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-6 py-4 min-h-[50px] text-[15px] font-semibold text-cta-ink"
+        >
+          <Icon name="whatsapp" class="w-5 h-5" />
+          <span>Escribir por WhatsApp</span>
+        </a>
+        <a
+          href="mailto:sulpaykiviajesyturismo@gmail.com"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-marfil hover:bg-salvia-soft px-6 py-3.5 min-h-[48px] text-[15px] font-semibold text-carbon transition-all duration-200 hover:-translate-y-0.5"
+        >
+          <Icon name="gmail" class="w-4 h-4 text-rojo-tierra" />
+          <span>sulpaykiviajesyturismo@gmail.com</span>
+        </a>
+      </div>
+    </div>
+  </section>
 </Layout>

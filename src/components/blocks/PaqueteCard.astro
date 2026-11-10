@@ -2,7 +2,6 @@
 import type { TarjetaPaqueteTuristicoProps } from "../../lib/types";
 import StrapiImage from "../StrapiImage.astro";
 import Icon from "../ui/Icon.astro";
-import SectionContainer from "../SectionContainer.astro";
 
 interface Props {
   data: TarjetaPaqueteTuristicoProps;
@@ -11,63 +10,110 @@ interface Props {
 const { data } = Astro.props as Props;
 const grupos = [
   {
-    titulo: "Destinos turísticos",
+    titulo: "Destinos incluidos en la propuesta",
     items: data.articulo_destinos ?? [],
     baseHref: "/destinos/",
+    detailLabel: "Ver destino",
   },
   {
-    titulo: "Servicios turísticos",
+    titulo: "Servicios y excursiones vinculadas",
     items: data.servicio_de_turismos ?? [],
     baseHref: "/servicios-turisticos/",
+    detailLabel: "Ver itinerario",
   },
 ];
+
+function buildWhatsappHref(title: string): string {
+  const msg = `Hola, quiero consultar por el paquete "${title}" que vi en la web de Sulpayki.`;
+  return `https://wa.me/5493804679492?text=${encodeURIComponent(msg)}`;
+}
 ---
 
-<SectionContainer>
-  <div class="flex flex-col gap-8">
-    {grupos.map(
-      (grupo) =>
-        grupo.items.length > 0 && (
-          <div>
-            <h2 class="text-xl md:text-2xl font-bold mb-4 text-green-700">{grupo.titulo}</h2>
-            <div class="flex flex-col gap-8">
-              {grupo.items.map((article) => (
-                <div class="bg-white rounded-2xl shadow hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col sm:flex-row sm:h-full sm:max-h-[250px]">
-                  <div class="w-full sm:w-1/2 relative h-auto sm:h-full sm:max-h-[250px]">
-                    {article.coverImagen?.url && (
-                      <StrapiImage
-                        src={article.coverImagen.url}
-                        alt={article.coverImagen.alternativeText || article.titulo}
-                        width={340}
-                        height={220}
-                        class="w-full h-auto sm:h-full max-h-[250px] object-cover"
-                      />
-                    )}
-                  </div>
-                  <div class="flex flex-col justify-between w-full sm:w-1/2 p-4 sm:p-6 h-auto sm:h-full sm:max-h-[250px] overflow-hidden">
-                    <div>
-                      <h3 class="text-lg sm:text-xl font-extrabold text-gray-800 mb-2 line-clamp-2">
-                        {article.titulo}
-                      </h3>
-                      <p class="text-sm sm:text-base text-gray-600 leading-snug mb-4 line-clamp-3">
-                        {article.descripcion}
-                      </p>
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+  <div class="space-y-10">
+    {
+      grupos.map(
+        (grupo) =>
+          grupo.items.length > 0 && (
+            <div>
+              <h2
+                data-reveal
+                class="font-display text-2xl sm:text-3xl font-bold mb-5 text-oliva tracking-[-0.02em]"
+              >
+                {grupo.titulo}
+              </h2>
+              <div
+                data-reveal-stagger="70"
+                class="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                {grupo.items.map((article) => (
+                  <article
+                    data-reveal
+                    class="card-interactive rounded-2xl bg-salvia-soft border border-salvia/45 hover:border-oliva overflow-hidden flex flex-col sm:flex-row"
+                  >
+                    <a
+                      href={`${grupo.baseHref}${article.slug}`}
+                      class="w-full sm:w-2/5 relative aspect-[16/10] sm:aspect-auto sm:min-h-[210px] bg-arena-calida overflow-hidden block group"
+                    >
+                      {article.coverImagen?.url ? (
+                        <StrapiImage
+                          src={article.coverImagen.url}
+                          alt={
+                            article.coverImagen.alternativeText ||
+                            article.titulo
+                          }
+                          width={420}
+                          height={280}
+                          class="card-media-zoom w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div class="w-full h-full flex items-center justify-center text-carbon-muted text-xs font-medium">
+                          Fotografía próximamente
+                        </div>
+                      )}
+                    </a>
+                    <div class="flex flex-1 flex-col justify-between p-5 sm:p-6">
+                      <div>
+                        <h3 class="font-display text-lg sm:text-xl font-bold text-carbon leading-snug line-clamp-2">
+                          <a
+                            href={`${grupo.baseHref}${article.slug}`}
+                            class="hover:text-oliva transition-colors"
+                          >
+                            {article.titulo}
+                          </a>
+                        </h3>
+                        {article.descripcion && (
+                          <p class="mt-2 text-sm text-carbon-muted leading-relaxed line-clamp-3">
+                            {article.descripcion}
+                          </p>
+                        )}
+                      </div>
+                      <div class="mt-5 pt-4 border-t border-salvia/40 flex flex-wrap items-center justify-between gap-2.5">
+                        <a
+                          href={`${grupo.baseHref}${article.slug}`}
+                          class="inline-flex items-center text-xs sm:text-sm font-semibold text-rojo-tierra hover:text-oliva transition-colors group"
+                        >
+                          <span>{grupo.detailLabel}</span>
+                          <Icon name="Flechita" />
+                        </a>
+
+                        <a
+                          href={buildWhatsappHref(article.titulo)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="btn-terracota inline-flex items-center gap-1.5 rounded-xl bg-terracota hover:bg-rojo-tierra px-3.5 py-2 min-h-[40px] text-xs font-semibold text-cta-ink"
+                        >
+                          <Icon name="whatsapp" class="w-3.5 h-3.5" />
+                          <span>Consultar paquete</span>
+                        </a>
+                      </div>
                     </div>
-                    <div class="flex justify-start md:pl-8">
-                      <a
-                        href={`${grupo.baseHref}${article.slug}`}
-                        class="flex items-center px-5 pt-5 text-green-700 font-semibold hover:text-green-800 hover:underline hover:underline-offset-[3px] transition-colors duration-200 group"
-                      >
-                        <span>Explorar Más</span>
-                        <Icon name="Flechita" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-        )
-    )}
+          )
+      )
+    }
   </div>
-</SectionContainer>
+</section>

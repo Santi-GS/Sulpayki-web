@@ -1,278 +1,247 @@
 ---
 import Icon from "./ui/Icon.astro";
+
+const whatsappHref =
+  "https://wa.me/5493804679492?text=Hola,%20quiero%20consultar%20por%20un%20paquete%20tur%C3%ADstico%20en%20La%20Rioja.%20Vengo%20de%20la%20p%C3%A1gina%20web.";
+const gmailDesktopHref =
+  "https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com";
 ---
 
-<div class="social-button" title="expand social media options">
-  <div class="icon-wrapper" id="social-icon" style="cursor:pointer;">
-    <svg id="main-fab-svg" xmlns="http://www.w3.org/2000/svg" class="share-icon" width="46" height="46" viewBox="-2 -3 33 33" fill="currentColor" style="display:block;margin:auto;">
-      <path d="M21 0a5 5 0 0 0-5 5c0 .086.027.164.031.25L8.188 9.188C7.32 8.457 6.223 8 5 8a5 5 0 1 0 0 10c1.223 0 2.32-.457 3.188-1.188l7.843 3.938c-.004.086-.031.164-.031.25a5 5 0 1 0 5-5c-1.223 0-2.32.457-3.188 1.188L9.97 13.25c.004-.086.031-.164.031-.25s-.027-.164-.031-.25l7.844-3.938C18.68 9.543 19.776 10 21 10a5 5 0 1 0 0-10Z"/>
-    </svg>
+<aside
+  id="floating-contact-aside"
+  class="fixed right-4 bottom-4 sm:right-6 sm:bottom-6 z-20 flex flex-col items-end gap-2.5 opacity-0 invisible pointer-events-none translate-y-2 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+  aria-label="Accesos rápidos de contacto"
+  aria-hidden="true"
+  inert
+  data-floating-dock
+>
+  <div
+    id="floating-channels"
+    data-open="false"
+    class="flex flex-col items-end gap-2.5 opacity-0 translate-y-2 pointer-events-none invisible transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
+    inert
+  >
+    <a
+      href={whatsappHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Consultar paquete por WhatsApp"
+      title="WhatsApp"
+      class="btn-terracota flex h-11 w-11 items-center justify-center rounded-full bg-terracota text-cta-ink hover:bg-rojo-tierra shadow-[0_12px_26px_-6px_rgba(41,42,36,0.36)] focus-visible:outline-arena-calida"
+    >
+      <Icon name="whatsapp" class="w-5 h-5" />
+    </a>
+
+    <a
+      href={gmailDesktopHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Enviar correo electrónico"
+      title="Correo electrónico"
+      class="gmail-link flex h-11 w-11 items-center justify-center rounded-full bg-carbon text-marfil hover:bg-oliva shadow-[0_12px_26px_-6px_rgba(41,42,36,0.32)] transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-arena-calida"
+    >
+      <Icon name="gmail" class="w-5 h-5" />
+    </a>
+
+    <a
+      href="https://www.instagram.com/sulpayki_viajesyturismo/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Visitar Instagram de Sulpayki"
+      title="Instagram"
+      class="flex h-11 w-11 items-center justify-center rounded-full bg-carbon text-marfil hover:bg-oliva shadow-[0_12px_26px_-6px_rgba(41,42,36,0.32)] transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-arena-calida"
+    >
+      <Icon name="instagram" class="w-5 h-5" />
+    </a>
+
+    <a
+      href="https://www.facebook.com/profile.php?id=61551433251415"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Visitar Facebook de Sulpayki"
+      title="Facebook"
+      class="flex h-11 w-11 items-center justify-center rounded-full bg-carbon text-marfil hover:bg-oliva shadow-[0_12px_26px_-6px_rgba(41,42,36,0.32)] transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-arena-calida"
+    >
+      <Icon name="facebook" class="w-5 h-5" />
+    </a>
   </div>
-  <a  class="social-point" href="https://wa.me/5493804679492?text=Hola,%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20turismo.%20Vengo%20de%20la%20p%C3%A1gina%20web." 
-    target="_blank" rel="nofollow" title="Whatsapp">
-    <div class="icon-wrapper"><Icon name="whatsapp" class="whatsapp" /></div>
-  </a>
-  <a  class="social-point gmail-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com"
-    target="_blank" 
-    rel="nofollow" 
-    title="Gmail">
-    <div class="icon-wrapper"><Icon name="gmail" class="gmail" /></div>
-  </a>
-  <a  class="social-point" 
-    href="https://www.instagram.com/sulpayki_viajesyturismo/" 
-    target="_blank" rel="nofollow" title="Instagram">
-    <div class="icon-wrapper"><Icon name="instagram" class="instagram" /></div>
-  </a>
-  <a class="social-point" 
-    href="https://www.facebook.com/profile.php?id=61551433251415" 
-    target="_blank" 
-    rel="nofollow" 
-    title="Facebook">
-    <div class="icon-wrapper"><Icon name="facebook" class="facebook" /></div>
-  </a>
-</div>
 
-<style>
-  .social-button {
-    transition: all 0.4s;
-    position: fixed;
-    right: 25px;
-    bottom: 25px;
-    width: 60px;
-    height: 60px;
-    text-align: center;
-    line-height: 60px;
-    border-radius: 50%;
-    background-color: #1479d8;
-    color: #fff;
-    font-size: 24px;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
-    cursor: pointer;
-    transition-delay: 1s;
-    z-index: 20;
-  }
-  .social-button-open {
-    transition-delay: 0s;
-    bottom: 85px;
-    background-color: #d81558;
-    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.28), 0 4px 15px 0 rgba(0, 0, 0, 0.25);
-  }
-  .social-button .social-point{
-    transition: all 0.4s;
-    opacity: 0;
-    width: 0px;
-    height: 0px;
-    text-align: center;
-    line-height: 50px;
-    border-radius: 50%;
-    color: #fff;
-    font-size: 24px;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
-    cursor: pointer;
-    visibility: hidden;
-  }
-  .social-button .social-point:hover {
-    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.28), 0 4px 15px 0 rgba(0, 0, 0, 0.25);
-  }
-  .social-button .social-point:nth-child(2) {
-    transition-delay: 0.3s;
-    position: absolute;
-    right: 50px;
-    bottom: 50px;
-    background-color: #25D366;
-  }
-  .social-button .social-point:nth-child(3) {
-    transition-delay: 0.4s;
-    position: absolute;
-    right: 50px;
-    bottom: 50px;
-    background-color: #FF9800;
-  }
-  .social-button .social-point:nth-child(4) {
-    transition-delay: 0.5s;
-    position: absolute;
-    right: 50px;
-    bottom: 50px;
-    background-color: #8a3ab9;
-  }
-  .social-button .social-point:nth-child(5) {
-    transition-delay: 0.6s;
-    position: absolute;
-    right: 50px;
-    bottom: 50px;
-    background-color: #1877f3;
-  }
+  <button
+    type="button"
+    id="floating-dock-toggle"
+    aria-expanded="false"
+    aria-controls="floating-channels"
+    aria-label="Abrir canales de contacto"
+    title="Canales de contacto"
+    class="relative flex h-12 w-12 items-center justify-center rounded-full bg-oliva text-marfil hover:bg-oliva-deep shadow-[0_14px_30px_-6px_rgba(41,42,36,0.4)] transition-all duration-200 hover:-translate-y-0.5 cursor-pointer focus-visible:outline-arena-calida"
+  >
+    <span data-dock-icon="open">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        class="w-5 h-5"
+      >
+        <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z" />
+        <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
+      </svg>
+    </span>
+    <span data-dock-icon="close" class="hidden">
+      <Icon name="CloseIcon" class="w-5 h-5" />
+    </span>
+  </button>
+</aside>
 
-  .social-button-open .social-point-open{
-    opacity: 1;
-    width: 50px;
-    height: 50px;
-    visibility: visible;
-  }
-  .social-button-open .social-point-open:nth-child(2) {
-    right: 5px;
-    bottom: 80px;
-  }
-  .social-button-open .social-point-open:nth-child(2):hover {
-    transition-delay: 0s;
-    background-color: #1EA551;
-  }
-  .social-button-open .social-point-open:nth-child(3) {
-    right: 65px;
-    bottom: 65px;
-  }
-  .social-button-open .social-point-open:nth-child(3):hover {
-    transition-delay: 0s;
-    background-color: #eb5814;
-  }
-  .social-button-open .social-point-open:nth-child(4) {
-    right: 80px;
-    bottom: 5px;
-  }
-  .social-button-open .social-point-open:nth-child(4):hover {
-    transition-delay: 0s;
-    background-color: #521aee;
-  }
-  .social-button-open .social-point-open:nth-child(5) {
-    right: 50px;
-    bottom: -55px;
-  }
-  .social-button-open .social-point-open:nth-child(5):hover {
-    transition-delay: 0s;
-    background-color: #0d3dda;
-  }
+<script type="module">
+  let footerObserver;
+  let footerVisible = false;
+  let scrollHandler;
+  let outsideClickHandler;
+  let escapeKeyHandler;
+  let pulseTimer;
 
-  .icon-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  #main-fab-svg {
-    width: 60%;
-    height: 60%;
-    display: block;
-    margin: auto;
-  }
-
-  /* --- DESKTOP --- */
-  @media (min-width: 768px) {
-    .social-button {
-      width: auto;
-      height: auto;
-      background: none;
-      box-shadow: none;
-      border-radius: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 10px;
-      right: 25px;
-      bottom: 25px;
+  function triggerSingleWelcomePulse(toggle) {
+    if (!toggle) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try {
+      if (sessionStorage.getItem("sulpayki_dock_pulsed") === "1") return;
+      sessionStorage.setItem("sulpayki_dock_pulsed", "1");
+    } catch {
+      // ignore storage errors
     }
-    #social-icon {
-      display: none !important;
-    }
-    .social-point {
-      position: static !important;
-      opacity: 1 !important;
-      width: 50px !important;
-      height: 50px !important;
-      visibility: visible !important;
-      margin: 0 0 8px 0;
-      transition: none !important;
-      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
-    }
-    .social-point:last-child {
-      margin-bottom: 0;
-    }
-    .social-point-open {
-      /* No efecto en desktop */
-    }
+
+    clearTimeout(pulseTimer);
+    pulseTimer = setTimeout(() => {
+      toggle.classList.add("dock-pulse-once");
+      setTimeout(() => {
+        toggle.classList.remove("dock-pulse-once");
+      }, 1300);
+    }, 1800);
   }
-  @media (max-width: 767px) {
-    .gmail-link {
-      href: mailto:sulpaykiviajesyturismo@gmail.com;
+
+  function initFloatingDock() {
+    const aside = document.getElementById("floating-contact-aside");
+    const toggle = document.getElementById("floating-dock-toggle");
+    const channels = document.getElementById("floating-channels");
+    const footer = document.getElementById("site-footer");
+    if (!toggle || !channels || !aside) return;
+
+    const openIcon = toggle.querySelector('[data-dock-icon="open"]');
+    const closeIcon = toggle.querySelector('[data-dock-icon="close"]');
+
+    const setExpanded = (open) => {
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute(
+        "aria-label",
+        open ? "Cerrar canales de contacto" : "Abrir canales de contacto"
+      );
+      channels.setAttribute("data-open", open ? "true" : "false");
+      channels.classList.toggle("opacity-0", !open);
+      channels.classList.toggle("opacity-100", open);
+      channels.classList.toggle("translate-y-2", !open);
+      channels.classList.toggle("translate-y-0", open);
+      channels.classList.toggle("pointer-events-none", !open);
+      channels.classList.toggle("invisible", !open);
+      if (open) {
+        channels.removeAttribute("inert");
+      } else {
+        channels.setAttribute("inert", "");
+      }
+      openIcon?.classList.toggle("hidden", open);
+      closeIcon?.classList.toggle("hidden", !open);
+    };
+
+    const syncVisibility = () => {
+      const shouldHide = window.scrollY <= 220 || footerVisible;
+      aside.classList.toggle("opacity-0", shouldHide);
+      aside.classList.toggle("invisible", shouldHide);
+      aside.classList.toggle("pointer-events-none", shouldHide);
+      aside.classList.toggle("translate-y-2", shouldHide);
+      aside.setAttribute("aria-hidden", shouldHide ? "true" : "false");
+      if (shouldHide) {
+        aside.setAttribute("inert", "");
+        setExpanded(false);
+      } else {
+        aside.removeAttribute("inert");
+        triggerSingleWelcomePulse(toggle);
+      }
+    };
+
+    setExpanded(false);
+    footerVisible = false;
+
+    toggle.onclick = (e) => {
+      e.stopPropagation();
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      setExpanded(!isOpen);
+    };
+
+    if (outsideClickHandler) {
+      document.removeEventListener("click", outsideClickHandler);
     }
+    outsideClickHandler = (e) => {
+      if (
+        toggle.getAttribute("aria-expanded") === "true" &&
+        !e.target?.closest?.("[data-floating-dock]")
+      ) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener("click", outsideClickHandler);
+
+    if (escapeKeyHandler) {
+      document.removeEventListener("keydown", escapeKeyHandler);
+    }
+    escapeKeyHandler = (e) => {
+      if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setExpanded(false);
+        toggle.focus();
+      }
+    };
+    document.addEventListener("keydown", escapeKeyHandler);
+
+    if (scrollHandler) window.removeEventListener("scroll", scrollHandler);
+    scrollHandler = () => syncVisibility();
+    window.addEventListener("scroll", scrollHandler, { passive: true });
+
+    if (footerObserver) footerObserver.disconnect();
+    if (footer && "IntersectionObserver" in window) {
+      footerObserver = new IntersectionObserver(
+        (entries) => {
+          footerVisible = entries.some((entry) => entry.isIntersecting);
+          syncVisibility();
+        },
+        { threshold: 0.08 }
+      );
+      footerObserver.observe(footer);
+    }
+
+    syncVisibility();
   }
-</style>
 
-<script>
-var social_open = false;
-
-function initSocialFab() {
-  const menu = document.querySelector('.social-button');
-  if (!menu) return;
-
-  const iconWrapper = document.getElementById('social-icon');
-  if (!iconWrapper) return;
-
-  // Evitar múltiples listeners
-  iconWrapper.replaceWith(iconWrapper.cloneNode(true));
-  const newIconWrapper = document.getElementById('social-icon');
-  if (!newIconWrapper) return;
-
-  newIconWrapper.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const svg = newIconWrapper.querySelector('svg');
-    if (!svg) return;
-
-    // Cambia el icono principal
-    if (social_open) {
-      svg.outerHTML = `<svg id=\"main-fab-svg\" xmlns=\"http://www.w3.org/2000/svg\" class=\"share-icon\" width=\"36\" height=\"36\" viewBox=\"-2 -3 33 33\" fill=\"currentColor\" style=\"display:block;margin:auto;\"><path d=\"M21 0a5 5 0 0 0-5 5c0 .086.027.164.031.25L8.188 9.188C7.32 8.457 6.223 8 5 8a5 5 0 1 0 0 10c1.223 0 2.32-.457 3.188-1.188l7.843 3.938c-.004.086-.031.164-.031.25a5 5 0 1 0 5-5c-1.223 0-2.32.457-3.188 1.188L9.97 13.25c.004-.086.031-.164.031-.25s-.027-.164-.031-.25l7.844-3.938C18.68 9.543 19.776 10 21 10a5 5 0 1 0 0-10Z\"/></svg>`;
+  function updateGmailHrefForMobile() {
+    const gmailBtn = document.querySelector(".gmail-link");
+    if (!gmailBtn) return;
+    if (window.innerWidth < 768) {
+      gmailBtn.setAttribute("href", "mailto:sulpaykiviajesyturismo@gmail.com");
     } else {
-      svg.outerHTML = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"26\" height=\"26\" fill=\"currentColor\" style=\"display:block;margin:auto;\"><path d=\"m21.734 19.64-2.097 2.094a.983.983 0 0 1-1.395 0L13 16.496l-5.238 5.238a.988.988 0 0 1-1.399 0l-2.097-2.093a.988.988 0 0 1 0-1.399L9.504 13 4.266 7.762a.995.995 0 0 1 0-1.399l2.097-2.097a.988.988 0 0 1 1.399 0L13 9.508l5.242-5.242a.983.983 0 0 1 1.395 0l2.097 2.093a.996.996 0 0 1 .004 1.403L16.496 13l5.238 5.242a.988.988 0 0 1 0 1.399Z\"/></svg>`;
+      gmailBtn.setAttribute(
+        "href",
+        "https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com"
+      );
     }
-
-    // Lógica para expandir/contraer los botones sociales
-    const menuEl = menu as HTMLElement;
-    if (social_open === true) {
-      social_open = false;
-      if (typeof menuEl.title === 'string') {
-        menuEl.title = menuEl.title.replace(/hide/, 'expand');
-      }
-      menuEl.classList.remove('social-button-open');
-      const menu_point = document.querySelectorAll('.social-point');
-      for (let i = 0; i < menu_point.length; i++) {
-        const point = menu_point[i] as HTMLElement;
-        point.classList.remove('social-point-open');
-        setTimeout(function () {
-          point.hidden = true;
-        }, 800);
-      }
-    } else {
-      social_open = true;
-      if (typeof menuEl.title === 'string') {
-        menuEl.title = menuEl.title.replace(/expand/, 'hide');
-      }
-      menuEl.classList.add('social-button-open');
-      const menu_point = document.querySelectorAll('.social-point');
-      for (let i = 0; i < menu_point.length; i++) {
-        const point = menu_point[i] as HTMLElement;
-        point.hidden = false;
-        setTimeout(function () {
-          point.classList.add('social-point-open');
-        }, 200);
-      }
-    }
-  });
-}
-
-document.addEventListener("DOMContentLoaded", initSocialFab);
-document.addEventListener("astro:page-load", initSocialFab);
-
-// Al cargar en móvil, cambia el href del botón Gmail
-function updateGmailHrefForMobile() {
-  var gmailBtn = document.querySelector('.gmail-link');
-  if (!gmailBtn) return;
-  if (window.innerWidth < 768) {
-    gmailBtn.setAttribute('href', 'mailto:sulpaykiviajesyturismo@gmail.com');
-  } else {
-    gmailBtn.setAttribute('href', 'https://mail.google.com/mail/?view=cm&fs=1&to=sulpaykiviajesyturismo@gmail.com');
   }
-}
-window.addEventListener('DOMContentLoaded', updateGmailHrefForMobile);
-window.addEventListener('resize', updateGmailHrefForMobile);
-document.addEventListener('astro:page-load', updateGmailHrefForMobile);
+
+  document.addEventListener("DOMContentLoaded", initFloatingDock);
+  document.addEventListener("astro:page-load", initFloatingDock);
+  window.addEventListener("DOMContentLoaded", updateGmailHrefForMobile);
+  window.addEventListener("resize", updateGmailHrefForMobile, { passive: true });
+  document.addEventListener("astro:page-load", updateGmailHrefForMobile);
 </script>
