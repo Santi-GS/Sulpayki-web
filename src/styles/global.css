@@ -295,13 +295,9 @@
 
   /* Refinamiento de View Transitions nativas de Astro */
   ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-group(root) {
     animation-duration: 320ms;
-    animation-timing-function: var(--ease-panoramico);
-  }
-
-  ::view-transition-group(*) {
-    animation-duration: 420ms;
     animation-timing-function: var(--ease-panoramico);
   }
 }

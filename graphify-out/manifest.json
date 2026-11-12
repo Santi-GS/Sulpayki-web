@@ -177,9 +177,9 @@
     "semantic_hash": "5e73aba820b352cb96df17b6fe5d1c3c"
   },
   "src/components/blocks/ArticulosDestacados.astro": {
-    "mtime": 1794268807.1161816,
-    "seen": 1794269084.1805115,
-    "ast_hash": "65422c73cfe6cc70484faa7ed3542d8c",
+    "mtime": 1794452047.0287461,
+    "seen": 1794452170.69501,
+    "ast_hash": "a9e789dd9c1818ac57ad843cf2aa8a06",
     "semantic_hash": ""
   },
   "src/components/blocks/BentoInfo.astro": {
@@ -213,8 +213,8 @@
     "semantic_hash": ""
   },
   "src/components/blocks/Hero.astro": {
-    "mtime": 1794269069.8328638,
-    "seen": 1794269084.1805263,
+    "mtime": 1794269256.6715553,
+    "seen": 1794452170.695025,
     "ast_hash": "37c7048faa49c194fe912f4560de1b7c",
     "semantic_hash": ""
   },
@@ -585,15 +585,15 @@
     "semantic_hash": "8027746fb4173ca422d0efbd7834a0be"
   },
   "src/pages/destinos/[...page].astro": {
-    "mtime": 1794268808.906297,
-    "seen": 1794269084.1807017,
-    "ast_hash": "82eb665cabe524fb27acb905300f1649",
+    "mtime": 1794451989.045436,
+    "seen": 1794452170.6951537,
+    "ast_hash": "684bdd14f48ccead1c692b45b2e2395a",
     "semantic_hash": ""
   },
   "src/pages/destinos/[slug].astro": {
-    "mtime": 1794268809.150102,
-    "seen": 1794269084.1807046,
-    "ast_hash": "42dcd0bfff314a455a0a548baec42de3",
+    "mtime": 1794452132.9568253,
+    "seen": 1794452170.6951551,
+    "ast_hash": "998c379cd0f93858bad4ccbcb8441942",
     "semantic_hash": ""
   },
   "src/pages/index.astro": {
@@ -603,15 +603,15 @@
     "semantic_hash": ""
   },
   "src/pages/servicios-turisticos/[...page].astro": {
-    "mtime": 1794268809.493826,
-    "seen": 1794269084.1807098,
-    "ast_hash": "7d3db5e9bbc364c1d45521fbb6810f1c",
+    "mtime": 1794451933.7045248,
+    "seen": 1794452170.6951587,
+    "ast_hash": "cf319d6538632ac07de15cad9b80b576",
     "semantic_hash": ""
   },
   "src/pages/servicios-turisticos/[slug].astro": {
-    "mtime": 1794268809.8171654,
-    "seen": 1794269084.180713,
-    "ast_hash": "00d5f4aafb282736bdcf849ccf357c4a",
+    "mtime": 1794452139.1475105,
+    "seen": 1794452170.6951602,
+    "ast_hash": "46b8b02a10615a64add13b7f1059555c",
     "semantic_hash": ""
   },
   "tsconfig.json": {

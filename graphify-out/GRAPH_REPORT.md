@@ -1,7 +1,7 @@
-# Graph Report - Sulpayki-web  (2026-11-09)
+# Graph Report - Sulpayki-web  (2026-11-11)
 
 ## Corpus Check
-- 103 files · ~44,371 words
+- 103 files · ~44,351 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `26b4b1d0`
+- Built from commit: `3d542730`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -49,10 +49,10 @@
 10. `slugify()` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `getStaticPaths()` --calls--> `getAllPages()`  [EXTRACTED]
-  src/pages/[slug]/index.astro → src/lib/loaders.ts
 - `getStaticPaths()` --calls--> `getPublishedArticles()`  [EXTRACTED]
   src/pages/servicios-turisticos/[...page].astro → src/lib/loaders.ts
+- `getStaticPaths()` --calls--> `getAllPages()`  [EXTRACTED]
+  src/pages/[slug]/index.astro → src/lib/loaders.ts
 - `FullArticle` --references--> `ArticleType`  [EXTRACTED]
   src/lib/loaders.ts → src/db/schema.ts
 - `FullArticle` --references--> `BlockData`  [EXTRACTED]

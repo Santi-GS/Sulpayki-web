@@ -81,7 +81,6 @@ const whatsappGruposHref =
                   >
                     {servicio.coverImagen?.url ? (
                       <StrapiImage
-                        transition:name={`img-servicio-${servicio.slug}`}
                         class="card-media-zoom w-full h-full object-cover"
                         src={servicio.coverImagen.url}
                         alt={
@@ -125,7 +124,6 @@ const whatsappGruposHref =
                   >
                     <div>
                       <h2
-                        transition:name={`titulo-servicio-${servicio.slug}`}
                         class="font-display text-xl sm:text-2xl font-bold text-carbon leading-snug line-clamp-2"
                       >
                         <a

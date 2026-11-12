@@ -37,7 +37,7 @@ interface Props {
 }
 
 const { servicio, serviciosRelacionados = [], destinosDestacados = [] } = Astro.props;
-const { coverImagen, blocks, titulo, resumen, descripcion, tags, slug } = servicio;
+const { coverImagen, blocks, titulo, resumen, descripcion, tags } = servicio;
 
 const whatsappHref = `https://wa.me/5493804679492?text=${encodeURIComponent(
   `Hola, quiero consultar por el paquete "${titulo}" que vi en la web de Sulpayki.`
@@ -95,7 +95,6 @@ const encabezadoDestinosComplementarios: EncabezadoDeSeccionProps = {
           {
             coverImagen?.url ? (
               <StrapiImage
-                transition:name={`img-servicio-${slug}`}
                 class="w-full h-full object-cover"
                 src={coverImagen.url}
                 alt={coverImagen.alternativeText || titulo}
@@ -135,7 +134,6 @@ const encabezadoDestinosComplementarios: EncabezadoDeSeccionProps = {
         <div class="lg:col-span-5 rounded-2xl bg-salvia-soft border border-salvia/45 p-6 sm:p-8 lg:p-9 flex flex-col justify-between">
           <div>
             <h1
-              transition:name={`titulo-servicio-${slug}`}
               class="font-display text-2xl sm:text-3xl lg:text-[2.15rem] font-bold text-carbon leading-[1.12] tracking-[-0.025em] text-balance"
             >
               {titulo}

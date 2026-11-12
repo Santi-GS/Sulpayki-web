@@ -10,7 +10,6 @@ interface Props {
 
 const { data, cardSurface } = Astro.props as Props;
 const isServicios = data.__component === "block.servicios-destacados";
-const transitionPrefix = isServicios ? "servicio" : "destino";
 const items = data.items ?? data.articulo_destinos ?? data.servicio_de_turismos ?? [];
 const baseHref = isServicios ? "/servicios-turisticos/" : "/destinos/";
 const sectionLabel = isServicios ? "paquetes y servicios" : "destinos en La Rioja";
@@ -99,7 +98,6 @@ const whatsappEmptyHref =
             >
               {items[0].coverImagen?.url ? (
                 <StrapiImage
-                  transition:name={`img-${transitionPrefix}-${items[0].slug}`}
                   src={items[0].coverImagen.url}
                   alt={items[0].coverImagen.alternativeText || items[0].titulo}
                   width={900}
@@ -128,7 +126,6 @@ const whatsappEmptyHref =
             <div class="lg:col-span-5 p-7 sm:p-9 lg:p-10 flex flex-col justify-between">
               <div>
                 <h3
-                  transition:name={`titulo-${transitionPrefix}-${items[0].slug}`}
                   class="font-display text-2xl sm:text-3xl font-bold text-carbon leading-tight tracking-[-0.02em] text-balance"
                 >
                   <a
@@ -204,7 +201,6 @@ const whatsappEmptyHref =
                 >
                   {article.coverImagen?.url ? (
                     <StrapiImage
-                      transition:name={`img-${transitionPrefix}-${article.slug}`}
                       src={article.coverImagen.url}
                       alt={article.coverImagen.alternativeText || article.titulo}
                       width={640}
@@ -238,7 +234,6 @@ const whatsappEmptyHref =
                 <div class="p-6 sm:p-7 flex flex-1 flex-col justify-between">
                   <div>
                     <h3
-                      transition:name={`titulo-${transitionPrefix}-${article.slug}`}
                       class="font-display text-xl sm:text-2xl font-bold text-carbon leading-snug line-clamp-2"
                     >
                       <a
@@ -326,7 +321,6 @@ const whatsappEmptyHref =
                 >
                   {article.coverImagen?.url ? (
                     <StrapiImage
-                      transition:name={`img-${transitionPrefix}-${article.slug}`}
                       src={article.coverImagen.url}
                       alt={article.coverImagen.alternativeText || article.titulo}
                       width={440}
@@ -360,7 +354,6 @@ const whatsappEmptyHref =
                 <div class="p-6 flex flex-1 flex-col justify-between">
                   <div>
                     <h3
-                      transition:name={`titulo-${transitionPrefix}-${article.slug}`}
                       class="font-display text-xl font-bold text-carbon leading-snug line-clamp-2"
                     >
                       <a

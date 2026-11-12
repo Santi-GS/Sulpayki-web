@@ -118,7 +118,6 @@ const encabezadoExperiencias: EncabezadoDeSeccionProps = {
               >
                 {articles[0].coverImagen?.url ? (
                   <StrapiImage
-                    transition:name={`img-destino-${articles[0].slug}`}
                     class="card-media-zoom w-full h-full object-cover"
                     src={articles[0].coverImagen.url}
                     alt={
@@ -155,7 +154,6 @@ const encabezadoExperiencias: EncabezadoDeSeccionProps = {
               <div class="lg:col-span-5 p-7 sm:p-9 lg:p-10 flex flex-col justify-between">
                 <div>
                   <h2
-                    transition:name={`titulo-destino-${articles[0].slug}`}
                     class="font-display text-2xl sm:text-3xl font-bold text-carbon leading-tight tracking-[-0.02em] text-balance"
                   >
                     <a
@@ -222,7 +220,6 @@ const encabezadoExperiencias: EncabezadoDeSeccionProps = {
                       >
                         {article.coverImagen?.url ? (
                           <StrapiImage
-                            transition:name={`img-destino-${article.slug}`}
                             class="card-media-zoom w-full h-full object-cover"
                             src={article.coverImagen.url}
                             alt={
@@ -256,7 +253,6 @@ const encabezadoExperiencias: EncabezadoDeSeccionProps = {
                       <div class="p-6 sm:p-7 flex flex-1 flex-col justify-between">
                         <div>
                           <h3
-                            transition:name={`titulo-destino-${article.slug}`}
                             class="font-display text-xl sm:text-2xl font-bold text-carbon leading-snug line-clamp-2"
                           >
                             <a
