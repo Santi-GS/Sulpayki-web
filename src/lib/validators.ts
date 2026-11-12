@@ -53,6 +53,7 @@ const blockContenidoImagenSchema = z.object({
   texto: z.string().trim().min(1, "Ingresá el texto del bloque con imagen."),
   imagen: imagenBlockField,
   invertido: z.boolean().default(false),
+  ajuste: z.enum(["cover", "contain"]).optional().default("cover"),
   link: z
     .object({
       label: z.string().trim().default(""),

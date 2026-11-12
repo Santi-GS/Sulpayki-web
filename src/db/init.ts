@@ -235,6 +235,7 @@ async function runSchemaAndSeed(): Promise<void> {
           isExternal: false,
         },
         invertido: false,
+        ajuste: "contain",
       },
       {
         __component: "block.preguntas-frecuentes",

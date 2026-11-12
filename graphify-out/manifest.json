@@ -165,10 +165,10 @@
     "semantic_hash": "48ec2d443910d6a0d1174a8ecc64e6df"
   },
   "src/components/admin/BlocksEditor.astro": {
-    "mtime": 1793306387.3816037,
-    "seen": 1794085787.4018805,
-    "ast_hash": "e4011158706cda36687c571d88ae0bec",
-    "semantic_hash": "e4011158706cda36687c571d88ae0bec"
+    "mtime": 1794454338.9040892,
+    "seen": 1794454474.6167743,
+    "ast_hash": "8467dde09e30f3c552e0963b000e8d50",
+    "semantic_hash": ""
   },
   "src/components/admin/MediaPickerModal.astro": {
     "mtime": 1793306387.4403214,
@@ -177,8 +177,8 @@
     "semantic_hash": "5e73aba820b352cb96df17b6fe5d1c3c"
   },
   "src/components/blocks/ArticulosDestacados.astro": {
-    "mtime": 1794452047.0287461,
-    "seen": 1794452170.69501,
+    "mtime": 1794452274.1595783,
+    "seen": 1794454474.6167836,
     "ast_hash": "a9e789dd9c1818ac57ad843cf2aa8a06",
     "semantic_hash": ""
   },
@@ -201,9 +201,9 @@
     "semantic_hash": ""
   },
   "src/components/blocks/ContenidoConImagen.astro": {
-    "mtime": 1794268807.5206995,
-    "seen": 1794269084.1805212,
-    "ast_hash": "aaff27f9506ab7f52baa5f90c6425a64",
+    "mtime": 1794454378.1393518,
+    "seen": 1794454474.6167948,
+    "ast_hash": "3b3cad98e901da19350738757dc8937f",
     "semantic_hash": ""
   },
   "src/components/blocks/EncabezadoDeSeccion.astro": {
@@ -255,10 +255,10 @@
     "semantic_hash": "34aa128fd805045bb7d17bcd35d40347"
   },
   "src/db/init.ts": {
-    "mtime": 1793823271.3284743,
-    "seen": 1794085787.403381,
-    "ast_hash": "d4e1006220a0cfd0c000b83836deceb6",
-    "semantic_hash": "d4e1006220a0cfd0c000b83836deceb6"
+    "mtime": 1794454289.8951302,
+    "seen": 1794454474.6168292,
+    "ast_hash": "168846d57549fcf35b61781a266e4d7a",
+    "semantic_hash": ""
   },
   "src/db/schema.ts": {
     "mtime": 1793306388.0961785,
@@ -381,16 +381,16 @@
     "semantic_hash": "7073e1e963d8d92b8e9c793a7551d0b0"
   },
   "src/lib/types.ts": {
-    "mtime": 1793294247.304555,
-    "seen": 1794085787.405369,
-    "ast_hash": "3d2557a7d1cd0d5ca17bb1c751dd806a",
-    "semantic_hash": "3d2557a7d1cd0d5ca17bb1c751dd806a"
+    "mtime": 1794454263.4200103,
+    "seen": 1794454474.6169302,
+    "ast_hash": "c78e7a7b36be80dbb3e4b2792621741a",
+    "semantic_hash": ""
   },
   "src/lib/validators.ts": {
-    "mtime": 1793306551.2953937,
-    "seen": 1794085787.4054615,
-    "ast_hash": "823c620feb74c03c381f33081a0d90f9",
-    "semantic_hash": "823c620feb74c03c381f33081a0d90f9"
+    "mtime": 1794454277.3427103,
+    "seen": 1794454474.6169345,
+    "ast_hash": "e2392ac2797b7c62e7497bfb5daef709",
+    "semantic_hash": ""
   },
   "src/middleware.ts": {
     "mtime": 1793306388.6756005,
@@ -585,14 +585,14 @@
     "semantic_hash": "8027746fb4173ca422d0efbd7834a0be"
   },
   "src/pages/destinos/[...page].astro": {
-    "mtime": 1794451989.045436,
-    "seen": 1794452170.6951537,
+    "mtime": 1794452274.2963674,
+    "seen": 1794454474.6170964,
     "ast_hash": "684bdd14f48ccead1c692b45b2e2395a",
     "semantic_hash": ""
   },
   "src/pages/destinos/[slug].astro": {
-    "mtime": 1794452132.9568253,
-    "seen": 1794452170.6951551,
+    "mtime": 1794452274.3851843,
+    "seen": 1794454474.6171029,
     "ast_hash": "998c379cd0f93858bad4ccbcb8441942",
     "semantic_hash": ""
   },
@@ -603,14 +603,14 @@
     "semantic_hash": ""
   },
   "src/pages/servicios-turisticos/[...page].astro": {
-    "mtime": 1794451933.7045248,
-    "seen": 1794452170.6951587,
+    "mtime": 1794452274.556411,
+    "seen": 1794454474.6171124,
     "ast_hash": "cf319d6538632ac07de15cad9b80b576",
     "semantic_hash": ""
   },
   "src/pages/servicios-turisticos/[slug].astro": {
-    "mtime": 1794452139.1475105,
-    "seen": 1794452170.6951602,
+    "mtime": 1794452274.6179638,
+    "seen": 1794454474.6171172,
     "ast_hash": "46b8b02a10615a64add13b7f1059555c",
     "semantic_hash": ""
   },

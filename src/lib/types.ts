@@ -95,6 +95,7 @@ export interface Imagen {
     link: Link;
     imagen: Imagen;
     invertido: boolean;
+    ajuste?: "cover" | "contain";
   }
 
   export interface MarkdownProps extends Base<"block.markdown"> {

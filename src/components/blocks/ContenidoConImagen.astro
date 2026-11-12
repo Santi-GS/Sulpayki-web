@@ -9,13 +9,31 @@ interface Props {
 }
 
 const {
-  data: { titulo, texto, imagen, link, invertido },
+  data: { titulo, texto, imagen, link, invertido, ajuste },
 } = Astro.props;
 
 const hasValidData = Boolean(titulo && texto && imagen && imagen.url);
 const htmlText = hasValidData ? renderMarkdown(texto) : "";
+
 const isSvgImage = Boolean(
   imagen?.url && imagen.url.toLowerCase().trim().endsWith(".svg")
+);
+
+// Detectar si la imagen debe mostrarse completa (contain) sin recortar.
+// Aplica para logos, isotipos, gráficos con transparencia, SVGs o cuando se configuró ajuste: "contain".
+const isLogoOrGraphic = Boolean(
+  ajuste === "contain" ||
+    isSvgImage ||
+    (imagen?.url &&
+      /logo|isotipo|isologo|marca|emblema|preview|removebg/i.test(imagen.url)) ||
+    (imagen?.alternativeText &&
+      /logo|isotipo|isologo|marca|emblema|preview|removebg/i.test(
+        imagen.alternativeText
+      )) ||
+    (titulo &&
+      /sulpayki|historia|sobre nosotros|propósito|tierra/i.test(titulo) &&
+      imagen?.url &&
+      /\.(png|svg|webp)$/i.test(imagen.url))
 );
 const isWhatsappLink = Boolean(
   link?.href && link.href.toLowerCase().includes("wa.me")
@@ -36,23 +54,32 @@ const whatsappConsultaHref = `https://wa.me/5493804679492?text=${encodeURICompon
         <div
           class:list={[
             "lg:col-span-5 relative overflow-hidden flex items-center justify-center",
-            isSvgImage
-              ? "bg-arena-calida/55 min-h-[240px] sm:min-h-[300px] p-8 sm:p-12"
+            isLogoOrGraphic
+              ? "bg-marfil p-8 sm:p-10 lg:p-12 min-h-[280px] sm:min-h-[340px] lg:min-h-[420px] border-b lg:border-b-0 border-salvia/35"
               : "bg-arena-calida min-h-[260px] sm:min-h-[340px] lg:min-h-[380px]",
+            isLogoOrGraphic && (invertido ? "lg:border-l" : "lg:border-r"),
             invertido && "lg:order-2",
           ]}
         >
-          <StrapiImage
-            src={imagen.url}
-            alt={imagen.alternativeText || titulo}
-            height={600}
-            width={800}
-            class:list={[
-              isSvgImage
-                ? "w-full max-w-[320px] h-auto object-contain"
-                : "card-media-zoom w-full h-full object-cover",
-            ]}
-          />
+          {isLogoOrGraphic ? (
+            <div class="relative w-full h-full flex items-center justify-center">
+              <StrapiImage
+                src={imagen.url}
+                alt={imagen.alternativeText || titulo}
+                height={600}
+                width={800}
+                class="w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[380px] max-h-[300px] sm:max-h-[340px] lg:max-h-[380px] h-auto object-contain select-none drop-shadow-sm transition-transform duration-300 hover:scale-[1.02]"
+              />
+            </div>
+          ) : (
+            <StrapiImage
+              src={imagen.url}
+              alt={imagen.alternativeText || titulo}
+              height={600}
+              width={800}
+              class="card-media-zoom w-full h-full object-cover"
+            />
+          )}
         </div>
 
         <div
