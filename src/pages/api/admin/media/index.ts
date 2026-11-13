@@ -7,6 +7,22 @@ import { getAllMedia } from "../../../../lib/loaders";
 
 export const prerender = false;
 
+function isValidMediaUrl(url: string): boolean {
+  if (!url) return false;
+  if (/[\u0000-\u001F\u007F\s"'`<>]/.test(url)) return false;
+
+  if (url.startsWith("https://") || url.startsWith("http://")) {
+    try {
+      const parsed = new URL(url);
+      return (parsed.protocol === "https:" || parsed.protocol === "http:") && Boolean(parsed.hostname);
+    } catch {
+      return false;
+    }
+  }
+
+  return url.startsWith("/") && !url.startsWith("//") && url.length > 1;
+}
+
 export const GET: APIRoute = async () => {
   const items = await getAllMedia();
   return new Response(JSON.stringify({ items }), {
@@ -59,19 +75,24 @@ export const POST: APIRoute = async ({ request }) => {
       altText?: string;
     } | null;
 
-    if (!body?.url || typeof body.url !== "string" || !body.url.trim()) {
+    const rawUrl = typeof body?.url === "string" ? body.url.trim() : "";
+    if (!isValidMediaUrl(rawUrl)) {
       return new Response(
-        JSON.stringify({ error: "Ingresá una URL de imagen válida." }),
+        JSON.stringify({
+          error:
+            'Ingresá una URL de imagen válida que comience con "https://", "http://" o "/" y sin espacios ni caracteres inválidos.',
+        }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
+    const altText = typeof body?.altText === "string" ? body.altText.trim() : "";
     const [inserted] = await db
       .insert(media)
       .values({
         publicId: `external-${Date.now()}`,
-        url: body.url.trim(),
-        altText: (body.altText || "").trim(),
+        url: rawUrl,
+        altText,
         width: 1200,
         height: 800,
         createdAt: now,

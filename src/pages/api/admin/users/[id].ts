@@ -45,7 +45,21 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
   }
 
   if (Object.keys(updates).length > 0) {
+    let roleChanged = false;
+    if (updates.role) {
+      const [current] = await db
+        .select({ role: users.role })
+        .from(users)
+        .where(eq(users.id, id))
+        .limit(1);
+      roleChanged = Boolean(current && current.role !== updates.role);
+    }
+
     await db.update(users).set(updates).where(eq(users.id, id));
+
+    if (updates.passwordHash || roleChanged) {
+      await db.delete(sessions).where(eq(sessions.userId, id));
+    }
   }
 
   return new Response(JSON.stringify({ ok: true }), {

@@ -1,52 +1,99 @@
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import type { AstroCookies } from "astro";
-import { eq, lt } from "drizzle-orm";
+import { eq, lt, lte, or, sql } from "drizzle-orm";
 import { getDb } from "../db/client";
 import { ensureDatabaseInitialized } from "../db/init";
-import { sessions, siteState, users, type UserRole } from "../db/schema";
+import { loginAttempts, sessions, siteState, users, type UserRole } from "../db/schema";
 import type { AuthenticatedUser } from "../env.d";
 
 export const SESSION_COOKIE_NAME = "sulpayki_session";
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 14; // 14 días
 
-// Control de intentos fallidos en memoria para mitigar fuerza bruta
-const loginAttempts = new Map<string, { count: number; resetAt: number }>();
-const MAX_ATTEMPTS = 8;
+// Control persistente de intentos fallidos en Turso/SQLite para mitigar fuerza bruta
+export const MAX_LOGIN_ATTEMPTS_PER_IP_EMAIL = 8;
+export const MAX_LOGIN_ATTEMPTS_PER_EMAIL = 20;
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutos
 
-export function checkRateLimit(identifier: string): { allowed: boolean; retryAfterSeconds?: number } {
+export async function checkRateLimit(
+  identifier: string,
+  maxAttempts = MAX_LOGIN_ATTEMPTS_PER_IP_EMAIL
+): Promise<{ allowed: boolean; retryAfterSeconds?: number }> {
+  await ensureDatabaseInitialized();
+  const db = getDb();
   const now = Date.now();
-  const record = loginAttempts.get(identifier);
-  if (!record || now > record.resetAt) {
+
+  const [record] = await db
+    .select({
+      count: loginAttempts.count,
+      resetAt: loginAttempts.resetAt,
+    })
+    .from(loginAttempts)
+    .where(eq(loginAttempts.key, identifier))
+    .limit(1);
+
+  if (!record || now >= record.resetAt) {
     return { allowed: true };
   }
-  if (record.count >= MAX_ATTEMPTS) {
+
+  if (record.count >= maxAttempts) {
     return {
       allowed: false,
-      retryAfterSeconds: Math.ceil((record.resetAt - now) / 1000),
+      retryAfterSeconds: Math.max(1, Math.ceil((record.resetAt - now) / 1000)),
     };
   }
+
   return { allowed: true };
 }
 
-export function recordFailedAttempt(identifier: string): void {
+export async function recordFailedAttempt(identifier: string): Promise<void> {
+  await ensureDatabaseInitialized();
+  const db = getDb();
   const now = Date.now();
-  const record = loginAttempts.get(identifier);
-  if (!record || now > record.resetAt) {
-    loginAttempts.set(identifier, { count: 1, resetAt: now + WINDOW_MS });
-  } else {
-    record.count += 1;
-  }
+  const nextResetAt = now + WINDOW_MS;
+
+  await db.delete(loginAttempts).where(lte(loginAttempts.resetAt, now));
+
+  await db
+    .insert(loginAttempts)
+    .values({
+      key: identifier,
+      count: 1,
+      resetAt: nextResetAt,
+    })
+    .onConflictDoUpdate({
+      target: loginAttempts.key,
+      set: {
+        count: sql`CASE WHEN ${loginAttempts.resetAt} <= ${now} THEN 1 ELSE ${loginAttempts.count} + 1 END`,
+        resetAt: sql`CASE WHEN ${loginAttempts.resetAt} <= ${now} THEN ${nextResetAt} ELSE ${loginAttempts.resetAt} END`,
+      },
+    });
 }
 
-export function clearFailedAttempts(identifier: string): void {
-  loginAttempts.delete(identifier);
+export async function clearFailedAttempts(identifier: string): Promise<void> {
+  await ensureDatabaseInitialized();
+  const db = getDb();
+  const now = Date.now();
+
+  await db
+    .delete(loginAttempts)
+    .where(or(eq(loginAttempts.key, identifier), lte(loginAttempts.resetAt, now)));
 }
 
 function getAuthSecret(): string {
   const metaEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
-  return metaEnv?.AUTH_SECRET || process.env.AUTH_SECRET || "sulpayki-dev-secret-change-in-prod";
+  const configured = (metaEnv?.AUTH_SECRET || process.env.AUTH_SECRET || "").trim();
+
+  if (process.env.VERCEL) {
+    if (configured.length < 16) {
+      throw new Error(
+        "AUTH_SECRET debe estar configurado con al menos 16 caracteres en producción (Vercel)."
+      );
+    }
+    return configured;
+  }
+
+  return configured || "sulpayki-dev-secret-change-in-prod";
 }
 
 function hashToken(rawToken: string): string {

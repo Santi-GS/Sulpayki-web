@@ -2,13 +2,19 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const ALLOWED_MIME_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-  "image/gif",
-]);
+const ALLOWED_MIME_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/avif": "avif",
+  "image/gif": "gif",
+};
+
+function getAllowedExtension(mimeType: string): string | undefined {
+  return Object.prototype.hasOwnProperty.call(ALLOWED_MIME_TYPES, mimeType)
+    ? ALLOWED_MIME_TYPES[mimeType]
+    : undefined;
+}
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -34,7 +40,8 @@ export interface UploadedImageResult {
 }
 
 export async function uploadImageFile(file: File): Promise<UploadedImageResult> {
-  if (!ALLOWED_MIME_TYPES.has(file.type)) {
+  const ext = getAllowedExtension(file.type);
+  if (!ext) {
     throw new Error("Formato de imagen no soportado. Subí un archivo JPG, PNG, WebP, AVIF o GIF.");
   }
 
@@ -94,7 +101,6 @@ export async function uploadImageFile(file: File): Promise<UploadedImageResult> 
   }
 
   // Fallback cómodo para desarrollo local sin conexión/cuenta aún creada
-  const ext = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "webp";
   const safeName = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}.${ext}`;
   const uploadsDir = path.join(process.cwd(), "public", "uploads");
   await fs.mkdir(uploadsDir, { recursive: true });

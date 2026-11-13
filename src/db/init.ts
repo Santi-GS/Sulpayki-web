@@ -4,16 +4,41 @@ import { getDb, getLibsqlClient, isUsingRemoteTurso } from "./client";
 import { articles, articleTags, homeHero, media, pages, siteState, tags, users } from "./schema";
 import { slugify } from "../lib/index";
 
-function getEnv(key: string, fallback: string): string {
+function getOptionalEnv(key: string): string | undefined {
   const metaEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
   const val = metaEnv?.[key] || process.env[key];
-  return val && val.trim().length > 0 ? val.trim() : fallback;
+  return val && val.trim().length > 0 ? val.trim() : undefined;
+}
+
+function getEnv(key: string, fallback: string): string {
+  return getOptionalEnv(key) ?? fallback;
 }
 
 let initPromise: Promise<void> | null = null;
 
 async function runSchemaAndSeed(): Promise<void> {
   const client = getLibsqlClient();
+
+  // Fast-path para cold starts: evitar DDL y lecturas de seed si el esquema (incluida login_attempts) ya existe
+  try {
+    const [stateRes, userRes, attemptsRes] = await client.batch(
+      [
+        "SELECT id FROM site_state WHERE id = 1 LIMIT 1",
+        "SELECT id FROM users LIMIT 1",
+        "SELECT 1 FROM login_attempts LIMIT 1",
+      ],
+      "read"
+    );
+    if (
+      (stateRes?.rows?.length ?? 0) > 0 &&
+      (userRes?.rows?.length ?? 0) > 0 &&
+      attemptsRes !== undefined
+    ) {
+      return;
+    }
+  } catch {
+    // Alguna tabla aún no existe: continuar con creación de esquema y seed inicial
+  }
 
   await client.batch(
     [
@@ -87,6 +112,11 @@ async function runSchemaAndSeed(): Promise<void> {
         has_pending_changes INTEGER NOT NULL DEFAULT 0,
         last_published_at TEXT
       );`,
+      `CREATE TABLE IF NOT EXISTS login_attempts (
+        key TEXT PRIMARY KEY,
+        count INTEGER NOT NULL,
+        reset_at INTEGER NOT NULL
+      );`,
     ],
     "write"
   );
@@ -108,7 +138,13 @@ async function runSchemaAndSeed(): Promise<void> {
   const [{ value: userCount }] = await db.select({ value: count() }).from(users);
   if (userCount === 0) {
     const superEmail = getEnv("INITIAL_SUPERADMIN_EMAIL", "admin@sulpayki.com").toLowerCase();
-    const superPass = getEnv("INITIAL_SUPERADMIN_PASSWORD", "SulpaykiAdmin2026!");
+    const configuredSuperPass = getOptionalEnv("INITIAL_SUPERADMIN_PASSWORD");
+    if (process.env.VERCEL && !configuredSuperPass) {
+      throw new Error(
+        "INITIAL_SUPERADMIN_PASSWORD debe estar configurada en las variables de entorno de Vercel para crear el usuario Superadmin inicial."
+      );
+    }
+    const superPass = configuredSuperPass || "SulpaykiAdmin2026!";
     const superName = getEnv("INITIAL_SUPERADMIN_NAME", "Administrador General");
     const superHash = await bcrypt.hash(superPass, 10);
 
@@ -122,11 +158,15 @@ async function runSchemaAndSeed(): Promise<void> {
       },
     ];
 
-    // En producción con Turso, solo se crea el editor si definís explícitamente INITIAL_EDITOR_EMAIL.
-    // En entorno local de pruebas (sin Turso remoto) se crea por defecto para permitir probar ambos roles.
-    const defaultEditorEmail = isUsingRemoteTurso() ? "" : "cliente@sulpayki.com";
+    // En producción (Vercel / Turso), solo se crea el editor si definís explícitamente INITIAL_EDITOR_EMAIL e INITIAL_EDITOR_PASSWORD.
+    // En entorno local de pruebas (sin Turso remoto ni Vercel) se crea por defecto para permitir probar ambos roles.
+    const defaultEditorEmail =
+      isUsingRemoteTurso() || process.env.VERCEL ? "" : "cliente@sulpayki.com";
     const editorEmail = getEnv("INITIAL_EDITOR_EMAIL", defaultEditorEmail).toLowerCase();
-    const editorPass = getEnv("INITIAL_EDITOR_PASSWORD", "SulpaykiEditor2026!");
+    const configuredEditorPass = getOptionalEnv("INITIAL_EDITOR_PASSWORD");
+    const editorPass = process.env.VERCEL
+      ? configuredEditorPass
+      : configuredEditorPass || "SulpaykiEditor2026!";
     const editorName = getEnv("INITIAL_EDITOR_NAME", "Equipo Sulpayki");
 
     if (editorEmail && editorEmail.length > 0 && editorPass && editorPass.length > 0) {

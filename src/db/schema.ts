@@ -94,3 +94,9 @@ export const siteState = sqliteTable("site_state", {
   lastPublishedAt: text("last_published_at"),
 });
 
+export const loginAttempts = sqliteTable("login_attempts", {
+  key: text("key").primaryKey(),
+  count: integer("count").notNull(),
+  resetAt: integer("reset_at").notNull(),
+});
+
