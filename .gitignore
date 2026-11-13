@@ -100,3 +100,6 @@ local.db
 local.db-journal
 local.db-wal
 local.db-shm
+
+# Salida y caché local generada por Graphify
+graphify-out/
