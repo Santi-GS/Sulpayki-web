@@ -1,9 +1,10 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import { getDatabaseUrl, isUsingRemoteTurso } from "../../db/client";
+import { buildBackupSnapshot } from "../../lib/backup";
 import { isCloudinaryConfigured } from "../../lib/cloudinary";
-import { getSitePublishState } from "../../lib/loaders";
 import { formatDate } from "../../lib/index";
+import { getSitePublishState } from "../../lib/loaders";
 
 export const prerender = false;
 
@@ -11,6 +12,11 @@ const remoteTurso = isUsingRemoteTurso();
 const dbUrl = getDatabaseUrl();
 const cloudinaryOk = isCloudinaryConfigured();
 const publishState = await getSitePublishState();
+const currentSnapshot = await buildBackupSnapshot();
+const { summary, images } = currentSnapshot;
+const hasLocalUploads = images.some((img) => img.url.startsWith("/uploads/"));
+const previewImages = images.slice(0, 12);
+const extraImagesCount = Math.max(0, images.length - previewImages.length);
 ---
 
 <AdminLayout title="Sistema y Respaldos" activeSection="sistema">
@@ -44,7 +50,7 @@ const publishState = await getSitePublishState();
           <p class="text-xs text-neutral-600">
             {cloudinaryOk
               ? "Optimización automática WebP/AVIF activa en la nube."
-              : "Configurá CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET en Vercel."}
+              : "Las imágenes nuevas se guardan en /public/uploads. Configurá CLOUDINARY_* para subirlas a la nube."}
           </p>
         </div>
 
@@ -64,21 +70,821 @@ const publishState = await getSitePublishState();
       </div>
     </section>
 
-    <!-- Respaldo descargable -->
-    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h2 class="text-base font-bold text-[#1F2421]">Copia de seguridad del contenido</h2>
+    <!-- Resumen del contenido actual -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#E2E0D8] pb-3">
+        <div>
+          <h2 class="text-base font-bold text-[#1F2421]">Contenido actual en esta base de datos</h2>
+          <p class="text-xs text-neutral-600">
+            Todo lo que se incluirá al copiar o descargar el respaldo de esta web.
+          </p>
+        </div>
+        <span class="text-xs font-semibold text-neutral-600">
+          {summary.referencedImages} imágenes referenciadas en total
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] px-3.5 py-3">
+          <p class="text-xs text-neutral-600">Destinos</p>
+          <p class="text-xl font-bold text-[#1F2421]">{summary.destinos}</p>
+        </div>
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] px-3.5 py-3">
+          <p class="text-xs text-neutral-600">Servicios</p>
+          <p class="text-xl font-bold text-[#1F2421]">{summary.servicios}</p>
+        </div>
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] px-3.5 py-3">
+          <p class="text-xs text-neutral-600">Diapositivas Hero</p>
+          <p class="text-xl font-bold text-[#1F2421]">{summary.heroSlides}</p>
+        </div>
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] px-3.5 py-3">
+          <p class="text-xs text-neutral-600">Páginas</p>
+          <p class="text-xl font-bold text-[#1F2421]">{summary.pages}</p>
+        </div>
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] px-3.5 py-3">
+          <p class="text-xs text-neutral-600">Etiquetas</p>
+          <p class="text-xl font-bold text-[#1F2421]">{summary.tags}</p>
+        </div>
+        <div class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] px-3.5 py-3">
+          <p class="text-xs text-neutral-600">Biblioteca Media</p>
+          <p class="text-xl font-bold text-[#1F2421]">{summary.media}</p>
+        </div>
+      </div>
+
+      {previewImages.length > 0 && (
+        <div class="pt-1">
+          <p class="text-xs font-semibold text-neutral-700 mb-2">Vista previa de imágenes detectadas</p>
+          <div class="flex flex-wrap items-center gap-2">
+            {previewImages.map((img) => (
+              <div
+                title={img.altText || img.url}
+                class="h-14 w-14 rounded-lg border border-[#E2E0D8] bg-neutral-100 overflow-hidden shrink-0"
+              >
+                <img
+                  src={img.url}
+                  alt={img.altText || "Imagen del sitio"}
+                  loading="lazy"
+                  class="h-full w-full object-cover"
+                />
+              </div>
+            ))}
+            {extraImagesCount > 0 && (
+              <span class="inline-flex h-14 items-center justify-center rounded-lg border border-dashed border-[#C7C4B8] bg-[#FAF9F6] px-3 text-xs font-semibold text-neutral-700">
+                +{extraImagesCount} más
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+
+    <!-- Exportar / Copiar respaldo -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-4">
+      <div class="border-b border-[#E2E0D8] pb-3">
+        <h2 class="text-base font-bold text-[#1F2421]">Exportar o copiar toda la web e imágenes</h2>
         <p class="text-sm text-neutral-600 mt-0.5">
-          Descargá un archivo JSON con toda la portada, destinos, servicios, etiquetas, páginas y biblioteca multimedia.
+          Copiá el contenido completo de la base de datos (portada, destinos, servicios, páginas, etiquetas y enlaces de imágenes) para llevarlo de Vercel a tu entorno local o viceversa.
         </p>
       </div>
-      <a
-        href="/api/admin/backup"
-        class="inline-flex items-center justify-center rounded-xl bg-[#1D261F] hover:bg-neutral-800 px-5 py-2.5 text-sm font-semibold text-white transition whitespace-nowrap"
-      >
-        Descargar respaldo JSON
-      </a>
+
+      <div class="rounded-xl border border-[#D7E8D4] bg-[#F3F9F2] px-4 py-3 text-xs text-[#1F2421] space-y-1">
+        <p class="font-semibold">¿Cómo replicar tu web de Vercel en local en segundos?</p>
+        <p class="text-neutral-700">
+          1) En tu panel de Vercel, tocá <strong>Copiar respaldo completo</strong>. 2) Abrí <strong>Sistema y Respaldos</strong> en tu panel local, pegalo abajo en <strong>Implementar respaldo</strong> y confirmá.
+        </p>
+      </div>
+
+      <label class="flex items-start gap-2.5 text-sm text-neutral-800 cursor-pointer select-none">
+        <input
+          id="export-embed-local-images"
+          type="checkbox"
+          checked={hasLocalUploads}
+          class="mt-1 h-4 w-4 rounded border-neutral-300 accent-[#3B8730]"
+        />
+        <span>
+          <span class="font-semibold">Incluir archivos de imágenes subidas en local (<code class="text-xs bg-neutral-100 px-1 py-0.5 rounded">/uploads/</code>)</span>
+          <span class="block text-xs text-neutral-600">
+            Útil si estás exportando desde local hacia Vercel para que las fotos locales se suban automáticamente a Cloudinary al importar.
+          </span>
+        </span>
+      </label>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          id="btn-copy-backup"
+          class="inline-flex items-center justify-center rounded-xl bg-[#3B8730] hover:bg-[#317227] px-5 py-2.5 text-sm font-semibold text-white transition min-h-[42px]"
+        >
+          Copiar respaldo completo
+        </button>
+
+        <button
+          type="button"
+          id="btn-download-backup"
+          class="inline-flex items-center justify-center rounded-xl bg-[#1D261F] hover:bg-neutral-800 px-5 py-2.5 text-sm font-semibold text-white transition min-h-[42px]"
+        >
+          Descargar respaldo (.json)
+        </button>
+
+        <button
+          type="button"
+          id="btn-download-images-zip"
+          class="inline-flex items-center justify-center rounded-xl border border-[#C7C4B8] bg-[#FAF9F6] hover:bg-neutral-200/70 px-4 py-2.5 text-sm font-semibold text-[#1F2421] transition min-h-[42px]"
+        >
+          Descargar todas las imágenes (.zip)
+        </button>
+      </div>
+
+      <p id="export-feedback" role="status" aria-live="polite" class="hidden rounded-xl border px-4 py-2.5 text-sm font-medium"></p>
+    </section>
+
+    <!-- Importar / Implementar respaldo -->
+    <section class="bg-white rounded-2xl border border-[#E2E0D8] p-6 space-y-5">
+      <div class="border-b border-[#E2E0D8] pb-3">
+        <h2 class="text-base font-bold text-[#1F2421]">Implementar respaldo en esta web</h2>
+        <p class="text-sm text-neutral-600 mt-0.5">
+          Pegá el respaldo copiado desde otro entorno o subí el archivo <code class="text-xs bg-neutral-100 px-1 py-0.5 rounded">.json</code> para cargar todos los artículos, portada, páginas e imágenes automáticamente.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label for="import-json-input" class="text-xs font-semibold text-neutral-700">
+              Pegar JSON del respaldo
+            </label>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="btn-paste-clipboard"
+                class="rounded-lg border border-neutral-300 bg-[#FAF9F6] hover:bg-neutral-200/70 px-2.5 py-1 text-xs font-semibold text-[#1F2421] transition"
+              >
+                Pegar del portapapeles
+              </button>
+              <button
+                type="button"
+                id="btn-clear-import"
+                class="rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-100 transition"
+              >
+                Limpiar
+              </button>
+            </div>
+          </div>
+          <textarea
+            id="import-json-input"
+            rows={7}
+            placeholder='Pegá acá el JSON copiado desde "Copiar respaldo completo"...'
+            class="w-full rounded-xl border border-neutral-300 bg-[#FAF9F6] p-3 font-mono text-xs text-neutral-900 focus:border-[#3B8730] focus:bg-white focus:outline-none"
+          ></textarea>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label for="import-file-input" class="block text-xs font-semibold text-neutral-700 mb-2">
+              O seleccioná un archivo .json descargado
+            </label>
+            <input
+              id="import-file-input"
+              type="file"
+              accept="application/json,.json"
+              class="block w-full rounded-xl border border-dashed border-[#C7C4B8] bg-[#FAF9F6] px-3 py-3 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-[#1D261F] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
+            />
+          </div>
+
+          <!-- Vista previa del respaldo cargado -->
+          <div id="import-preview-card" class="hidden rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold uppercase tracking-wide text-[#3B8730]">Respaldo válido detectado</span>
+              <span id="preview-meta" class="text-xs text-neutral-600"></span>
+            </div>
+            <div id="preview-counts" class="grid grid-cols-3 gap-2 text-xs text-neutral-800"></div>
+          </div>
+
+          <p id="import-parse-error" class="hidden rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-red-900"></p>
+        </div>
+      </div>
+
+      <!-- Opciones de importación -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+        <fieldset class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 space-y-2.5">
+          <legend class="px-1 text-xs font-bold text-[#1F2421]">Modo de implementación</legend>
+          <label class="flex items-start gap-2.5 text-sm cursor-pointer">
+            <input type="radio" name="import-mode" value="replace" checked class="mt-1 accent-[#3B8730]" />
+            <span>
+              <span class="font-semibold text-[#1F2421]">Reemplazar todo el contenido (recomendado para clonar)</span>
+              <span class="block text-xs text-neutral-600">
+                Deja esta web idéntica al respaldo en portada, destinos, servicios, páginas, etiquetas y medios. Mantiene tus usuarios y sesiones.
+              </span>
+            </span>
+          </label>
+          <label class="flex items-start gap-2.5 text-sm cursor-pointer">
+            <input type="radio" name="import-mode" value="merge" class="mt-1 accent-[#3B8730]" />
+            <span>
+              <span class="font-semibold text-[#1F2421]">Combinar y actualizar por slug</span>
+              <span class="block text-xs text-neutral-600">
+                Agrega elementos nuevos y actualiza los existentes que coincidan por slug sin borrar otros contenidos actuales.
+              </span>
+            </span>
+          </label>
+        </fieldset>
+
+        <fieldset class="rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 space-y-2.5">
+          <legend class="px-1 text-xs font-bold text-[#1F2421]">Tratamiento de imágenes</legend>
+          <label class="flex items-start gap-2.5 text-sm cursor-pointer">
+            <input id="import-localize-images" type="checkbox" class="mt-1 h-4 w-4 rounded border-neutral-300 accent-[#3B8730]" />
+            <span>
+              <span class="font-semibold text-[#1F2421]">
+                Guardar copia física de imágenes remotas en este entorno
+              </span>
+              <span class="block text-xs text-neutral-600">
+                {cloudinaryOk
+                  ? "Descarga las imágenes externas y las re-sube a tu Cloudinary conectado."
+                  : "Descarga las imágenes de Cloudinary/externas dentro de /public/uploads/ para trabajar 100% offline. Si lo dejás desmarcado, usará directamente las URLs optimizadas de Cloudinary (instantáneo)."}
+              </span>
+            </span>
+          </label>
+          <p class="text-xs text-neutral-600">
+            Nota: Si el respaldo incluye imágenes locales embebidas (<code class="bg-white px-1 rounded">/uploads/</code>), se importarán automáticamente al almacenamiento de este entorno.
+          </p>
+        </fieldset>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div id="import-progress-wrap" class="hidden rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] p-4 space-y-2">
+        <div class="flex items-center justify-between text-xs font-semibold text-[#1F2421]">
+          <span id="import-progress-label">Preparando implementación...</span>
+          <span id="import-progress-pct">0%</span>
+        </div>
+        <div class="h-2.5 w-full rounded-full bg-neutral-200 overflow-hidden">
+          <div id="import-progress-bar" class="h-full bg-[#3B8730] transition-all duration-200" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <button
+          type="button"
+          id="btn-execute-import"
+          disabled
+          class="inline-flex items-center justify-center rounded-xl bg-[#3B8730] hover:bg-[#317227] disabled:opacity-45 disabled:cursor-not-allowed px-6 py-3 text-sm font-semibold text-white transition"
+        >
+          Implementar respaldo en esta web
+        </button>
+
+        <div id="import-quick-links" class="hidden flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <a href="/admin" class="rounded-lg border border-[#E2E0D8] bg-[#FAF9F6] px-3 py-1.5 hover:bg-neutral-200/70">Ir al Resumen</a>
+          <a href="/admin/destinos" class="rounded-lg border border-[#E2E0D8] bg-[#FAF9F6] px-3 py-1.5 hover:bg-neutral-200/70">Ver Destinos</a>
+          <a href="/admin/servicios" class="rounded-lg border border-[#E2E0D8] bg-[#FAF9F6] px-3 py-1.5 hover:bg-neutral-200/70">Ver Servicios</a>
+          <a href="/" target="_blank" rel="noopener noreferrer" class="rounded-lg bg-[#1D261F] text-white px-3 py-1.5 hover:bg-neutral-800">Abrir web pública</a>
+        </div>
+      </div>
+
+      <div id="import-result-feedback" role="status" aria-live="polite" class="hidden rounded-xl border px-4 py-3 text-sm"></div>
     </section>
   </div>
-</AdminLayout>
 
+  <script>
+    import { createZipBlob, type ZipEntry } from "../../lib/zip";
+    import {
+      extractBackupImageItems,
+      safeParseJsonArray,
+      type BackupImageItem,
+    } from "../../lib/backup-images-extract";
+
+    interface ParsedBackup {
+      version?: number;
+      exportedAt?: string;
+      source?: { databaseMode?: string; cloudinaryConfigured?: boolean };
+      homeHero?: Array<{ slidesJson?: string }>;
+      tags?: Array<unknown>;
+      articles?: Array<{ type?: string; coverUrl?: string; coverAlt?: string; blocksJson?: string }>;
+      articleTags?: Array<unknown>;
+      pages?: Array<{ blocksJson?: string }>;
+      media?: Array<{ url?: string; altText?: string }>;
+      images?: BackupImageItem[];
+      embeddedImages?: Record<string, { dataUrl: string; filename: string; altText?: string }>;
+    }
+
+    function formatBytes(bytes: number): string {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
+
+    async function blobToDataUrl(blob: Blob): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Error leyendo imagen"));
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    async function fetchImageBytes(url: string): Promise<{ bytes: Uint8Array; mime: string }> {
+      // Para URLs del mismo origen o con CORS habilitado (res.cloudinary.com) intentamos directo primero
+      if (url.startsWith("/") || url.startsWith("https://") || url.startsWith("http://")) {
+        try {
+          const directRes = await fetch(url);
+          if (directRes.ok) {
+            const mime = directRes.headers.get("content-type") || "image/webp";
+            const buf = await directRes.arrayBuffer();
+            if (buf.byteLength > 0) {
+              return { bytes: new Uint8Array(buf), mime };
+            }
+          }
+        } catch {
+          // Si falla CORS, usamos el proxy interno autenticado
+        }
+      }
+
+      if (url.startsWith("http://") || url.startsWith("https://")) {
+        const proxyRes = await fetch(`/api/admin/backup/image-proxy?url=${encodeURIComponent(url)}`);
+        if (!proxyRes.ok) {
+          throw new Error(`No se pudo descargar ${url}`);
+        }
+        const mime = proxyRes.headers.get("content-type") || "image/webp";
+        const buf = await proxyRes.arrayBuffer();
+        return { bytes: new Uint8Array(buf), mime };
+      }
+
+      throw new Error(`URL no accesible: ${url}`);
+    }
+
+    function sanitizeFilename(rawName: string, index: number, mime: string): string {
+      const extFromMime = mime.split("/")[1]?.split(";")[0]?.replace("jpeg", "jpg") || "webp";
+      const base = rawName
+        .split("?")[0]!
+        .split("/")
+        .pop()
+        ?.replace(/[^a-zA-Z0-9._-]/g, "-") || `imagen-${index + 1}.${extFromMime}`;
+      const prefix = String(index + 1).padStart(2, "0");
+      return base.includes(".") ? `${prefix}-${base}` : `${prefix}-${base}.${extFromMime}`;
+    }
+
+    function initSistemaPage() {
+      const root = document.getElementById("btn-copy-backup");
+      if (!root || root.dataset.bound === "1") return;
+      root.dataset.bound = "1";
+
+      const embedLocalCheck = document.getElementById("export-embed-local-images") as HTMLInputElement | null;
+      const btnCopy = document.getElementById("btn-copy-backup") as HTMLButtonElement;
+      const btnDownload = document.getElementById("btn-download-backup") as HTMLButtonElement;
+      const btnZip = document.getElementById("btn-download-images-zip") as HTMLButtonElement;
+      const exportFeedback = document.getElementById("export-feedback") as HTMLElement;
+
+      const jsonInput = document.getElementById("import-json-input") as HTMLTextAreaElement;
+      const fileInput = document.getElementById("import-file-input") as HTMLInputElement;
+      const btnPaste = document.getElementById("btn-paste-clipboard") as HTMLButtonElement;
+      const btnClear = document.getElementById("btn-clear-import") as HTMLButtonElement;
+      const previewCard = document.getElementById("import-preview-card") as HTMLElement;
+      const previewMeta = document.getElementById("preview-meta") as HTMLElement;
+      const previewCounts = document.getElementById("preview-counts") as HTMLElement;
+      const parseError = document.getElementById("import-parse-error") as HTMLElement;
+      const localizeCheck = document.getElementById("import-localize-images") as HTMLInputElement;
+      const btnExecute = document.getElementById("btn-execute-import") as HTMLButtonElement;
+      const progressWrap = document.getElementById("import-progress-wrap") as HTMLElement;
+      const progressLabel = document.getElementById("import-progress-label") as HTMLElement;
+      const progressPct = document.getElementById("import-progress-pct") as HTMLElement;
+      const progressBar = document.getElementById("import-progress-bar") as HTMLElement;
+      const resultFeedback = document.getElementById("import-result-feedback") as HTMLElement;
+      const quickLinks = document.getElementById("import-quick-links") as HTMLElement;
+
+      let loadedBackup: ParsedBackup | null = null;
+
+      function setExportStatus(msg: string, tone: "ok" | "error" | "info") {
+        exportFeedback.textContent = msg;
+        exportFeedback.classList.remove("hidden");
+        exportFeedback.className =
+          tone === "ok"
+            ? "rounded-xl border border-green-300 bg-green-50 text-green-950 px-4 py-2.5 text-sm font-medium"
+            : tone === "error"
+            ? "rounded-xl border border-red-300 bg-red-50 text-red-900 px-4 py-2.5 text-sm font-medium"
+            : "rounded-xl border border-[#E2E0D8] bg-[#FAF9F6] text-neutral-800 px-4 py-2.5 text-sm font-medium";
+      }
+
+      async function buildExportPayload(): Promise<ParsedBackup> {
+        const res = await fetch("/api/admin/backup?inline=1");
+        if (!res.ok) throw new Error("No se pudo obtener el respaldo desde el servidor.");
+        const snapshot = (await res.json()) as ParsedBackup;
+
+        if (embedLocalCheck?.checked) {
+          const items = extractBackupImageItems(snapshot).filter((i) => i.url.startsWith("/uploads/"));
+          if (items.length > 0) {
+            const embedded: Record<string, { dataUrl: string; filename: string; altText?: string }> = {};
+            for (const item of items) {
+              try {
+                const imgRes = await fetch(item.url);
+                if (!imgRes.ok) continue;
+                const blob = await imgRes.blob();
+                const dataUrl = await blobToDataUrl(blob);
+                embedded[item.url] = {
+                  dataUrl,
+                  filename: item.url.split("/").pop() || "imagen.webp",
+                  altText: item.altText || "",
+                };
+              } catch {
+                // Ignorar imagen individual no accesible
+              }
+            }
+            if (Object.keys(embedded).length > 0) {
+              snapshot.embeddedImages = embedded;
+            }
+          }
+        }
+
+        return snapshot;
+      }
+
+      btnCopy.onclick = async () => {
+        btnCopy.disabled = true;
+        const prev = btnCopy.textContent;
+        btnCopy.textContent = "Generando copia...";
+        try {
+          const snapshot = await buildExportPayload();
+          const text = JSON.stringify(snapshot, null, 2);
+          await navigator.clipboard.writeText(text);
+          const embeddedCount = Object.keys(snapshot.embeddedImages || {}).length;
+          const imgTotal = extractBackupImageItems(snapshot).length;
+          setExportStatus(
+            `¡Respaldo copiado al portapapeles! (${snapshot.articles?.length ?? 0} artículos, ${imgTotal} imágenes${embeddedCount ? `, ${embeddedCount} embebidas` : ""} — ${formatBytes(new Blob([text]).size)}). Pegalo en "Implementar respaldo" en tu otro panel.`,
+            "ok"
+          );
+        } catch (err) {
+          setExportStatus(
+            err instanceof Error
+              ? err.message
+              : "No se pudo copiar al portapapeles. Probá descargar el archivo .json.",
+            "error"
+          );
+        } finally {
+          btnCopy.disabled = false;
+          btnCopy.textContent = prev;
+        }
+      };
+
+      btnDownload.onclick = async () => {
+        btnDownload.disabled = true;
+        const prev = btnDownload.textContent;
+        btnDownload.textContent = "Preparando archivo...";
+        try {
+          const snapshot = await buildExportPayload();
+          const text = JSON.stringify(snapshot, null, 2);
+          const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `sulpayki-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          setExportStatus(
+            `Archivo JSON descargado (${formatBytes(blob.size)}).`,
+            "ok"
+          );
+        } catch (err) {
+          setExportStatus(
+            err instanceof Error ? err.message : "No se pudo descargar el respaldo.",
+            "error"
+          );
+        } finally {
+          btnDownload.disabled = false;
+          btnDownload.textContent = prev;
+        }
+      };
+
+      btnZip.onclick = async () => {
+        btnZip.disabled = true;
+        const prev = btnZip.textContent;
+        btnZip.textContent = "Empaquetando imágenes...";
+        try {
+          const res = await fetch("/api/admin/backup?inline=1");
+          if (!res.ok) throw new Error("No se pudo leer la lista de imágenes.");
+          const snapshot = (await res.json()) as ParsedBackup;
+          const items = extractBackupImageItems(snapshot);
+          if (items.length === 0) {
+            setExportStatus("No hay imágenes registradas para descargar.", "info");
+            return;
+          }
+
+          const entries: ZipEntry[] = [];
+          let failed = 0;
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i]!;
+            setExportStatus(`Descargando imagen ${i + 1} de ${items.length}...`, "info");
+            try {
+              const { bytes, mime } = await fetchImageBytes(item.url);
+              entries.push({
+                name: sanitizeFilename(item.url, i, mime),
+                data: bytes,
+              });
+            } catch {
+              failed += 1;
+            }
+          }
+
+          if (entries.length === 0) {
+            throw new Error("No se pudo descargar ninguna imagen.");
+          }
+
+          const zipBlob = createZipBlob(entries);
+          const url = URL.createObjectURL(zipBlob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `sulpayki-imagenes-${new Date().toISOString().slice(0, 10)}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+
+          setExportStatus(
+            `ZIP descargado con ${entries.length} imágenes (${formatBytes(zipBlob.size)})${failed > 0 ? ` — ${failed} no pudieron descargarse` : ""}.`,
+            "ok"
+          );
+        } catch (err) {
+          setExportStatus(
+            err instanceof Error ? err.message : "Error al generar el ZIP de imágenes.",
+            "error"
+          );
+        } finally {
+          btnZip.disabled = false;
+          btnZip.textContent = prev;
+        }
+      };
+
+      function parseAndPreview(rawText: string) {
+        const trimmed = rawText.trim();
+        parseError.classList.add("hidden");
+        previewCard.classList.add("hidden");
+        loadedBackup = null;
+        btnExecute.disabled = true;
+
+        if (!trimmed) return;
+
+        try {
+          const parsed = JSON.parse(trimmed) as ParsedBackup;
+          if (!parsed || typeof parsed !== "object") {
+            throw new Error("El JSON debe ser un objeto de respaldo.");
+          }
+          const hasAnyContent =
+            Array.isArray(parsed.articles) ||
+            Array.isArray(parsed.homeHero) ||
+            Array.isArray(parsed.pages) ||
+            Array.isArray(parsed.tags) ||
+            Array.isArray(parsed.media);
+          if (!hasAnyContent) {
+            throw new Error("El JSON no contiene tablas válidas de Sulpayki.");
+          }
+
+          loadedBackup = parsed;
+          const allImgs = extractBackupImageItems(parsed);
+          const embeddedCount =
+            parsed.embeddedImages && typeof parsed.embeddedImages === "object" && !Array.isArray(parsed.embeddedImages)
+              ? Object.keys(parsed.embeddedImages).length
+              : 0;
+          const articles = Array.isArray(parsed.articles) ? parsed.articles : [];
+          const homeHero = Array.isArray(parsed.homeHero) ? parsed.homeHero : [];
+          const destinosCount = articles.filter((a) => a.type === "DESTINO").length;
+          const serviciosCount = articles.filter((a) => a.type === "SERVICIO").length;
+          const slidesCount = homeHero.reduce(
+            (acc, h) => acc + safeParseJsonArray(h.slidesJson).length,
+            0
+          );
+
+          const sourceLabel =
+            parsed.source?.databaseMode === "turso"
+              ? "Origen: Turso (Prod)"
+              : parsed.source?.databaseMode === "local"
+              ? "Origen: SQLite Local"
+              : "Respaldo Sulpayki";
+          const dateLabel = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString("es-AR") : "";
+          previewMeta.textContent = [sourceLabel, dateLabel].filter(Boolean).join(" · ");
+
+          const countsData: Array<[number, string]> = [
+            [destinosCount, " destinos"],
+            [serviciosCount, " servicios"],
+            [slidesCount, " slides hero"],
+            [Array.isArray(parsed.pages) ? parsed.pages.length : 0, " páginas"],
+            [Array.isArray(parsed.tags) ? parsed.tags.length : 0, " etiquetas"],
+            [allImgs.length, ` imágenes${embeddedCount ? ` (${embeddedCount} emb.)` : ""}`],
+          ];
+          previewCounts.replaceChildren(
+            ...countsData.map(([count, label]) => {
+              const item = document.createElement("div");
+              const strong = document.createElement("strong");
+              strong.textContent = String(count);
+              item.append(strong, document.createTextNode(label));
+              return item;
+            })
+          );
+          previewCard.classList.remove("hidden");
+          btnExecute.disabled = false;
+        } catch (err) {
+          parseError.textContent =
+            err instanceof Error ? err.message : "No se pudo leer el JSON ingresado.";
+          parseError.classList.remove("hidden");
+        }
+      }
+
+      jsonInput.addEventListener("input", () => parseAndPreview(jsonInput.value));
+
+      btnPaste.onclick = async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          jsonInput.value = text;
+          parseAndPreview(text);
+        } catch {
+          parseError.textContent =
+            "El navegador no permitió leer el portapapeles automáticamente. Pegá el contenido con Ctrl+V dentro del cuadro de texto.";
+          parseError.classList.remove("hidden");
+        }
+      };
+
+      btnClear.onclick = () => {
+        jsonInput.value = "";
+        fileInput.value = "";
+        parseAndPreview("");
+        resultFeedback.classList.add("hidden");
+        quickLinks.classList.add("hidden");
+        progressWrap.classList.add("hidden");
+      };
+
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        const text = await file.text();
+        jsonInput.value = text;
+        parseAndPreview(text);
+      });
+
+      function updateProgress(label: string, pct: number) {
+        progressWrap.classList.remove("hidden");
+        progressLabel.textContent = label;
+        const clamped = Math.max(0, Math.min(100, Math.round(pct)));
+        progressPct.textContent = `${clamped}%`;
+        progressBar.style.width = `${clamped}%`;
+      }
+
+      btnExecute.onclick = async () => {
+        if (!loadedBackup) return;
+
+        const modeInput = document.querySelector('input[name="import-mode"]:checked') as HTMLInputElement | null;
+        const mode = modeInput?.value === "merge" ? "merge" : "replace";
+
+        if (
+          mode === "replace" &&
+          !window.confirm(
+            "¿Confirmás reemplazar todo el contenido actual (portada, destinos, servicios, páginas, etiquetas y medios) con este respaldo? Tus usuarios y sesiones no se verán afectados."
+          )
+        ) {
+          return;
+        }
+
+        btnExecute.disabled = true;
+        resultFeedback.classList.add("hidden");
+        quickLinks.classList.add("hidden");
+
+        try {
+          updateProgress("Importando base de datos...", 15);
+
+          // Separamos embeddedImages para no superar límites de tamaño en un solo POST
+          const { embeddedImages, images: _imgs, ...cleanSnapshot } = loadedBackup;
+
+          const restoreRes = await fetch("/api/admin/backup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode, snapshot: cleanSnapshot }),
+          });
+          const restoreData = await restoreRes.json();
+          if (!restoreRes.ok) {
+            throw new Error(restoreData.error || "Error al restaurar la base de datos.");
+          }
+
+          // Determinar qué imágenes migrar / guardar físicamente
+          const embeddedMap =
+            embeddedImages && typeof embeddedImages === "object" && !Array.isArray(embeddedImages)
+              ? embeddedImages
+              : {};
+          const allImages = extractBackupImageItems(loadedBackup);
+          const tasks: Array<{ sourceUrl: string; dataUrl?: string; filename?: string; altText?: string }> = [];
+          const queuedUrls = new Set<string>();
+
+          for (const [origUrl, emb] of Object.entries(embeddedMap)) {
+            if (!emb?.dataUrl) continue;
+            queuedUrls.add(origUrl);
+            tasks.push({
+              sourceUrl: origUrl,
+              dataUrl: emb.dataUrl,
+              filename: emb.filename,
+              altText: emb.altText,
+            });
+          }
+
+          if (localizeCheck.checked) {
+            for (const item of allImages) {
+              if (queuedUrls.has(item.url)) continue;
+              if (item.url.startsWith("http://") || item.url.startsWith("https://")) {
+                queuedUrls.add(item.url);
+                tasks.push({
+                  sourceUrl: item.url,
+                  altText: item.altText,
+                });
+              }
+            }
+          }
+
+          const replacements: Array<{
+            oldUrl: string;
+            newUrl: string;
+            newPublicId?: string;
+            width?: number;
+            height?: number;
+            altText?: string;
+          }> = [];
+          const imageWarnings: string[] = [];
+
+          if (tasks.length > 0) {
+            for (let i = 0; i < tasks.length; i++) {
+              const task = tasks[i]!;
+              const pct = 25 + ((i + 1) / tasks.length) * 60;
+              updateProgress(`Procesando imagen ${i + 1} de ${tasks.length}...`, pct);
+
+              try {
+                const migRes = await fetch("/api/admin/backup/migrate-image", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(task),
+                });
+                const migData = await migRes.json();
+                if (!migRes.ok) {
+                  imageWarnings.push(`${task.sourceUrl}: ${migData.error || "error"}`);
+                  continue;
+                }
+                replacements.push({
+                  oldUrl: migData.oldUrl,
+                  newUrl: migData.newUrl,
+                  newPublicId: migData.newPublicId,
+                  width: migData.width,
+                  height: migData.height,
+                  altText: migData.altText,
+                });
+              } catch {
+                imageWarnings.push(`${task.sourceUrl}: no se pudo transferir`);
+              }
+            }
+
+            if (replacements.length > 0) {
+              updateProgress("Actualizando referencias de imágenes en artículos y páginas...", 92);
+              await fetch("/api/admin/backup/remap-urls", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ replacements }),
+              });
+            }
+          }
+
+          updateProgress("¡Implementación completada!", 100);
+
+          const r = restoreData.restored;
+          const summaryMsg =
+            `¡Listo! Se implementaron ${r.articles} artículos, ${r.pages} páginas, ${r.tags} etiquetas, ${r.media} registros multimedia` +
+            (replacements.length > 0 ? ` y ${replacements.length} archivos de imagen migrados.` : ".");
+
+          const summaryP = document.createElement("p");
+          summaryP.className = "font-semibold";
+          summaryP.textContent = summaryMsg;
+
+          if (imageWarnings.length > 0) {
+            const warningsP = document.createElement("p");
+            warningsP.className = "mt-1 text-xs text-amber-900";
+            warningsP.textContent = `Advertencias en ${imageWarnings.length} imagen(es) (se conservó la URL original): ${imageWarnings.slice(0, 3).join(" | ")}`;
+            resultFeedback.replaceChildren(summaryP, warningsP);
+          } else {
+            resultFeedback.replaceChildren(summaryP);
+          }
+          resultFeedback.className =
+            "rounded-xl border border-green-300 bg-green-50 text-green-950 px-4 py-3 text-sm";
+          resultFeedback.classList.remove("hidden");
+          quickLinks.classList.remove("hidden");
+
+          const w = window as unknown as { markSulpaykiPendingChanges?: () => void };
+          w.markSulpaykiPendingChanges?.();
+        } catch (err) {
+          resultFeedback.textContent =
+            err instanceof Error ? err.message : "Ocurrió un error al implementar el respaldo.";
+          resultFeedback.className =
+            "rounded-xl border border-red-300 bg-red-50 text-red-900 px-4 py-3 text-sm font-medium";
+          resultFeedback.classList.remove("hidden");
+        } finally {
+          btnExecute.disabled = false;
+        }
+      };
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initSistemaPage);
+    } else {
+      initSistemaPage();
+    }
+    document.addEventListener("astro:page-load", initSistemaPage);
+  </script>
+</AdminLayout>
