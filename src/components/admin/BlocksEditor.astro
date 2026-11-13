@@ -71,7 +71,7 @@ const {
     </div>
   </div>
 
-  <script type="application/json" id="sulpayki-initial-blocks" set:html={JSON.stringify(initialBlocks)}></script>
+  <script type="application/json" id="sulpayki-initial-blocks" set:html={JSON.stringify(initialBlocks).replace(/</g, "\\u003c")}></script>
 </section>
 
 <script is:inline>

@@ -293,6 +293,28 @@ const publicPrefix = isServicio ? "/servicios-turisticos/" : "/destinos/";
         .replace(/^-+|-+$/g, "");
     }
 
+    function sanitizeImageUrlLocal(rawUrl) {
+      if (typeof rawUrl !== "string") return "";
+      const trimmed = rawUrl.trim();
+      if (!trimmed || /[\u0000-\u001F\u007F\s]/.test(trimmed)) return "";
+      const lower = trimmed.toLowerCase();
+      if (lower.startsWith("http://") || lower.startsWith("https://")) {
+        try {
+          const parsed = new URL(trimmed);
+          if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return trimmed;
+          }
+        } catch {
+          return "";
+        }
+        return "";
+      }
+      if (trimmed.startsWith("/") && !trimmed.startsWith("//") && !trimmed.startsWith("/\\")) {
+        return trimmed;
+      }
+      return "";
+    }
+
     function initArticleForm() {
       const form = document.getElementById("article-editor-form");
       if (!form) return;
@@ -329,11 +351,26 @@ const publicPrefix = isServicio ? "/servicios-turisticos/" : "/destinos/";
 
       pickCoverBtn?.addEventListener("click", () => {
         window.openSulpaykiMediaPicker?.((media) => {
-          coverUrlInput.value = media.url;
-          if (!coverAltInput.value && media.altText) {
+          const safeUrl = sanitizeImageUrlLocal(media?.url);
+          coverUrlInput.value = safeUrl;
+          if (!coverAltInput.value && media?.altText) {
             coverAltInput.value = media.altText;
           }
-          previewBox.innerHTML = `<img src="${media.url}" alt="" class="w-full h-full object-cover" />`;
+          if (!previewBox) return;
+          if (safeUrl) {
+            const img = document.createElement("img");
+            img.id = "cover-preview-img";
+            img.src = safeUrl;
+            img.alt = "";
+            img.className = "w-full h-full object-cover";
+            previewBox.replaceChildren(img);
+          } else {
+            const placeholder = document.createElement("span");
+            placeholder.id = "cover-preview-placeholder";
+            placeholder.className = "text-xs text-neutral-500 px-4 text-center";
+            placeholder.textContent = "Todavía no seleccionaste imagen de portada";
+            previewBox.replaceChildren(placeholder);
+          }
         });
       });
 

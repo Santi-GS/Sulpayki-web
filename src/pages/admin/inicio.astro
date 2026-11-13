@@ -135,8 +135,8 @@ const availableLinkGroups = [
       </div>
     </section>
 
-    <script type="application/json" id="hero-initial-data" set:html={JSON.stringify(hero)}></script>
-    <script type="application/json" id="available-links-data" set:html={JSON.stringify(availableLinkGroups)}></script>
+    <script type="application/json" id="hero-initial-data" set:html={JSON.stringify(hero).replace(/</g, "\\u003c")}></script>
+    <script type="application/json" id="available-links-data" set:html={JSON.stringify(availableLinkGroups).replace(/</g, "\\u003c")}></script>
   </form>
 
   <script is:inline>

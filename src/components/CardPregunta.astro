@@ -1,5 +1,5 @@
 ---
-import { marked } from "marked";
+import { renderMarkdown } from "../lib/markdown";
 
 interface Props {
   pregunta: string;
@@ -9,7 +9,7 @@ interface Props {
 
 const { pregunta, respuesta, defaultOpen = false } = Astro.props;
 
-const htmlRespuesta = marked(respuesta);
+const htmlRespuesta = renderMarkdown(respuesta);
 ---
 
 <li

@@ -2,7 +2,7 @@
 import type { ContenidoConImagenProps } from "../../lib/types";
 import StrapiImage from "../StrapiImage.astro";
 import Icon from "../ui/Icon.astro";
-import { renderMarkdown } from "../../lib/markdown";
+import { renderMarkdown, sanitizeHref } from "../../lib/markdown";
 
 interface Props {
   data: ContenidoConImagenProps;
@@ -35,9 +35,11 @@ const isLogoOrGraphic = Boolean(
       imagen?.url &&
       /\.(png|svg|webp)$/i.test(imagen.url))
 );
+const safeLinkHref = link?.href ? sanitizeHref(link.href) : "";
 const isWhatsappLink = Boolean(
-  link?.href && link.href.toLowerCase().includes("wa.me")
+  safeLinkHref && safeLinkHref !== "#" && safeLinkHref.toLowerCase().includes("wa.me")
 );
+const isExternalLink = Boolean(link?.isExternal && safeLinkHref !== "#");
 
 const whatsappConsultaHref = `https://wa.me/5493804679492?text=${encodeURIComponent(
   `Hola, quiero consultar por paquetes y viajes con Sulpayki en La Rioja.`
@@ -107,9 +109,9 @@ const whatsappConsultaHref = `https://wa.me/5493804679492?text=${encodeURICompon
                     ? "btn-terracota bg-terracota hover:bg-rojo-tierra text-cta-ink"
                     : "bg-marfil hover:bg-arena-calida/70 border border-salvia/45 text-carbon transition-all duration-200 hover:-translate-y-0.5",
                 ]}
-                href={link.href}
-                target={link.isExternal ? "_blank" : "_self"}
-                rel={link.isExternal ? "noopener noreferrer" : undefined}
+                href={safeLinkHref}
+                target={isExternalLink ? "_blank" : "_self"}
+                rel={isExternalLink ? "noopener noreferrer" : undefined}
               >
                 {isWhatsappLink && <Icon name="whatsapp" class="w-4 h-4" />}
                 <span>{link.label}</span>
